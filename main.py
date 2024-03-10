@@ -6,8 +6,8 @@ import base64
 class QRGenerator:
     def __init__(self):
         self.data = ""
-        self.version = 0
-        self.box_size = 0 # base: 29, so, just multiply by yout desire number for scale your qr 
+        self.version = None
+        self.box_size = 0 # base: 33x33, so, just multiply by yout desire number for scale your qr 
         self.border = 0
 
         self.back_color = ""
@@ -16,9 +16,10 @@ class QRGenerator:
 
         self.logo_path = ""
         self.qr_path = ""
+        self.prev = None
         self.preview = ""
 
-    def generate(self):
+    def generate_preview(self):
         qr = qrcode.QRCode(
                             version=self.version, 
                             error_correction=qrcode.constants.ERROR_CORRECT_L,
@@ -28,9 +29,17 @@ class QRGenerator:
         qr.add_data(self.data)
         qr.make(fit=True)
 
-        img = qr.make_image(fill_color=self.main_color, back_color=self.back_color)
+        self.qr_path = qr.make_image(fill_color=self.main_color, back_color=self.back_color)
+        self.prev = self.qr_path
 
         byte_arr = io.BytesIO()
-        img.save(byte_arr, format='JPEG')
+        self.prev.save(byte_arr, format='JPEG')
         encoded_image = base64.b64encode(byte_arr.getvalue()).decode("utf-8")
         self.preview = encoded_image
+
+    def generate(self, path):
+        self.qr_path.save(f"{path}.png")
+
+    def get_res(self):
+        resolution = self.prev.size
+        return resolution
