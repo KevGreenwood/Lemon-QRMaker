@@ -30,8 +30,6 @@ def main(page: Page):
         qr_preview.src_base64 = build_qr()
         page.update()
 
-
-
     input_txt = TextField(label="Ingrese el contenido", value="https://github.com/KevGreenwood", on_change=button_clicked)
     input_col = Column([input_txt])
     input_panel = ExpansionPanelList([ExpansionPanel(header=ListTile(title=Text("ENTER CONTENT")), expanded=True, content=input_col)])
@@ -120,7 +118,7 @@ def main(page: Page):
         ])
     error_panel = ExpansionPanelList([ExpansionPanel(header=ListTile(title=Text("ERROR CORRECTION")), content=error_dropdown)])
     
-    qr_preview = Image(src="default-preview-qr.svg", width=300, height=300)
+    qr_preview = Image(src=build_qr, width=300, height=300)
     conainer = Container(alignment=alignment.top_center, content=qr_preview)
 
     left_column = Column([input_panel, size_panel, color_panel, logo_panel, design_panel, error_panel])
