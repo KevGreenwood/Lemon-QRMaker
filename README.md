@@ -1,1 +1,1 @@
-# Cassie-QRGenerator
+# Cassie-QRMaker
