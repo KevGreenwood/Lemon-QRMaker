@@ -1,11 +1,13 @@
 from flet import *
-from main import *
+from core import *
 
 
 def main(page: Page):
-    qr = QRGenerator()
+    page.title = "Cassie-QRCodeMaker"
     page.scroll = "always"
-
+    
+    # --- QR Building ---
+    qr = QRGenerator()
     def build_qr():
         qr.data = input_txt.value
         
@@ -14,25 +16,26 @@ def main(page: Page):
         else:
             qr.version = int(version_slider.value)
         
-        qr.box_size = int(box_version_slider.value)
+        qr.box_size = int(qr_size_slider.value)
 
         if border_txt.value == "":
             qr.border = 0
         else:
             qr.border = int(border_txt.value)
+        
         qr.back_color = back_color_txt.value
         qr.main_color = fore_color_txt.value
+
         qr.generate_preview()
+
         print(f"{qr.version}\n{qr.box_size}")
+
         return qr.preview
 
+    # --- Realtime Building ---
     def button_clicked(e):
         qr_preview.src_base64 = build_qr()
-        page.update()
-
-    input_txt = TextField(label="Ingrese el contenido", value="https://github.com/KevGreenwood", on_change=button_clicked)
-    input_col = Column([input_txt])
-    input_panel = ExpansionPanelList([ExpansionPanel(header=ListTile(title=Text("ENTER CONTENT")), expanded=True, content=input_col)])
+        qr_preview.update()
 
     def switch_version(e):
         if ver_auto_box.value:
@@ -41,14 +44,21 @@ def main(page: Page):
         else:
             version_slider.disabled = False
         qr_preview.src_base64 = build_qr()
-        page.update()
-    
+        qr_preview.update()
+
+    # --- Input Section ---
+    input_txt = TextField(label="Ingrese el contenido", value="https://github.com/KevGreenwood", on_change=button_clicked)
+    input_col = Column([input_txt])
+    input_panel = ExpansionPanelList([ExpansionPanel(header=ListTile(title=Text("ENTER CONTENT")), expanded=True, content=input_col)])
+
+    # --- Size Section ---
     version_slider = Slider(min=1, max=40, divisions=39, label="{value}", value=1, disabled = True, on_change=button_clicked)
     ver_auto_box = Checkbox(label="Auto", value=True, on_change=switch_version)
     size_row = Row([version_slider, ver_auto_box])
     border_txt = TextField(label="Ingrese el tamaño del borde", value="4", on_change=button_clicked)
     size_panel = ExpansionPanelList([ExpansionPanel(header=ListTile(title=Text("SET SIZE")), content=Column([size_row, border_txt]))])
     
+    # --- Color Section ---
     color_radio_group = RadioGroup(content=Row([
         Radio(label="Single Color"),
         Radio(label="Color Gradient"),
@@ -59,6 +69,7 @@ def main(page: Page):
     fore_color_row = Row([fore_color_txt])
     color_column = Column([color_radio_group, fore_color_row, back_color_txt])
     color_panel = ExpansionPanelList([ExpansionPanel(header=ListTile(title=Text("SET COLORS")), content=color_column)])
+    
 
     def pick_files_result(e: FilePickerResultEvent):
         for file in e.files:
@@ -118,12 +129,9 @@ def main(page: Page):
         ])
     error_panel = ExpansionPanelList([ExpansionPanel(header=ListTile(title=Text("ERROR CORRECTION")), content=error_dropdown)])
     
-    qr_preview = Image(src=build_qr, width=300, height=300)
-    conainer = Container(alignment=alignment.top_center, content=qr_preview)
+    
 
     left_column = Column([input_panel, size_panel, color_panel, logo_panel, design_panel, error_panel])
-
-    
 
     scale_txt = Text("1450 x 1450 px", color="black", weight=FontWeight.BOLD, text_align=TextAlign.CENTER)
 
@@ -135,24 +143,28 @@ def main(page: Page):
         scale_txt.update()
 
 
-    box_version_slider = Slider(min=10, max=100, divisions=9, label="{value}", value=50, on_change=update_scale_txt)
+    qr_size_slider = Slider(min=10, max=100, divisions=9, label="{value}", value=50, on_change=update_scale_txt)
+    qr_preview = Image(src_base64=build_qr(),width=300, height=300)
 
-    scale_column = Column(alignment=MainAxisAlignment.CENTER, controls=[box_version_slider, scale_txt])
+    prev_container = Container(alignment=alignment.top_center, content=qr_preview)
+    scale_column = Column(alignment=MainAxisAlignment.CENTER, controls=[qr_size_slider, scale_txt])
 
     def save_file_result(e: FilePickerResultEvent):
         qr.generate(e.path)
         print(f"Image saved in {e.path}")
 
     save_file_dialog = FilePicker(on_result=save_file_result)
-
     save_btn = ElevatedButton("Save", icon=icons.SAVE_ALT_ROUNDED, on_click=lambda _: save_file_dialog.save_file(file_type=FilePickerFileType.IMAGE))
 
-    buttons_row = Row(alignment=MainAxisAlignment.CENTER, controls=[ElevatedButton("Generate", on_click=button_clicked, icon=icons.QR_CODE_ROUNDED), save_btn])
-    right_column = Column(alignment=alignment.top_center, controls=[conainer, scale_column, buttons_row])
+    buttons_row = Row(alignment=MainAxisAlignment.CENTER, controls=[save_btn, ])
+    right_column = Column(alignment=alignment.top_center, controls=[prev_container, scale_column, buttons_row])
 
     left = Container(alignment=alignment.top_left, bgcolor="#e8eef2", width=500, height=2000, col={"sm": 12, "md": 8, "xl": 8}, content=left_column)
+    
     right = Container(bgcolor="white", width=300, height=2000, col={"sm": 12, "md": 4, "xl": 4}, content=right_column)
+    
     main_container = ResponsiveRow(spacing=0, controls=[left, right])
+
     page.overlay.extend([pick_files_dialog, save_file_dialog])
     page.add(main_container)
 
