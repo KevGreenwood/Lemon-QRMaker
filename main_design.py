@@ -23,9 +23,9 @@ def main(page: Page):
         qr.back_color = back_color_txt.value
         qr.main_color = fore_color_txt.value
 
-        qr.generate_preview()
-        print(f"{qr.version}\n{qr.box_size}")
-        return qr.preview
+        print(f"Version: {qr.version}\nSize: {qr.box_size}")
+
+        return qr.generate_preview()
 
     # --- Realtime Building ---
     def regenerate_preview(e):
@@ -84,7 +84,7 @@ def main(page: Page):
         regenerate_preview(e)
 
     open_logo = ElevatedButton("Upload Logo", icon=icons.UPLOAD_FILE_ROUNDED, on_click=lambda _: pick_files_dialog.pick_files(allow_multiple=False, allowed_extensions=["png", "jpeg"]))
-    delete_logo = ElevatedButton("Upload Logo", icon=icons.UPLOAD_FILE_ROUNDED, on_click=remove_logo)
+    delete_logo = ElevatedButton("Delete Logo", icon=icons.REMOVE_CIRCLE_OUTLINE_ROUNDED, on_click=remove_logo)
     logo = ft.Image(src="default-preview-qr.svg", width=200, height=200)
     logo_preview = Container(logo)
     logo_column = Column([logo_preview, open_logo, delete_logo])
@@ -119,17 +119,17 @@ def main(page: Page):
 
     left_column = Column([input_panel, size_panel, color_panel, logo_panel, design_panel])
 
-    scale_txt = Text("1450 x 1450 px", color="black", weight=FontWeight.BOLD, text_align=TextAlign.CENTER)
 
     def update_scale_txt(e):
-        slider_value = int(e.control.value)
-        resolution = qr.get_res()
-        scaled_resolution = tuple(i * slider_value for i in resolution)
-        scale_txt.value = scaled_resolution
+        regenerate_preview(e)
+        scale_txt.value = qr.get_res()
         scale_txt.update()
 
     qr_size_slider = Slider(min=10, max=100, divisions=9, label="{value}", value=50, on_change=update_scale_txt)
     qr_preview = ft.Image(src_base64=build_qr(),width=300, height=300)
+
+    scale_txt = Text(value=qr.get_res(), color="black", weight=FontWeight.BOLD)
+
 
     prev_container = Container(alignment=alignment.top_center, content=qr_preview)
     scale_column = Column(alignment=MainAxisAlignment.CENTER, controls=[qr_size_slider, scale_txt])
