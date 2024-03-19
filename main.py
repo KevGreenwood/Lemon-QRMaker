@@ -1,62 +1,174 @@
-import io
-import base64
-import qrcode
-from qrcode.image.styledpil import StyledPilImage
-from qrcode.image.styles.moduledrawers.pil import *
-from qrcode.image.styles.colormasks import *
+from flet import *
+import flet as ft
+from core import *
 
 
-class QRGenerator:
-    def __init__(self):
-        self.qr = None # Instance of qrcode.QRCode
-        self.version = None
-        self.box_size = 50 # base: 33x33, so, just multiply by your desire number for scale your qr
-        self.border = 4
-        self.data = ""
-        self.use_logo = False
-        # Can be hex values or RGB Tuples   
-        self.main_color = None
-        self.back_color = None
-        self.alt_color = None
-        # Paths
-        self.logo_path = ""
-        self.final_qr = ""
-
-    def _building_qr(self):
-        if self.use_logo:
-            self.qr = qrcode.QRCode(
-                version=self.version, 
-                error_correction=qrcode.constants.ERROR_CORRECT_H,
-                box_size=self.box_size,
-                border=self.border
-            )
-            self._adding_data()
-            self.final_qr = self.qr.make_image(
-                image_factory = StyledPilImage, 
-                module_drawer = SquareModuleDrawer(),
-                embeded_image_path=self.logo_path
-            )
+def main(page: Page):
+    page.title = "Cassie-QRCodeMaker"
+    page.scroll = "always"
+    
+    # --- QR Building ---
+    qr = QRGenerator()
+    def build_qr():
+        qr.data = input_txt.value
+        if ver_auto_box.value:
+            qr.version = None
         else:
-            self.qr = qrcode.QRCode(
-                version=self.version, 
-                box_size=self.box_size,
-                border=self.border
-            )
-            self._adding_data()
-            self.final_qr = self.qr.make_image(fill_color=self.main_color, back_color=self.back_color)
+            qr.version = int(version_slider.value)
+        qr.box_size = int(qr_size_slider.value)
+        if border_txt.value == "":
+            qr.border = 4
+        else:
+            qr.border = int(border_txt.value)
+        qr.back_color = back_color_txt.value
+        qr.main_color = fore_color_txt.value
 
-    def _adding_data(self):
-        self.qr.add_data(self.data)
-        self.qr.make(fit=True)
+        print(f"Version: {qr.version}\nSize: {qr.box_size}")
 
-    def generate_preview(self):
-        self._building_qr()
-        byte_arr = io.BytesIO()
-        self.final_qr.save(byte_arr, format='PNG')
-        return base64.b64encode(byte_arr.getvalue()).decode("utf-8")
+        return qr.generate_preview()
 
-    def generate_final(self, path):
-        self.final_qr.save(f"{path}.png")
+    # --- Realtime Building ---
+    def regenerate_preview(e):
+        qr_preview.src_base64 = build_qr()
+        qr_preview.update()
 
-    def get_res(self):
-        return f"{self.final_qr.size[0]} x {self.final_qr.size[1]}"
+    def switch_version(e):
+        if ver_auto_box.value:
+            version_slider.disabled = True
+            version_slider.value = 1        
+        else:
+            version_slider.disabled = False
+        version_slider.update()
+        regenerate_preview(e)
+    
+
+    # --- Input Section ---
+    input_txt = TextField(label="Ingrese el contenido", value="https://github.com/KevGreenwood", on_change=regenerate_preview)
+    email = TextField("Your email")
+    input_tabs = Tabs(
+        tabs=[Tab(text="all", content=input_txt), Tab(text="active", content=email), Tab(text="completed")]
+    )
+
+    input_col = Column([input_tabs, input_conatiner])
+
+    # --- Size Section ---
+    version_slider = Slider(min=1, max=40, divisions=39, label="{value}", value=1, disabled = True, on_change=regenerate_preview)
+    ver_auto_box = Checkbox(label="Auto", value=True, on_change=switch_version)
+    size_row = Row([version_slider, ver_auto_box])
+    border_txt = TextField(label="Ingrese el tamaño del borde", value="4", input_filter=NumbersOnlyInputFilter(),on_change=regenerate_preview)
+    size_panel = ExpansionPanelList([ExpansionPanel(header=ListTile(title=Text("SET SIZE")), content=Column([size_row, border_txt]))])
+    
+    # --- Color Section ---
+    color_radio_group = RadioGroup(content=Row([
+        Radio(label="Single Color"),
+        Radio(label="Color Gradient"),
+        Checkbox(label="Custom Eye Color")
+    ]))
+    fore_color_txt = TextField(label="Foreground Color", prefix_icon=icons.COLOR_LENS, value="#000000", on_change=regenerate_preview)
+    back_color_txt = TextField(label="Background Color", prefix_icon=icons.COLOR_LENS, value="#FFFFFF", on_change=regenerate_preview)
+    fore_color_row = Row([fore_color_txt])
+    color_column = Column([color_radio_group, fore_color_row, back_color_txt])
+    color_panel = ExpansionPanelList([ExpansionPanel(header=ListTile(title=Text("SET COLORS")), content=color_column)])
+    
+    def pick_files_result(e: FilePickerResultEvent):
+        for file in e.files:
+            print("Nombre del archivo:", file.name)
+            print("Ruta del archivo:", file.path)
+            print("Tamaño del archivo:", file.size)
+        logo.src = e.files[0].path
+        qr.logo_path = e.files[0].path
+        qr.use_logo = True
+        logo.update()
+        regenerate_preview(e)
+    pick_files_dialog = FilePicker(on_result=pick_files_result)
+
+    def remove_logo(e):
+        qr.logo_path = None
+        qr.use_logo = False
+        logo.update()
+        regenerate_preview(e)
+
+    open_logo = ElevatedButton("Upload Logo", icon=icons.UPLOAD_FILE_ROUNDED, on_click=lambda _: pick_files_dialog.pick_files(allow_multiple=False, allowed_extensions=["png", "jpeg"]))
+    delete_logo = ElevatedButton("Delete Logo", icon=icons.REMOVE_CIRCLE_OUTLINE_ROUNDED, on_click=remove_logo)
+    logo = ft.Image(src="default-preview-qr.svg", width=200, height=200)
+    logo_preview = Container(logo)
+    logo_row = Row([open_logo, delete_logo])
+    logo_column = Column([logo_preview, logo_row])
+    
+    logo_panel = ExpansionPanelList([ExpansionPanel(header=ListTile(title=Text("ADD LOGO IMAGE")), content=logo_column)])
+
+    body_shape = Row([
+        ft.Image(src="default-preview-qr.svg", width=100, height=100),
+        ft.Image(src="default-preview-qr.svg", width=100, height=100),
+        ft.Image(src="default-preview-qr.svg", width=100, height=100),
+        ft.Image(src="default-preview-qr.svg", width=100, height=100),
+        ft.Image(src="default-preview-qr.svg", width=100, height=100),
+        ft.Image(src="default-preview-qr.svg", width=100, height=100)
+        ])
+    eye_shape = Row([
+        ft.Image(src="default-preview-qr.svg", width=100, height=100),
+        ft.Image(src="default-preview-qr.svg", width=100, height=100),
+        ft.Image(src="default-preview-qr.svg", width=100, height=100),
+        ft.Image(src="default-preview-qr.svg", width=100, height=100),
+        ft.Image(src="default-preview-qr.svg", width=100, height=100),
+        ft.Image(src="default-preview-qr.svg", width=100, height=100)
+        ])
+    eye_ball = Row([
+        ft.Image(src="default-preview-qr.svg", width=100, height=100),
+        ft.Image(src="default-preview-qr.svg", width=100, height=100),
+        ft.Image(src="default-preview-qr.svg", width=100, height=100),
+        ft.Image(src="default-preview-qr.svg", width=100, height=100),
+        ft.Image(src="default-preview-qr.svg", width=100, height=100),
+        ft.Image(src="default-preview-qr.svg", width=100, height=100)
+        ])
+    styles_col = Column([Text("Body Shape"), body_shape, Text("Eye Frame Shape"), eye_shape, Text("Eye Ball Shape"), eye_ball])
+    design_panel = ExpansionPanelList([ExpansionPanel(header=ListTile(title=Text("CUSTOMIZE DESIGN")), content=styles_col)])
+
+    error_dropdown = Dropdown(value="Medium", options=
+                            [
+                                dropdown.Option("Low"),
+                                dropdown.Option("Medium"),
+                                dropdown.Option("High"),
+                                dropdown.Option("Very High")
+                            ]
+                        )
+    advanced_panel = ExpansionPanelList([ExpansionPanel(header=ListTile(title=Text("ADVCANCED OPTIONS")), content=error_dropdown)])
+
+
+    left_column = Column([input_col, size_panel, color_panel, logo_panel, design_panel, advanced_panel])
+
+
+    def update_scale_txt(e):
+        regenerate_preview(e)
+        scale_txt.value = qr.get_res()
+        scale_txt.update()
+
+    qr_size_slider = Slider(min=10, max=100, divisions=9, label="{value}", value=50, on_change=update_scale_txt)
+    qr_preview = ft.Image(src_base64=build_qr(),width=300, height=300)
+
+    scale_txt = Text(value=qr.get_res(), color="black", weight=FontWeight.BOLD)
+
+
+    prev_container = Container(alignment=alignment.top_center, content=qr_preview)
+    scale_column = Column(alignment=MainAxisAlignment.CENTER, controls=[qr_size_slider, scale_txt])
+
+    def save_file_result(e: FilePickerResultEvent):
+        qr.generate_final(e.path)
+        print(f"Image saved in {e.path}")
+
+    save_file_dialog = FilePicker(on_result=save_file_result)
+    save_btn = ElevatedButton("Save", icon=icons.SAVE_ALT_ROUNDED, on_click=lambda _: save_file_dialog.save_file(file_type=FilePickerFileType.IMAGE))
+
+    buttons_row = Row(alignment=MainAxisAlignment.CENTER, controls=[save_btn, ])
+    right_column = Column(alignment=alignment.top_center, controls=[prev_container, scale_column, buttons_row])
+
+    left = Container(alignment=alignment.top_left, width=500, height=2000, col={"sm": 12, "md": 8, "xl": 8}, content=left_column)
+    right = Container(bgcolor="white", width=300, height=2000, col={"sm": 12, "md": 4, "xl": 4}, content=right_column)
+    main_container = ResponsiveRow(spacing=0, controls=[left, right])
+
+    page.overlay.extend([pick_files_dialog, save_file_dialog])
+    page.add(main_container)
+
+
+if __name__ == "__main__":
+    app(target=main)
