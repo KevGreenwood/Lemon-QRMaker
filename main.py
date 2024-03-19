@@ -49,7 +49,6 @@ class QRGenerator:
         self.qr.add_data(self.data)
         self.qr.make(fit=True)
 
-
     def generate_preview(self):
         self._building_qr()
         byte_arr = io.BytesIO()
