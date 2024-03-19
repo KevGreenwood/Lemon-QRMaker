@@ -17,7 +17,7 @@ def main(page: Page):
             qr.version = int(version_slider.value)
         qr.box_size = int(qr_size_slider.value)
         if border_txt.value == "":
-            qr.border = 0
+            qr.border = 4
         else:
             qr.border = int(border_txt.value)
         qr.back_color = back_color_txt.value
@@ -50,7 +50,7 @@ def main(page: Page):
     version_slider = Slider(min=1, max=40, divisions=39, label="{value}", value=1, disabled = True, on_change=regenerate_preview)
     ver_auto_box = Checkbox(label="Auto", value=True, on_change=switch_version)
     size_row = Row([version_slider, ver_auto_box])
-    border_txt = TextField(label="Ingrese el tamaño del borde", value="4", on_change=regenerate_preview)
+    border_txt = TextField(label="Ingrese el tamaño del borde", value="4", input_filter=NumbersOnlyInputFilter(),on_change=regenerate_preview)
     size_panel = ExpansionPanelList([ExpansionPanel(header=ListTile(title=Text("SET SIZE")), content=Column([size_row, border_txt]))])
     
     # --- Color Section ---
