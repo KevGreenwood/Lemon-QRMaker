@@ -33,13 +33,14 @@ class QR_Tabs(UserControl):
                 self.bitcoin_tab
             ], on_change=self.update, selected_index=0)
         
+
         self.cont = Container(padding=10)
 
-        self.back = IconButton(icon=icons.ARROW_BACK_IOS, on_click=self.go_back)
+        self.back = IconButton(icon=icons.ARROW_BACK_IOS, on_click=self.go_back, icon_color=colors.WHITE, width=30)
 
-        self.forward = IconButton(icon=icons.ARROW_FORWARD_IOS, on_click=self.go_forward)
+        self.forward = IconButton(icon=icons.ARROW_FORWARD_IOS, on_click=self.go_forward, icon_color=colors.WHITE, width=30)
 
-        self.tab_container = Container(Row([self.back, self.tabs, self.forward]))
+        self.tab_row = Row(controls=[self.back, Column(controls=[self.tabs], expand=True), self.forward], horizontal_alignment=CrossAxisAlignment.CENTER)
 
     def debug(self, e):
         print(self.tabs.selected_index)
@@ -47,12 +48,23 @@ class QR_Tabs(UserControl):
     def go_back(self, e):
         if self.tabs.selected_index > 0:
             self.tabs.selected_index -= 1
-            self.update(e)
-        
+            self.back.icon_color = colors.WHITE
+        else:
+            self.back.icon_color = colors.LIGHT_BLUE_ACCENT_100
+
+        self.forward.icon_color = colors.WHITE
+        self.update(e)
+    
     def go_forward(self, e):
         if self.tabs.selected_index < 12:
             self.tabs.selected_index += 1
-            self.update(e)
+            self.forward.icon_color = colors.WHITE
+        else:
+            self.forward.icon_color = colors.LIGHT_BLUE_ACCENT_100
+        
+        self.back.icon_color = colors.WHITE
+        self.update(e)
+        
     
     def update(self, e):
         if self.tabs.selected_index == 0:
@@ -92,4 +104,4 @@ class QR_Tabs(UserControl):
         super().update()
 
     def build(self):
-        return Column([self.tab_container, self.cont])
+        return Column([self.tab_row, self.cont])
