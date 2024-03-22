@@ -9,7 +9,9 @@ class QR_Tabs(UserControl):
         self.main_txt = TextField(label="Ingrese el contenido") # Use for generic porpouses
         self.alt_txt = TextField(label="Ingrese el contenido")
         self.mail_txt = TextField(label="Ingrese su correo electronico")
-        self.phone_txt = TextField(label="Ingrese el contenido", input_filter=NumbersOnlyInputFilter())
+        self.phone_txt = TextField(label="Ingrese el contenido", input_filter=InputFilter(allow=True,
+            regex_string=r"[0-9+]",
+            replacement_string=""), max_length=16)
         
         self.url_tab = Tab(tab_content=Column([Icon(icons.LINK), Text("URL")], spacing=0, horizontal_alignment=CrossAxisAlignment.CENTER))
         self.text_tab = Tab(tab_content=Column([Icon(icons.TEXT_SNIPPET), Text("Text")], spacing=0, horizontal_alignment=CrossAxisAlignment.CENTER))
@@ -24,7 +26,7 @@ class QR_Tabs(UserControl):
         self.event_tab = Tab(tab_content=Column([Icon(icons.EVENT), Text("Event")], spacing=0, horizontal_alignment=CrossAxisAlignment.CENTER))
         self.paypal_tab = Tab(tab_content=Column([Icon(icons.PAYPAL), Text("PayPal")], spacing=0, horizontal_alignment=CrossAxisAlignment.CENTER))
         self.bitcoin_tab = Tab(tab_content=Column([Icon(icons.CURRENCY_BITCOIN), Text("Bitcoin")], spacing=0, horizontal_alignment=CrossAxisAlignment.CENTER))
-
+    
         self.tabs = Tabs(tabs=
             [
                 self.url_tab, self.text_tab, self.mail_tab, self.phone_tab, 
@@ -40,10 +42,7 @@ class QR_Tabs(UserControl):
 
         self.forward = IconButton(icon=icons.ARROW_FORWARD_IOS, on_click=self.go_forward, icon_color=colors.WHITE, width=30)
 
-        self.tab_row = Row(controls=[self.back, Column(controls=[self.tabs], expand=True), self.forward], horizontal_alignment=CrossAxisAlignment.CENTER)
-
-    def debug(self, e):
-        print(self.tabs.selected_index)
+        self.tab_row = Row(controls=[self.back, Column(controls=[self.tabs], expand=True), self.forward])
     
     def go_back(self, e):
         if self.tabs.selected_index > 0:
@@ -64,43 +63,41 @@ class QR_Tabs(UserControl):
         
         self.back.icon_color = colors.WHITE
         self.update(e)
-        
     
     def update(self, e):
-        if self.tabs.selected_index == 0:
-            self.main_txt.value = "https://github.com/KevGreenwood"
-            self.main_txt.multiline = False
-            self.main_txt.filled = False
-            self.cont.content = self.main_txt
+        match self.tabs.selected_index:
+            case 0:
+                self.main_txt.value = "https://github.com/KevGreenwood"
+                self.main_txt.multiline = False
+                self.main_txt.filled = False
+                self.cont.content = self.main_txt
+
+            case 1:
+                self.main_txt.value = ""
+                self.main_txt.multiline = True
+                self.main_txt.filled = True
+                self.cont.content = self.main_txt
         
-        if self.tabs.selected_index == 1:
-            self.main_txt.value = ""
-            self.main_txt.multiline = True
-            self.main_txt.filled = True
-            self.cont.content = self.main_txt
-        
-        if self.tabs.selected_index == 2:
-            self.mail_txt.value = ""
-            self.alt_txt.value = ""
-            self.main_txt.value = ""
-            self.main_txt.filled = True
-            self.cont.content = Column([self.mail_txt, self.alt_txt, self.main_txt])
+            case 2:
+                self.mail_txt.value = ""
+                self.alt_txt.value = ""
+                self.main_txt.value = ""
+                self.main_txt.filled = True
+                self.cont.content = Column([self.mail_txt, self.alt_txt, self.main_txt])
 
-        if self.tabs.selected_index == 3:
-            self.phone_txt.value = ""
-            self.cont.content = self.phone_txt
+            case 3:
+                self.phone_txt.value = ""
+                self.cont.content = self.phone_txt
 
-        if self.tabs.selected_index == 4 or self.tabs.selected_index == 5:
-            self.phone_txt.value = ""
-            self.main_txt.value = ""
-            self.main_txt.filled = True
-            self.cont.content = Column([self.phone_txt, self.main_txt])
+            case 4 | 5:
+                self.phone_txt.value = ""
+                self.main_txt.value = ""
+                self.main_txt.filled = True
+                self.cont.content = Column([self.phone_txt, self.main_txt])
 
-        if self.tabs.selected_index == 6:
-                
-            self.cont.content = Column([self.main_txt, self.alt_txt, ])
+            case 6:
+                self.cont.content = Column([self.main_txt, self.alt_txt, ])
             
-        
         super().update()
 
     def build(self):
