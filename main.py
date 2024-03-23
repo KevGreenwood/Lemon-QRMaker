@@ -6,7 +6,7 @@ from main_designer import *
 def main(page: Page):
     page.title = "Cassie-QRCodeMaker"
     page.horizontal_alignment = alignment.center
-    page.add(QR_Tabs())
+    page.add(Row([QR_Tabs(), RightLayout()], vertical_alignment=CrossAxisAlignment.START))
 
 
 if __name__ == "__main__":

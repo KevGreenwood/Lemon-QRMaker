@@ -38,7 +38,7 @@ class QR_Tabs(UserControl):
 
         self.cont = Container(padding=10)
 
-        self.back = IconButton(icon=icons.ARROW_BACK_IOS, on_click=self.go_back, icon_color=colors.WHITE, width=30)
+        self.back = IconButton(icon=icons.ARROW_BACK_IOS, on_click=self.go_back, icon_color=colors.WHITE, width=30, visible=False)
 
         self.forward = IconButton(icon=icons.ARROW_FORWARD_IOS, on_click=self.go_forward, icon_color=colors.WHITE, width=30)
 
@@ -48,20 +48,12 @@ class QR_Tabs(UserControl):
         if self.tabs.selected_index > 0:
             self.tabs.selected_index -= 1
             self.back.icon_color = colors.WHITE
-        else:
-            self.back.icon_color = colors.LIGHT_BLUE_ACCENT_100
-
-        self.forward.icon_color = colors.WHITE
         self.update(e)
     
     def go_forward(self, e):
         if self.tabs.selected_index < 12:
             self.tabs.selected_index += 1
             self.forward.icon_color = colors.WHITE
-        else:
-            self.forward.icon_color = colors.LIGHT_BLUE_ACCENT_100
-        
-        self.back.icon_color = colors.WHITE
         self.update(e)
     
     def update(self, e):
@@ -71,6 +63,7 @@ class QR_Tabs(UserControl):
                 self.main_txt.multiline = False
                 self.main_txt.filled = False
                 self.cont.content = self.main_txt
+                self.back.visible = False
 
             case 1:
                 self.main_txt.value = ""
@@ -94,11 +87,29 @@ class QR_Tabs(UserControl):
                 self.main_txt.value = ""
                 self.main_txt.filled = True
                 self.cont.content = Column([self.phone_txt, self.main_txt])
+                self.forward.visible = True
 
             case 6:
                 self.cont.content = Column([self.main_txt, self.alt_txt, ])
+                
+            case 12:
+                self.forward.visible = False
             
+            case _:
+                self.forward.visible = True
+
+        if self.tabs.selected_index > 0:
+            self.back.visible = True
+
         super().update()
 
     def build(self):
-        return Column([self.tab_row, self.cont])
+        return Container(Column([self.tab_row, self.cont]), width=800, alignment=alignment.top_left)
+
+class RightLayout(UserControl):
+    def __init__(self):
+        super().__init__()
+        self.qr_preview = ft.Image(src="default-preview-qr.svg",width=300, height=300)
+        self.prev_container = Container(alignment=alignment.top_center, content=self.qr_preview)
+    def build(self):
+        return Container(Column([self.prev_container]), bgcolor="white", width=500, col=6)
