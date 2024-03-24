@@ -111,5 +111,35 @@ class RightLayout(UserControl):
         super().__init__()
         self.qr_preview = ft.Image(src="default-preview-qr.svg",width=300, height=300)
         self.prev_container = Container(alignment=alignment.top_center, content=self.qr_preview)
+        self.save_btn = ElevatedButton("Save", icons.SAVE)
+        self.qr_size_slider = Slider(min=10, max=100, divisions=9, label="{value}", value=50)
+        self.size_row = Row([Text("Low Quality"), Text("666x666 px"), Text("High Quality")], alignment=MainAxisAlignment.SPACE_BETWEEN)
+
     def build(self):
-        return Container(Column([self.prev_container]), bgcolor="white", width=500, col=6)
+        return Container(Column([self.prev_container, self.qr_size_slider, self.size_row, self.save_btn], horizontal_alignment=CrossAxisAlignment.CENTER), bgcolor="white", width=500, col=6)
+
+class LeftLayout(UserControl):
+    def __init__(self):
+        super().__init__()
+        # --- Input Section ---
+        self.version_slider = Slider(min=1, max=40, divisions=39, label="{value}", value=1, disabled = True)
+        self.ver_auto_box = Checkbox(label="Auto", value=True)
+        self.size_row = Row([self.version_slider, self.ver_auto_box])
+        self.border_txt = TextField(label="Ingrese el tamaño del borde", value="4", input_filter=NumbersOnlyInputFilter())
+        self.size_panel = ExpansionPanelList([ExpansionPanel(header=ListTile(title=Text("SET SIZE")), content=Column([self.size_row, self.border_txt]))])
+
+        # --- Color Section ---
+        self.color_radio_group = RadioGroup(content=Row([
+            Radio(label="Single Color"),
+            Radio(label="Color Gradient"),
+            Checkbox(label="Custom Eye Color")
+        ]))
+        self.fore_color_txt = TextField(label="Foreground Color", prefix_icon=icons.COLOR_LENS, value="#000000", )
+        self.back_color_txt = TextField(label="Background Color", prefix_icon=icons.COLOR_LENS, value="#FFFFFF", )
+        self.fore_color_row = Row([self.fore_color_txt])
+        self.color_column = Column([self.color_radio_group, self.fore_color_row, self.back_color_txt])
+        self.color_panel = ExpansionPanelList([ExpansionPanel(header=ListTile(title=Text("SET COLORS")), content=self.color_column)])
+
+
+    def build(self):
+        return Container(Column([self.size_panel, self.color_panel]), width=800, alignment=alignment.top_left)

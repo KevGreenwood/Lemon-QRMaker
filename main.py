@@ -5,8 +5,8 @@ from main_designer import *
 
 def main(page: Page):
     page.title = "Cassie-QRCodeMaker"
-    page.horizontal_alignment = alignment.center
-    page.add(Row([QR_Tabs(), RightLayout()], vertical_alignment=CrossAxisAlignment.START))
+    left_side = Column([QR_Tabs(), LeftLayout()])
+    page.add(Row([left_side, RightLayout()], alignment=MainAxisAlignment.CENTER, vertical_alignment=CrossAxisAlignment.START))
 
 
 if __name__ == "__main__":
