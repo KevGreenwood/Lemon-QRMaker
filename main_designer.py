@@ -15,8 +15,8 @@ class App(UserControl):
         self.main_txt = TextField(
             label="Ingrese el contenido", on_change=self.regenerate_preview,
             value = "https://github.com/KevGreenwood", autofocus=True
-        )  # Use for generic proposes
-        self.alt_txt = TextField(label="Ingrese el contenido", on_change=self.regenerate_preview)
+        )
+        self.filled_txt = TextField(label="Ingrese el contenido", on_change=self.regenerate_preview)
         self.mail_txt = TextField(label="Ingrese su correo electronico", on_change=self.regenerate_preview)
         self.phone_txt = TextField(
             label="Ingrese el contenido",
@@ -25,6 +25,29 @@ class App(UserControl):
             ),
             max_length=16, on_change=self.regenerate_preview
         )
+        self.latitude_txt = TextField(
+            label="Ingrese el contenido",
+            input_filter=InputFilter(
+                allow=True, regex_string=r"[0-9-.]", replacement_string=""
+            ), on_change=self.regenerate_preview
+        )
+        self.longitude_txt = TextField(
+            label="Ingrese el contenido",
+            input_filter=InputFilter(
+                allow=True, regex_string=r"[0-9-.]", replacement_string=""
+            ), on_change=self.regenerate_preview
+        )
+        self.pass_txt = TextField(
+            label="Ingrese el contenido", on_change=self.regenerate_preview
+        )
+        self.encrypt_drop = Dropdown("WPA/WPA2",options=
+                                    [
+                                        dropdown.Option("None"),
+                                        dropdown.Option("WEP"),
+                                        dropdown.Option("WPA/WPA2")
+                                    ],
+                                    on_change=self.regenerate_preview
+                                )
 
         # Tabs
         self.url_tab = Tab(
@@ -317,10 +340,10 @@ class App(UserControl):
 
             case 2:
                 self.mail_txt.value = ""
-                self.alt_txt.value = ""
+                self.filled_txt.value = ""
                 self.main_txt.value = ""
                 self.main_txt.filled = True
-                self.cont.content = Column([self.mail_txt, self.alt_txt, self.main_txt])
+                self.cont.content = Column([self.mail_txt, self.filled_txt, self.main_txt])
             
             case 3:
                 self.phone_txt.value = ""
@@ -337,12 +360,15 @@ class App(UserControl):
                 self.cont.content = Column(
                     [
                         self.main_txt,
-                        self.alt_txt,
+                        self.filled_txt,
                     ]
                 )
 
             case 8:
-                self.cont.content = Column([self.phone_txt, self.main_txt])
+                self.cont.content = Column([self.latitude_txt, self.longitude_txt])
+
+            case 9:
+                self.cont.content = Column([self.main_txt, self.pass_txt, self.encrypt_drop])
 
             case 12:
                 self.forward.visible = False
@@ -357,17 +383,49 @@ class App(UserControl):
 
     # --- QR Building ---
     def build_qr(self):
+        wifi_encrypt = ""
+        
+
+        match self.tabs.selected_index:
+            case 8:
+                if float(self.latitude_txt.value) > 90:
+                    self.latitude_txt.value = 90
+                    self.latitude_txt.update()   
+                if float(self.latitude_txt.value) < -90:
+                    self.latitude_txt.value = -90
+                    self.latitude_txt.update()   
+                if float(self.longitude_txt.value) > 180:
+                    self.longitude_txt.value = 180
+                    self.longitude_txt.update()   
+                if float(self.longitude_txt.value) < -180:
+                    self.longitude_txt.value = -180
+                    self.longitude_txt.update()   
+            
+            case 9:
+                match self.encrypt_drop.value:
+                    case "None":
+                        wifi_encrypt = "nopass"
+                    case "WEP":
+                        wifi_encrypt = "WEP"
+                    case "WPA/WPA2":
+                        wifi_encrypt = "WPA"
+
         qr_data_formats = {
             0: (self.main_txt.value if self.tabs.selected_index <= 1 else None),
-            2: f"mailto:{self.mail_txt.value}?subject={self.alt_txt.value}&body={self.main_txt.value}",
+            2: f"mailto:{self.mail_txt.value}?subject={self.filled_txt.value}&body={self.main_txt.value}",
             3: f"tel:{self.phone_txt.value}",
             4: f"SMSTO:{self.phone_txt.value}:{self.main_txt.value}",
             5: f"https://wa.me/{self.phone_txt.value}/?text={self.main_txt.value}",
-
-
-
-            8: f"https://maps.google.com/local?q={self.phone_txt.value},{self.main_txt.value}"
+            6: "",
+            7: "MECARD:N:{},{};NICKNAME:{};TEL:{};TEL:{};TEL:{};EMAIL:{};BDAY:{};NOTE:{};ADR:,,{},{},{},{},{};;",
+            8: f"https://maps.google.com/local?q={self.latitude_txt.value},{self.longitude_txt.value}",
+            9: f"WIFI:S:{self.main_txt.value};T:{wifi_encrypt};P:{self.pass_txt.value};;",
+            10: "BEGIN:VEVENT\nSUMMARY:{}\nLOCATION:{}\nDTSTART:{}\nDTEND:{}\nEND:VEVENT",
+            11: "https://www.paypal.com/cgi-bin/webscr?business={}&cmd=_xclick&currency_code={}&amount={}&item_name={}&return={}&cancel_return={}",
+            12: "{}:{}?amount={}&message={}"
         }
+
+
         self.qr.data = qr_data_formats.get(self.tabs.selected_index, None)
             
         if self.ver_auto_box.value:
