@@ -10,31 +10,6 @@ class App(UserControl):
         self.qr = QRGenerator()
         self.data = ""
         
-        # --- Right Layout ---
-        self.qr_preview = ft.Image(src="default-preview-qr.svg", width=300, height=300)
-        self.prev_container = Container(
-            alignment=alignment.top_center, content=self.qr_preview
-        )
-        self.save_btn = ElevatedButton("Save", icon=icons.SAVE)
-        self.qr_size_slider = Slider(
-            min=10, max=100, divisions=9, label="{value}", value=50
-        )
-        self.size_row = Row(
-            [Text("Low Quality"), Text("666x666 px"), Text("High Quality")],
-            alignment=MainAxisAlignment.SPACE_BETWEEN,
-        )
-        self.right = Container(
-            Column(
-                [
-                    self.prev_container, self.qr_size_slider,
-                    self.size_row, self.save_btn,
-                ],
-                horizontal_alignment=CrossAxisAlignment.CENTER,
-            ),
-            bgcolor="white",
-            width=500,
-        )
-
         # --- Left Layout ---
         # Text Fields
         self.main_txt = TextField(
@@ -280,6 +255,32 @@ class App(UserControl):
                 )
             ]
         )
+
+        # --- Right Layout ---
+        self.qr_preview = ft.Image(src_base64=self.build_qr(), width=300, height=300)
+        self.prev_container = Container(
+            alignment=alignment.top_center, content=self.qr_preview
+        )
+        self.save_btn = ElevatedButton("Save", icon=icons.SAVE)
+        self.qr_size_slider = Slider(
+            min=10, max=100, divisions=9, label="{value}", value=50
+        )
+        self.size_row = Row(
+            [Text("Low Quality"), Text("666x666 px"), Text("High Quality")],
+            alignment=MainAxisAlignment.SPACE_BETWEEN,
+        )
+        self.right = Container(
+            Column(
+                [
+                    self.prev_container, self.qr_size_slider,
+                    self.size_row, self.save_btn,
+                ],
+                horizontal_alignment=CrossAxisAlignment.CENTER,
+            ),
+            bgcolor="white",
+            width=500,
+        )
+
 
         self.main = Container(
             Column([self.size_panel, self.color_panel, self.logo_panel], width=770),
