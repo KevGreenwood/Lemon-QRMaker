@@ -8,12 +8,14 @@ class App(UserControl):
         super().__init__()
 
         self.qr = QRGenerator()
+        self.data = ""
+        
         # --- Right Layout ---
         self.qr_preview = ft.Image(src="default-preview-qr.svg", width=300, height=300)
         self.prev_container = Container(
             alignment=alignment.top_center, content=self.qr_preview
         )
-        self.save_btn = ElevatedButton("Save", icons.SAVE)
+        self.save_btn = ElevatedButton("Save", icon=icons.SAVE)
         self.qr_size_slider = Slider(
             min=10, max=100, divisions=9, label="{value}", value=50
         )
@@ -24,10 +26,8 @@ class App(UserControl):
         self.right = Container(
             Column(
                 [
-                    self.prev_container,
-                    self.qr_size_slider,
-                    self.size_row,
-                    self.save_btn,
+                    self.prev_container, self.qr_size_slider,
+                    self.size_row, self.save_btn,
                 ],
                 horizontal_alignment=CrossAxisAlignment.CENTER,
             ),
@@ -38,16 +38,17 @@ class App(UserControl):
         # --- Left Layout ---
         # Text Fields
         self.main_txt = TextField(
-            label="Ingrese el contenido", on_change=self.regenerate_preview
-        )  # Use for generic porpouses
-        self.alt_txt = TextField(label="Ingrese el contenido")
-        self.mail_txt = TextField(label="Ingrese su correo electronico")
+            label="Ingrese el contenido", on_change=self.regenerate_preview,
+            value = "https://github.com/KevGreenwood", autofocus=True
+        )  # Use for generic proposes
+        self.alt_txt = TextField(label="Ingrese el contenido", on_change=self.regenerate_preview)
+        self.mail_txt = TextField(label="Ingrese su correo electronico", on_change=self.regenerate_preview)
         self.phone_txt = TextField(
             label="Ingrese el contenido",
             input_filter=InputFilter(
                 allow=True, regex_string=r"[0-9+]", replacement_string=""
             ),
-            max_length=16,
+            max_length=16, on_change=self.regenerate_preview
         )
 
         # Tabs
@@ -153,12 +154,9 @@ class App(UserControl):
 
         self.tabs = Tabs(
             tabs=[
-                self.url_tab,
-                self.text_tab,
-                self.mail_tab,
-                self.phone_tab,
-                self.sms_tab,
-                self.wa_tab,
+                self.url_tab, self.text_tab,
+                self.mail_tab, self.phone_tab,
+                self.sms_tab, self.wa_tab,
                 self.vcard_tab,
                 self.mcard_tab,
                 self.location_tab,
@@ -171,7 +169,7 @@ class App(UserControl):
             selected_index=0,
         )
 
-        self.cont = Container(padding=10)
+        self.cont = Container(self.main_txt, padding=10)
 
         # Custom Tab
         self.back = IconButton(
@@ -284,9 +282,8 @@ class App(UserControl):
         )
 
         self.main = Container(
-            Column([self.size_panel, self.color_panel, self.logo_panel]),
-            width=800,
-            alignment=alignment.top_left,
+            Column([self.size_panel, self.color_panel, self.logo_panel], width=770),
+            width=800
         )
 
     # Custom Tabs
@@ -310,7 +307,7 @@ class App(UserControl):
                 self.main_txt.filled = False
                 self.cont.content = self.main_txt
                 self.back.visible = False
-
+            
             case 1:
                 self.main_txt.value = ""
                 self.main_txt.multiline = True
@@ -323,7 +320,7 @@ class App(UserControl):
                 self.main_txt.value = ""
                 self.main_txt.filled = True
                 self.cont.content = Column([self.mail_txt, self.alt_txt, self.main_txt])
-
+            
             case 3:
                 self.phone_txt.value = ""
                 self.cont.content = self.phone_txt
@@ -343,6 +340,9 @@ class App(UserControl):
                     ]
                 )
 
+            case 8:
+                self.cont.content = Column([self.phone_txt, self.main_txt])
+
             case 12:
                 self.forward.visible = False
 
@@ -356,7 +356,19 @@ class App(UserControl):
 
     # --- QR Building ---
     def build_qr(self):
-        self.qr.data = self.main_txt.value
+        qr_data_formats = {
+            0: (self.main_txt.value if self.tabs.selected_index <= 1 else None),
+            2: f"mailto:{self.mail_txt.value}?subject={self.alt_txt.value}&body={self.main_txt.value}",
+            3: f"tel:{self.phone_txt.value}",
+            4: f"SMSTO:{self.phone_txt.value}:{self.main_txt.value}",
+            5: f"https://wa.me/{self.phone_txt.value}/?text={self.main_txt.value}",
+
+
+
+            8: f"https://maps.google.com/local?q={self.phone_txt.value},{self.main_txt.value}"
+        }
+        self.qr.data = qr_data_formats.get(self.tabs.selected_index, None)
+            
         if self.ver_auto_box.value:
             self.qr.version = None
         else:
@@ -403,6 +415,7 @@ class App(UserControl):
         self.logo.update()
         self.regenerate_preview(e)
 
+    
     def build(self):
         return Row(
             [Column([self.tabs_container, self.main]), self.right],
