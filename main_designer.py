@@ -13,11 +13,15 @@ class App(UserControl):
         # --- Left Layout ---
         # Text Fields
         self.main_txt = TextField(
-            label="Ingrese el contenido", on_change=self.regenerate_preview,
-            value = "https://github.com/KevGreenwood", autofocus=True
+            label="Ingrese el contenido", value = "https://github.com/KevGreenwood",
+            on_change=self.regenerate_preview
         )
-        self.filled_txt = TextField(label="Ingrese el contenido", on_change=self.regenerate_preview)
+        self.filled_txt = TextField(
+            label="Ingrese el contenido", on_change=self.regenerate_preview,
+            multiline=True, filled=True)
+
         self.mail_txt = TextField(label="Ingrese su correo electronico", on_change=self.regenerate_preview)
+
         self.phone_txt = TextField(
             label="Ingrese el contenido",
             input_filter=InputFilter(
@@ -25,6 +29,7 @@ class App(UserControl):
             ),
             max_length=16, on_change=self.regenerate_preview
         )
+
         self.latitude_txt = TextField(
             label="Ingrese el contenido",
             input_filter=InputFilter(
@@ -37,17 +42,20 @@ class App(UserControl):
                 allow=True, regex_string=r"[0-9-.]", replacement_string=""
             ), on_change=self.regenerate_preview
         )
+
         self.pass_txt = TextField(
             label="Ingrese el contenido", on_change=self.regenerate_preview
         )
-        self.encrypt_drop = Dropdown("WPA/WPA2",options=
-                                    [
-                                        dropdown.Option("None"),
-                                        dropdown.Option("WEP"),
-                                        dropdown.Option("WPA/WPA2")
-                                    ],
-                                    on_change=self.regenerate_preview
-                                )
+
+        
+        self.encrypt_drop = Dropdown("WPA/WPA2", options=
+                                        [
+                                            dropdown.Option("None"),
+                                            dropdown.Option("WEP"),
+                                            dropdown.Option("WPA/WPA2")
+                                        ],
+                                        on_change=self.regenerate_preview
+                                    )
 
         # Tabs
         self.url_tab = Tab(
@@ -167,31 +175,32 @@ class App(UserControl):
             selected_index=0,
         )
 
-        self.cont = Container(self.main_txt, padding=10)
+        self.cont = Container(self.main_txt, padding=10, width=750)
 
         # Custom Tab
         self.back = IconButton(
             icon=icons.ARROW_BACK_IOS,
             on_click=self.go_back,
             icon_color=colors.WHITE,
-            width=30,
+            
             visible=False,
         )
         self.forward = IconButton(
             icon=icons.ARROW_FORWARD_IOS,
             on_click=self.go_forward,
             icon_color=colors.WHITE,
-            width=30,
+            
         )
         self.tab_row = Row(
             controls=[
                 self.back,
                 Column(controls=[self.tabs], expand=True),
                 self.forward,
-            ]
+            ],
+            width=750
         )
         self.tabs_container = Container(
-            Column([self.tab_row, self.cont]), width=800, alignment=alignment.top_left
+            Column([self.tab_row, self.cont]), width=770, alignment=alignment.top_left
         )
 
         # --- Size Section ---
@@ -306,8 +315,8 @@ class App(UserControl):
 
 
         self.main = Container(
-            Column([self.size_panel, self.color_panel, self.logo_panel], width=770),
-            width=800
+            Column([self.size_panel, self.color_panel, self.logo_panel]),
+            width=750
         )
 
     # Custom Tabs
@@ -327,23 +336,18 @@ class App(UserControl):
         match self.tabs.selected_index:
             case 0:
                 self.main_txt.value = "https://github.com/KevGreenwood"
-                self.main_txt.multiline = False
-                self.main_txt.filled = False
                 self.cont.content = self.main_txt
                 self.back.visible = False
             
             case 1:
                 self.main_txt.value = ""
-                self.main_txt.multiline = True
-                self.main_txt.filled = True
-                self.cont.content = self.main_txt
+                self.cont.content = self.filled_txt
 
             case 2:
                 self.mail_txt.value = ""
-                self.filled_txt.value = ""
                 self.main_txt.value = ""
-                self.main_txt.filled = True
-                self.cont.content = Column([self.mail_txt, self.filled_txt, self.main_txt])
+                self.filled_txt.value = ""
+                self.cont.content = Column([self.mail_txt, self.main_txt, self.filled_txt])
             
             case 3:
                 self.phone_txt.value = ""
@@ -351,9 +355,8 @@ class App(UserControl):
 
             case 4 | 5:
                 self.phone_txt.value = ""
-                self.main_txt.value = ""
-                self.main_txt.filled = True
-                self.cont.content = Column([self.phone_txt, self.main_txt])
+                self.filled_txt.value = ""
+                self.cont.content = Column([self.phone_txt, self.filled_txt])
                 self.forward.visible = True
 
             case 6:
@@ -385,8 +388,10 @@ class App(UserControl):
     def build_qr(self):
         wifi_encrypt = ""
         
-
         match self.tabs.selected_index:
+            case 6:
+                pass
+
             case 8:
                 if float(self.latitude_txt.value) > 90:
                     self.latitude_txt.value = 90
@@ -414,9 +419,8 @@ class App(UserControl):
             0: (self.main_txt.value if self.tabs.selected_index <= 1 else None),
             2: f"mailto:{self.mail_txt.value}?subject={self.filled_txt.value}&body={self.main_txt.value}",
             3: f"tel:{self.phone_txt.value}",
-            4: f"SMSTO:{self.phone_txt.value}:{self.main_txt.value}",
-            5: f"https://wa.me/{self.phone_txt.value}/?text={self.main_txt.value}",
-            6: "",
+            4: f"SMSTO:{self.phone_txt.value}:{self.filled_txt.value}",
+            5: f"https://wa.me/{self.phone_txt.value}/?text={self.filled_txt.value}",
             7: "MECARD:N:{},{};NICKNAME:{};TEL:{};TEL:{};TEL:{};EMAIL:{};BDAY:{};NOTE:{};ADR:,,{},{},{},{},{};;",
             8: f"https://maps.google.com/local?q={self.latitude_txt.value},{self.longitude_txt.value}",
             9: f"WIFI:S:{self.main_txt.value};T:{wifi_encrypt};P:{self.pass_txt.value};;",
@@ -477,7 +481,7 @@ class App(UserControl):
     
     def build(self):
         return Row(
-            [Column([self.tabs_container, self.main]), self.right],
+            [Column([self.tabs_container, self.main], height=650, scroll=ScrollMode.ADAPTIVE), self.right],
             alignment=MainAxisAlignment.CENTER,
             vertical_alignment=CrossAxisAlignment.START,
         )
