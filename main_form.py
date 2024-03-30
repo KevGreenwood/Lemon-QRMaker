@@ -9,6 +9,7 @@ class App(UserControl):
 
         self.qr = QRGenerator()
         self.data = ""
+        self.start_time = ""
         
         # --- Left Layout ---
         # Text Fields
@@ -389,7 +390,7 @@ class App(UserControl):
                 self.main_txt.value = ""
                 self.location_txt.value = ""
                 self.start_txt.value = self.end_txt.value = date.today()
-                start_cont = Container(self.start_txt, on_click=lambda _: self.pick_time_date())
+                start_cont = Container(self.start_txt, on_click=lambda _: self.pick_time_date("start"), bgcolor=colors.AMBER)
                 end_cont = Container(self.end_txt, on_click=lambda _: self.pick_time_date())
 
                 self.cont.content = Column([self.main_txt, self.location_txt, start_cont, end_cont])
@@ -451,7 +452,7 @@ class App(UserControl):
             7: "MECARD:N:{},{};NICKNAME:{};TEL:{};TEL:{};TEL:{};EMAIL:{};BDAY:{};NOTE:{};ADR:,,{},{},{},{},{};;",
             8: f"https://maps.google.com/local?q={self.latitude_txt.value},{self.longitude_txt.value}",
             9: f"WIFI:S:{self.main_txt.value};T:{wifi_encrypt};P:{self.pass_txt.value};;",
-            10: "BEGIN:VEVENT\nUID:{self.main_txt.value}\nORGANIZER{}\nSUMMARY:{}\nLOCATION:\nDTSTART:{self.start_txt.value}\nDTEND:\nEND:VEVENT",
+            10: f"BEGIN:VEVENT\nUID:{self.main_txt.value}\nORGANIZER:\nSUMMARY:\nLOCATION:\nDTSTART:{self.start_time}\nDTEND:\nEND:VEVENT",
             11: f"market://details?id={self.main_txt.value}",
             12: "MEBKM:TITLE:{};URL:{self.main_txt.value};;",
             13: "https://www.paypal.com/cgi-bin/webscr?business={}&cmd=_xclick&currency_code={}&amount={}&item_name={}&return={}&cancel_return={}",
@@ -531,7 +532,16 @@ class App(UserControl):
         self.page.overlay.append(Column([self.date_picker, self.time_picker]))
         self.page.overlay.extend([self.save_file_dialog, self.pick_files_dialog])
         self.page.update()
+    
 
-    def pick_time_date(self):
+    def pick_time_date(self, state):
         self.date_picker.pick_date()
         self.time_picker.pick_time()
+        if state == "start":            
+            print(self.time_picker.value)
+            self.start_txt.value = f"{self.date_picker.value} {self.time_picker.value}"
+
+            self.start_txt.update()
+
+            pure_date = f"{self.date_picker.value}T{self.time_picker.value}"
+            self.start_time = pure_date.replace(" ", "").replace("-", "").replace(":", "")
