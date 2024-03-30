@@ -5,6 +5,7 @@ from main_designer import *
 
 def main(page: Page):
     page.title = "Cassie-QRCodeMaker"
+
     page.add(App())
 
 

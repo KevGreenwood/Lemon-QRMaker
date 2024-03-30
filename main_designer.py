@@ -1,3 +1,7 @@
+
+from datetime import date
+import datetime
+
 from flet import *
 import flet as ft
 from core import *
@@ -48,7 +52,7 @@ class App(UserControl):
         )
 
         
-        self.encrypt_drop = Dropdown("WPA/WPA2", options=
+        self.encrypt_drop = Dropdown(value="WPA/WPA2", options=
                                         [
                                             dropdown.Option("None"),
                                             dropdown.Option("WEP"),
@@ -56,6 +60,17 @@ class App(UserControl):
                                         ],
                                         on_change=self.regenerate_preview
                                     )
+
+        self.location_txt = TextField(
+            label="Ingrese el contenido", on_change=self.regenerate_preview
+        )
+
+        self.date_picker = DatePicker(
+            on_change = self.regenerate_preview
+        )
+
+        self.start_txt = TextField(
+            label="Ingrese el contenido", on_change=self.regenerate_preview, read_only=True)
 
         # Tabs
         self.url_tab = Tab(
@@ -110,14 +125,14 @@ class App(UserControl):
         )
         self.vcard_tab = Tab(
             tab_content=Column(
-                [Icon(icons.CONTACT_PAGE), Text("VCard")],
+                [Icon(icons.PERSON), Text("VCard")],
                 spacing=0,
                 horizontal_alignment=CrossAxisAlignment.CENTER,
             )
         )
         self.mcard_tab = Tab(
             tab_content=Column(
-                [Icon(icons.CONTACT_PAGE), Text("MeCard")],
+                [Icon(icons.PERSON), Text("MeCard")],
                 spacing=0,
                 horizontal_alignment=CrossAxisAlignment.CENTER,
             )
@@ -139,6 +154,20 @@ class App(UserControl):
         self.event_tab = Tab(
             tab_content=Column(
                 [Icon(icons.EVENT), Text("Event")],
+                spacing=0,
+                horizontal_alignment=CrossAxisAlignment.CENTER,
+            )
+        )
+        self.app_tab = Tab(
+            tab_content=Column(
+                [Icon(icons.APPS), Text("App")],
+                spacing=0,
+                horizontal_alignment=CrossAxisAlignment.CENTER,
+            )
+        )
+        self.fav_tab = Tab(
+            tab_content=Column(
+                [Icon(icons.BOOKMARK), Text("Favorite")],
                 spacing=0,
                 horizontal_alignment=CrossAxisAlignment.CENTER,
             )
@@ -167,12 +196,12 @@ class App(UserControl):
                 self.mcard_tab,
                 self.location_tab,
                 self.wifi_tab,
-                self.event_tab,
+                self.event_tab, self.app_tab, self.fav_tab,
                 self.paypal_tab,
                 self.bitcoin_tab,
             ],
             on_change=self.update,
-            selected_index=0,
+            selected_index=0
         )
 
         self.cont = Container(self.main_txt, padding=10, width=750)
@@ -182,14 +211,12 @@ class App(UserControl):
             icon=icons.ARROW_BACK_IOS,
             on_click=self.go_back,
             icon_color=colors.WHITE,
-            
-            visible=False,
+            visible=False
         )
         self.forward = IconButton(
             icon=icons.ARROW_FORWARD_IOS,
             on_click=self.go_forward,
             icon_color=colors.WHITE,
-            
         )
         self.tab_row = Row(
             controls=[
@@ -293,7 +320,8 @@ class App(UserControl):
         self.prev_container = Container(
             alignment=alignment.top_center, content=self.qr_preview
         )
-        self.save_btn = ElevatedButton("Save", icon=icons.SAVE)
+        self.save_file_dialog = FilePicker(on_result=self.save_file_result)
+        self.save_btn = ElevatedButton("Save", icon=icons.SAVE, on_click=lambda _: self.save_file_dialog.save_file(file_type=FilePickerFileType.IMAGE))
         self.qr_size_slider = Slider(
             min=10, max=100, divisions=9, label="{value}", value=50
         )
@@ -340,7 +368,7 @@ class App(UserControl):
                 self.back.visible = False
             
             case 1:
-                self.main_txt.value = ""
+                self.filled_txt.value = ""
                 self.cont.content = self.filled_txt
 
             case 2:
@@ -360,20 +388,33 @@ class App(UserControl):
                 self.forward.visible = True
 
             case 6:
-                self.cont.content = Column(
-                    [
-                        self.main_txt,
-                        self.filled_txt,
-                    ]
-                )
+                pass
+            
+            case 7:
+                pass
 
             case 8:
+                self.latitude_txt.value = ""
+                self.longitude_txt.value = ""
                 self.cont.content = Column([self.latitude_txt, self.longitude_txt])
 
             case 9:
+                self.main_txt.value = ""
+                self.pass_txt.value = ""
+                self.encrypt_drop.value = "WPA/WPA2"
                 self.cont.content = Column([self.main_txt, self.pass_txt, self.encrypt_drop])
+            
+            case 10:
+                self.main_txt.value = ""
+                self.location_txt.value = ""
+                self.start_txt.value = date.today()
+                self.cont.content = Column([self.main_txt, self.location_txt, Container(self.start_txt, on_click=lambda _: self.date_picker.pick_date())])
 
-            case 12:
+            case 11:
+                self.main_txt.value = ""
+                self.cont.content = Column([self.main_txt])
+
+            case 14:
                 self.forward.visible = False
 
             case _:
@@ -394,26 +435,28 @@ class App(UserControl):
 
             case 8:
                 if float(self.latitude_txt.value) > 90:
-                    self.latitude_txt.value = 90
-                    self.latitude_txt.update()   
+                    self.latitude_txt.value = 90                    
                 if float(self.latitude_txt.value) < -90:
                     self.latitude_txt.value = -90
-                    self.latitude_txt.update()   
+                self.latitude_txt.update()
+
                 if float(self.longitude_txt.value) > 180:
                     self.longitude_txt.value = 180
-                    self.longitude_txt.update()   
                 if float(self.longitude_txt.value) < -180:
                     self.longitude_txt.value = -180
-                    self.longitude_txt.update()   
+                self.longitude_txt.update()  
             
             case 9:
-                match self.encrypt_drop.value:
-                    case "None":
-                        wifi_encrypt = "nopass"
-                    case "WEP":
-                        wifi_encrypt = "WEP"
-                    case "WPA/WPA2":
-                        wifi_encrypt = "WPA"
+                wifi_encrypt_map = {
+                    "None": "nopass",
+                    "WEP": "WEP",
+                    "WPA/WPA2": "WPA"
+                }
+                wifi_encrypt = wifi_encrypt_map.get(self.encrypt_drop.value, None)
+                print(wifi_encrypt)
+            case 10:
+                self.start_txt.value = f"{self.date_picker.value}"
+                self.start_txt.update()
 
         qr_data_formats = {
             0: (self.main_txt.value if self.tabs.selected_index <= 1 else None),
@@ -421,15 +464,16 @@ class App(UserControl):
             3: f"tel:{self.phone_txt.value}",
             4: f"SMSTO:{self.phone_txt.value}:{self.filled_txt.value}",
             5: f"https://wa.me/{self.phone_txt.value}/?text={self.filled_txt.value}",
+            6: "",
             7: "MECARD:N:{},{};NICKNAME:{};TEL:{};TEL:{};TEL:{};EMAIL:{};BDAY:{};NOTE:{};ADR:,,{},{},{},{},{};;",
             8: f"https://maps.google.com/local?q={self.latitude_txt.value},{self.longitude_txt.value}",
             9: f"WIFI:S:{self.main_txt.value};T:{wifi_encrypt};P:{self.pass_txt.value};;",
-            10: "BEGIN:VEVENT\nSUMMARY:{}\nLOCATION:{}\nDTSTART:{}\nDTEND:{}\nEND:VEVENT",
-            11: "https://www.paypal.com/cgi-bin/webscr?business={}&cmd=_xclick&currency_code={}&amount={}&item_name={}&return={}&cancel_return={}",
-            12: "{}:{}?amount={}&message={}"
+            10: "BEGIN:VEVENT\nUID:{self.main_txt.value}\nORGANIZER{}\nSUMMARY:{}\nLOCATION:\nDTSTART:{self.start_txt.value}\nDTEND:\nEND:VEVENT",
+            11: f"market://details?id={self.main_txt.value}",
+            12: "MEBKM:TITLE:{};URL:{self.main_txt.value};;",
+            13: "https://www.paypal.com/cgi-bin/webscr?business={}&cmd=_xclick&currency_code={}&amount={}&item_name={}&return={}&cancel_return={}",
+            14: "{}:{}?amount={}&message={}"
         }
-
-
         self.qr.data = qr_data_formats.get(self.tabs.selected_index, None)
             
         if self.ver_auto_box.value:
@@ -477,7 +521,10 @@ class App(UserControl):
         self.qr.use_logo = False
         self.logo.update()
         self.regenerate_preview(e)
-
+    
+    def save_file_result(self, e: FilePickerResultEvent):
+        self.qr.generate_final(e.path)
+        print(f"Image saved in {e.path}")
     
     def build(self):
         return Row(
@@ -485,3 +532,8 @@ class App(UserControl):
             alignment=MainAxisAlignment.CENTER,
             vertical_alignment=CrossAxisAlignment.START,
         )
+
+    def did_mount(self):
+        self.page.overlay.append(self.date_picker)
+        self.page.overlay.extend([self.save_file_dialog])
+        self.page.update()
