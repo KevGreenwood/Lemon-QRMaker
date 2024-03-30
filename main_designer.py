@@ -506,15 +506,16 @@ class App(UserControl):
         self.regenerate_preview(e)
 
     def pick_files_result(self, e: FilePickerResultEvent):
-        for file in e.files:
-            print("Nombre del archivo:", file.name)
-            print("Ruta del archivo:", file.path)
-            print("Tamaño del archivo:", file.size)
-        self.logo.src = e.files[0].path
-        self.qr.logo_path = e.files[0].path
-        self.qr.use_logo = True
-        self.logo.update()
-        self.regenerate_preview(e)
+        if e.files:
+            for file in e.files:
+                print("Nombre del archivo:", file.name)
+                print("Ruta del archivo:", file.path)
+                print("Tamaño del archivo:", file.size)
+            self.logo.src = e.files[0].path
+            self.qr.logo_path = e.files[0].path
+            self.qr.use_logo = True
+            self.logo.update()
+            self.regenerate_preview(e)
     
     def remove_logo(self, e):
         self.qr.logo_path = None
@@ -523,8 +524,16 @@ class App(UserControl):
         self.regenerate_preview(e)
     
     def save_file_result(self, e: FilePickerResultEvent):
-        self.qr.generate_final(e.path)
-        print(f"Image saved in {e.path}")
+        if e.path:
+            self.qr.generate_final(e.path)
+            print(f"Image saved in {e.path}")
+
+            self.page.snack_bar = ft.SnackBar(
+                                            content=ft.Text(f"Image saved in {e.path}"),
+                                            open=True,
+                                        )
+            self.page.update()
+
     
     def build(self):
         return Row(
@@ -535,5 +544,5 @@ class App(UserControl):
 
     def did_mount(self):
         self.page.overlay.append(self.date_picker)
-        self.page.overlay.extend([self.save_file_dialog])
+        self.page.overlay.extend([self.save_file_dialog, self.pick_files_dialog])
         self.page.update()
