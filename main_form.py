@@ -1,11 +1,7 @@
-
-from datetime import date
-import datetime
-
 from flet import *
 import flet as ft
 from core import *
-
+from datetime import date
 
 class App(UserControl):
     def __init__(self):
@@ -16,21 +12,13 @@ class App(UserControl):
         
         # --- Left Layout ---
         # Text Fields
-        self.main_txt = TextField(
-            label="Ingrese el contenido", value = "https://github.com/KevGreenwood",
-            on_change=self.regenerate_preview
-        )
-        self.filled_txt = TextField(
-            label="Ingrese el contenido", on_change=self.regenerate_preview,
-            multiline=True, filled=True)
+        self.main_txt = TextField(label="Ingrese el contenido", value = "https://github.com/KevGreenwood", on_change=self.regenerate_preview)
+        self.filled_txt = TextField(label="Ingrese el contenido", on_change=self.regenerate_preview, multiline=True, filled=True)
 
         self.mail_txt = TextField(label="Ingrese su correo electronico", on_change=self.regenerate_preview)
 
-        self.phone_txt = TextField(
-            label="Ingrese el contenido",
-            input_filter=InputFilter(
-                allow=True, regex_string=r"[0-9+]", replacement_string=""
-            ),
+        self.phone_txt = TextField(label="Ingrese el contenido",
+            input_filter=InputFilter(allow=True, regex_string=r"[0-9+]", replacement_string=""),
             max_length=16, on_change=self.regenerate_preview
         )
 
@@ -47,30 +35,23 @@ class App(UserControl):
             ), on_change=self.regenerate_preview
         )
 
-        self.pass_txt = TextField(
-            label="Ingrese el contenido", on_change=self.regenerate_preview
-        )
+        self.pass_txt = TextField(label="Ingrese el contenido", on_change=self.regenerate_preview)
 
-        
         self.encrypt_drop = Dropdown(value="WPA/WPA2", options=
-                                        [
-                                            dropdown.Option("None"),
-                                            dropdown.Option("WEP"),
-                                            dropdown.Option("WPA/WPA2")
-                                        ],
-                                        on_change=self.regenerate_preview
-                                    )
-
-        self.location_txt = TextField(
-            label="Ingrese el contenido", on_change=self.regenerate_preview
+            [
+                dropdown.Option("None"),
+                dropdown.Option("WEP"),
+                dropdown.Option("WPA/WPA2")
+            ], on_change=self.regenerate_preview
         )
 
-        self.date_picker = DatePicker(
-            on_change = self.regenerate_preview
-        )
+        self.location_txt = TextField(label="Ingrese el contenido", on_change=self.regenerate_preview)
 
-        self.start_txt = TextField(
-            label="Ingrese el contenido", on_change=self.regenerate_preview, read_only=True)
+        self.date_picker = DatePicker(on_change=self.regenerate_preview)
+        self.time_picker = TimePicker(on_change=self.regenerate_preview)
+
+        self.start_txt = TextField(label="Ingrese el contenido", on_change=self.regenerate_preview, read_only=True)
+        self.end_txt = TextField(label="Ingrese el contenido", on_change=self.regenerate_preview, read_only=True)
 
         # Tabs
         self.url_tab = Tab(
@@ -407,8 +388,11 @@ class App(UserControl):
             case 10:
                 self.main_txt.value = ""
                 self.location_txt.value = ""
-                self.start_txt.value = date.today()
-                self.cont.content = Column([self.main_txt, self.location_txt, Container(self.start_txt, on_click=lambda _: self.date_picker.pick_date())])
+                self.start_txt.value = self.end_txt.value = date.today()
+                start_cont = Container(self.start_txt, on_click=lambda _: self.pick_time_date())
+                end_cont = Container(self.end_txt, on_click=lambda _: self.pick_time_date())
+
+                self.cont.content = Column([self.main_txt, self.location_txt, start_cont, end_cont])
 
             case 11:
                 self.main_txt.value = ""
@@ -455,8 +439,7 @@ class App(UserControl):
                 wifi_encrypt = wifi_encrypt_map.get(self.encrypt_drop.value, None)
                 print(wifi_encrypt)
             case 10:
-                self.start_txt.value = f"{self.date_picker.value}"
-                self.start_txt.update()
+                pass
 
         qr_data_formats = {
             0: (self.main_txt.value if self.tabs.selected_index <= 1 else None),
@@ -506,7 +489,7 @@ class App(UserControl):
         self.regenerate_preview(e)
 
     def pick_files_result(self, e: FilePickerResultEvent):
-        if e.files:
+        if e.files: # Prevents Error if you cancel
             for file in e.files:
                 print("Nombre del archivo:", file.name)
                 print("Ruta del archivo:", file.path)
@@ -524,14 +507,16 @@ class App(UserControl):
         self.regenerate_preview(e)
     
     def save_file_result(self, e: FilePickerResultEvent):
-        if e.path:
+        if e.path: # Prevents save a filename named "None" in the app path
             self.qr.generate_final(e.path)
+            
             print(f"Image saved in {e.path}")
 
             self.page.snack_bar = ft.SnackBar(
-                                            content=ft.Text(f"Image saved in {e.path}"),
-                                            open=True,
-                                        )
+                content=ft.Text(f"Image saved in {e.path}"),
+                open=True,
+                bgcolor=colors.GREEN
+            )
             self.page.update()
 
     
@@ -543,6 +528,10 @@ class App(UserControl):
         )
 
     def did_mount(self):
-        self.page.overlay.append(self.date_picker)
+        self.page.overlay.append(Column([self.date_picker, self.time_picker]))
         self.page.overlay.extend([self.save_file_dialog, self.pick_files_dialog])
         self.page.update()
+
+    def pick_time_date(self):
+        self.date_picker.pick_date()
+        self.time_picker.pick_time()
