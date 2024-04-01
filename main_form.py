@@ -14,24 +14,37 @@ class App(UserControl):
 
         # --- Left Layout ---
         # Text Fields
-        self.main_txt = TextField(
-            label="Ingrese el contenido",
+        self.url_txt = TextField(
+            label="Website URL",
             value="https://github.com/KevGreenwood",
+            hint_text="https://",
             on_change=self.regenerate_preview,
         )
         self.filled_txt = TextField(
-            label="Ingrese el contenido",
+            label="Write your text here",
             on_change=self.regenerate_preview,
             multiline=True,
             filled=True,
         )
 
         self.mail_txt = TextField(
-            label="Ingrese su correo electronico", on_change=self.regenerate_preview
+            label="Email Address",
+            hint_text="example@email.com",
+            on_change=self.regenerate_preview
+        )
+        self.subject_txt = TextField(
+            label="Subject",
+            on_change=self.regenerate_preview
+        )
+        self.msg_txt = TextField(
+            label="Message",
+            on_change=self.regenerate_preview,
+            multiline=True,
+            filled=True,
         )
 
         self.phone_txt = TextField(
-            label="Ingrese el contenido",
+            label="Phone Number",
             input_filter=InputFilter(
                 allow=True, regex_string=r"[0-9+]", replacement_string=""
             ),
@@ -39,7 +52,7 @@ class App(UserControl):
             on_change=self.regenerate_preview,
         )
 
-        self.vcard_ver = Dropdown(
+        self.vcard_ver = Dropdown("Version 3",
             options=
             [
                 dropdown.Option("Version 2.1"),
@@ -48,93 +61,123 @@ class App(UserControl):
         )
 
         self.name_txt = TextField(
-            label="Ingrese su apellido", on_change=self.regenerate_preview
+            label="First name", 
+            width=360,
+            on_change=self.regenerate_preview
         )
         self.lastname_txt = TextField(
-            label="Ingrese su apellido", on_change=self.regenerate_preview
+            label="Last name", 
+            width=360,
+            on_change=self.regenerate_preview
         )
         self.org_txt = TextField(
-            label="Ingrese su apellido", on_change=self.regenerate_preview
+            label="Organization",
+            width=360,
+            on_change=self.regenerate_preview
         )
         self.pos_txt = TextField(
-            label="Ingrese su apellido", on_change=self.regenerate_preview
+            label="Position (Work)",
+            width=360,
+            on_change=self.regenerate_preview
         )
         self.work_phone_txt = TextField(
-            label="Ingrese el contenido",
+            label="Phone (Work)",
             input_filter=InputFilter(
                 allow=True, regex_string=r"[0-9+]", replacement_string=""
             ),
             max_length=16,
+            width=360,
             on_change=self.regenerate_preview,
         )
         self.priv_phone_txt = TextField(
-            label="Ingrese el contenido",
+            label="Phone (Private)",
             input_filter=InputFilter(
                 allow=True, regex_string=r"[0-9+]", replacement_string=""
             ),
             max_length=16,
+            width=360,
             on_change=self.regenerate_preview,
         )
         self.work_fax_txt = TextField(
-            label="Ingrese el contenido",
+            label="Fax (Work)",
             input_filter=InputFilter(
                 allow=True, regex_string=r"[0-9+]", replacement_string=""
             ),
             max_length=12,
+            width=360,
             on_change=self.regenerate_preview,
         )
         self.priv_fax_txt = TextField(
-            label="Ingrese el contenido",
+            label="Fax (Private)",
             input_filter=InputFilter(
                 allow=True, regex_string=r"[0-9+]", replacement_string=""
             ),
             max_length=12,
+            width=360,
             on_change=self.regenerate_preview,
         )
         self.street_txt = TextField(
-            label="Ingrese su apellido", on_change=self.regenerate_preview
+            label="Street",
+            width=360,
+            on_change=self.regenerate_preview, multiline=True
         )
         self.zip_txt = TextField(
-            label="Ingrese el contenido",
+            label="Zip code",
             input_filter=InputFilter(
                 allow=True, regex_string=r"[0-9+-]", replacement_string=""
             ),
             max_length=12,
+            width=360,
             on_change=self.regenerate_preview,
         )
         self.city_txt = TextField(
-            label="Ingrese su apellido", on_change=self.regenerate_preview
+            label="City", 
+            width=360,
+            on_change=self.regenerate_preview
+            
         )
         self.state_txt = TextField(
-            label="Ingrese su apellido", on_change=self.regenerate_preview
+            label="State",
+            width=360,
+            on_change=self.regenerate_preview
         )
         self.country_txt = TextField(
-            label="Ingrese su apellido", on_change=self.regenerate_preview
+            label="Country",
+            width=360,
+            on_change=self.regenerate_preview
         )
 
         self.nickname_txt = TextField(
-            label="Ingrese su apellido", on_change=self.regenerate_preview
+            label="Nickname", on_change=self.regenerate_preview
         )
 
         self.latitude_txt = TextField(
-            label="Ingrese el contenido",
+            label="Latitude",
             input_filter=InputFilter(
                 allow=True, regex_string=r"[0-9-.]", replacement_string=""
             ),
+            width=360,
             on_change=self.regenerate_preview,
         )
         self.longitude_txt = TextField(
-            label="Ingrese el contenido",
+            label="Longitude",
             input_filter=InputFilter(
                 allow=True, regex_string=r"[0-9-.]", replacement_string=""
             ),
+            width=360,
             on_change=self.regenerate_preview,
         )
 
-        self.pass_txt = TextField(
-            label="Ingrese el contenido", on_change=self.regenerate_preview
+        self.ssid_txt = TextField(
+            label="Network Name", 
+            hint_text="SSID",
+            on_change=self.regenerate_preview
         )
-
+        self.pass_txt = TextField(
+            label="Password", 
+            password=True, can_reveal_password=True,
+            on_change=self.regenerate_preview
+        )
         self.encrypt_drop = Dropdown(
             value="WPA/WPA2",
             options=[
@@ -142,32 +185,41 @@ class App(UserControl):
                 dropdown.Option("WEP"),
                 dropdown.Option("WPA/WPA2"),
             ],
+            width=575,
             on_change=self.regenerate_preview,
         )
+        self.hidden = Checkbox("Hidden Network", value=False)
 
+        self.title_txt = TextField(
+            label="Title", on_change=self.regenerate_preview
+        )
         self.location_txt = TextField(
-            label="Ingrese el contenido", on_change=self.regenerate_preview
+            label="Event Location", on_change=self.regenerate_preview
         )
 
         self.date_picker = DatePicker(on_change=self.regenerate_preview)
         self.time_picker = TimePicker(on_change=self.regenerate_preview)
 
         self.start_txt = TextField(
-            label="Ingrese el contenido",
+            label="Event Start",
             on_change=self.regenerate_preview,
             read_only=True,
         )
         self.end_txt = TextField(
-            label="Ingrese el contenido",
+            label="Event End",
             on_change=self.regenerate_preview,
             read_only=True,
         )
-
-
+        
+        self.app_txt = TextField(
+            label="App package name",
+            hint_text="com.google.android.youtube",
+            on_change=self.regenerate_preview
+        )
 
 
         self.cypto_drop = Dropdown(
-            value="WPA/WPA2",
+            value="Bitcoin",
             options=[
                 dropdown.Option("Bitcoin"),
                 dropdown.Option("Bitcoin Cash"),
@@ -177,13 +229,56 @@ class App(UserControl):
             ],
             on_change=self.regenerate_preview,
         )
+        self.crypto_adress_txt = TextField(
+            label="Receiver",
+            hint_text="Bitcoin Address",
+            on_change=self.regenerate_preview
+        )
         self.amount_txt = TextField(
+            label="Amount",
+            input_filter=InputFilter(
+                allow=True, regex_string=r"[0-9.]", replacement_string=""
+            ),
+            on_change=self.regenerate_preview,
+        )
+        self.id_txt = TextField(
+            label="ID",
+            on_change=self.regenerate_preview
+        )
+
+        self.payament_drop = Dropdown(
+            options=[
+                dropdown.Option("Buy now"),
+                dropdown.Option("Add to cart"),
+                dropdown.Option("Donations"),
+            ],
+            on_change=self.regenerate_preview,
+        )
+        self.currency_txt = TextField(
+            label="USD",
+            input_filter=InputFilter(
+                allow=True, regex_string=r"[a,...,z]", replacement_string=""
+            ),
+            max_length=3,
+            on_change=self.regenerate_preview,
+            )
+
+        self.ship_txt = TextField(
             label="Ingrese el contenido",
             input_filter=InputFilter(
                 allow=True, regex_string=r"[0-9.]", replacement_string=""
             ),
             on_change=self.regenerate_preview,
         )
+        self.tax_txt = TextField(
+            label="Ingrese el contenido",
+            input_filter=InputFilter(
+                allow=True, regex_string=r"[0-9.]", replacement_string=""
+            ),
+            max_length=6,
+            on_change=self.regenerate_preview,
+        )
+
 
         # Tabs
         self.url_tab = Tab(
@@ -322,7 +417,7 @@ class App(UserControl):
             selected_index=0,
         )
 
-        self.cont = Container(self.main_txt, padding=10, width=750)
+        self.cont = Container(self.url_txt, padding=10, width=750)
 
         # Custom Tab
         self.back = IconButton(
@@ -444,7 +539,6 @@ class App(UserControl):
         )
 
         # --- Right Layout ---
-        
         self.save_file_dialog = FilePicker(on_result=self.save_file_result)
         self.save_btn = ElevatedButton(
             "Save",
@@ -506,20 +600,20 @@ class App(UserControl):
     def update(self, e):
         match self.tabs.selected_index:
             case 0:
-                self.main_txt.value = "https://github.com/KevGreenwood"
-                self.cont.content = self.main_txt
+                self.url_txt.value = "https://github.com/KevGreenwood"
+                self.cont.content = self.url_txt
                 self.back.visible = False
 
             case 1:
                 self.filled_txt.value = ""
+                self.filled_txt.label = "Write your text here"
                 self.cont.content = self.filled_txt
 
             case 2:
                 self.mail_txt.value = ""
-                self.main_txt.value = ""
-                self.filled_txt.value = ""
+                self.subject_txt.value = ""
                 self.cont.content = Column(
-                    [self.mail_txt, self.main_txt, self.filled_txt]
+                    [self.mail_txt, self.subject_txt, self.msg_txt]
                 )
 
             case 3:
@@ -528,32 +622,32 @@ class App(UserControl):
 
             case 4 | 5:
                 self.phone_txt.value = ""
-                self.filled_txt.value = ""
-                self.cont.content = Column([self.phone_txt, self.filled_txt])
+                self.cont.content = Column([self.phone_txt, self.msg_txt])
                 self.forward.visible = True
 
             case 6:
                 self.cont.content = Column(
                     [
                         self.vcard_ver,
-                        Row([self.name_txt, self.lastname_txt], spacing=130),
+                        Row([self.name_txt, self.lastname_txt]),
                         Row([self.org_txt, self.pos_txt]),
                         Row([self.work_phone_txt, self.priv_phone_txt]),
                         Row([self.phone_txt, self.work_fax_txt]),
                         Row([self.priv_fax_txt, self.mail_txt]),
-                        Row([self.main_txt, self.street_txt]),
+                        Row([self.url_txt, self.street_txt]),
                         Row([self.zip_txt, self.city_txt]),
                         Row([self.state_txt, self.country_txt])
                     ]
                 )
 
             case 7:
+
                 self.cont.content = Column(
                     [
-                        Row([self.name_txt, self.lastname_txt], spacing=130),
+                        Row([self.name_txt, self.lastname_txt]),
                         Row([self.nickname_txt, self.work_phone_txt]),
                         Row([self.priv_phone_txt, self.phone_txt]),
-                        Row([self.mail_txt, self.main_txt]),
+                        Row([self.mail_txt, self.url_txt]),
                         Row([self.street_txt]),
                         Row([self.zip_txt, self.city_txt]),
                         Row([self.state_txt, self.country_txt]),
@@ -564,18 +658,18 @@ class App(UserControl):
             case 8:
                 self.latitude_txt.value = ""
                 self.longitude_txt.value = ""
-                self.cont.content = Column([self.latitude_txt, self.longitude_txt])
+                self.cont.content = Row([self.latitude_txt, self.longitude_txt])
 
             case 9:
-                self.main_txt.value = ""
+                self.encrypt_drop.value = ""
                 self.pass_txt.value = ""
                 self.encrypt_drop.value = "WPA/WPA2"
                 self.cont.content = Column(
-                    [self.main_txt, self.pass_txt, self.encrypt_drop]
+                    [self.ssid_txt, self.pass_txt, Row([self.encrypt_drop, self.hidden])]
                 )
 
             case 10:
-                self.main_txt.value = ""
+                self.url_txt.value = ""
                 self.location_txt.value = ""
                 self.start_txt.value = self.end_txt.value = date.today()
                 start_cont = Container(
@@ -588,24 +682,34 @@ class App(UserControl):
                 )
 
                 self.cont.content = Column(
-                    [self.main_txt, self.location_txt, start_cont, end_cont]
+                    [self.title_txt, self.location_txt, start_cont, end_cont]
                 )
 
             case 11:
-                self.main_txt.value = ""
-                self.cont.content = Column([self.main_txt])
+                self.url_txt.value = ""
+                self.cont.content = Column([self.app_txt])
 
             case 12:
-                self.cont.content = Column([self.name_txt, self.main_txt])
+                self.cont.content = Column([self.title_txt, self.url_txt])
+
+            case 13:
+                self.cont.content = Column(
+                    [
+                        Row([self.payament_drop, self.mail_txt]),
+                        Row([self.name_txt, self.nickname_txt]),
+                        Row([self.amount_txt, self.currency_txt]),
+                        Row([self.ship_txt, self.tax_txt])
+                    ]
+                )
 
             case 14:
                 self.forward.visible = False
                 self.cont.content = Column([
                     self.cypto_drop,
-                    self.main_txt,
+                    self.crypto_adress_txt,
                     self.amount_txt,
-                    self.nickname_txt,
-                    self.filled_txt
+                    self.id_txt,
+                    self.msg_txt
                 ])
 
             case _:
@@ -646,18 +750,18 @@ class App(UserControl):
                 pass
 
         qr_data_formats = {
-            0: (self.main_txt.value if self.tabs.selected_index <= 1 else None),
-            2: f"mailto:{self.mail_txt.value}?subject={self.filled_txt.value}&body={self.main_txt.value}",
+            0: (self.url_txt.value if self.tabs.selected_index <= 1 else None),
+            2: f"mailto:{self.mail_txt.value}?subject={self.filled_txt.value}&body={self.url_txt.value}",
             3: f"tel:{self.phone_txt.value}",
             4: f"SMSTO:{self.phone_txt.value}:{self.filled_txt.value}",
             5: f"https://wa.me/{self.phone_txt.value}/?text={self.filled_txt.value}",
             6: "",
             7: "MECARD:N:{},{};NICKNAME:{};TEL:{};TEL:{};TEL:{};EMAIL:{};BDAY:{};NOTE:{};ADR:,,{},{},{},{},{};;",
             8: f"https://maps.google.com/local?q={self.latitude_txt.value},{self.longitude_txt.value}",
-            9: f"WIFI:S:{self.main_txt.value};T:{wifi_encrypt};P:{self.pass_txt.value};;",
-            10: f"BEGIN:VEVENT\nUID:{self.main_txt.value}\nORGANIZER:\nSUMMARY:\nLOCATION:\nDTSTART:\nDTEND:\nEND:VEVENT",
-            11: f"market://details?id={self.main_txt.value}",
-            12: "MEBKM:TITLE:{};URL:{self.main_txt.value};;",
+            9: f"WIFI:S:{self.url_txt.value};T:{wifi_encrypt};P:{self.pass_txt.value};;",
+            10: f"BEGIN:VEVENT\nUID:{self.url_txt.value}\nORGANIZER:\nSUMMARY:\nLOCATION:\nDTSTART:\nDTEND:\nEND:VEVENT",
+            11: f"market://details?id={self.url_txt.value}",
+            12: "MEBKM:TITLE:{};URL:{self.url_txt.value};;",
             13: "https://www.paypal.com/cgi-bin/webscr?business={}&cmd=_xclick&currency_code={}&amount={}&item_name={}&return={}&cancel_return={}",
             14: "{}:{}?amount={}&message={}",
         }
