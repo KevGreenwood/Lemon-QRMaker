@@ -321,7 +321,7 @@ class App(UserControl):
             tab_content=Column(
                 [
                     ft.Image(
-                        src="Assets\\Icons\\whatsapp.svg",
+                        src="assets\\icons\\whatsapp.svg",
                         width=24,
                         height=24,
                         color=colors.WHITE,
@@ -834,7 +834,7 @@ class App(UserControl):
         if not self.delete_logo.disabled:
             self.qr.logo_path = None
             self.qr.use_logo = False
-            self.logo.src = "Assets/logo.jpg"
+            self.logo.src = "assets/logo.jpg"
             self.logo.update()
             self.regenerate_preview(e)
             self.delete_logo.disabled = True
