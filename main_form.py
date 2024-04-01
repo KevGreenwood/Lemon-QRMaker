@@ -549,9 +549,9 @@ class App(UserControl):
         self.delete_logo = ElevatedButton(
             "Delete Logo",
             icon=icons.REMOVE_CIRCLE_OUTLINE_ROUNDED,
-            on_click=self.remove_logo,
+            on_click=self.remove_logo, disabled=True
         )
-        self.logo = ft.Image(src="default-preview-qr.svg", width=200, height=200)
+        self.logo = ft.Image(src="Assets/logo.jpg", width=200, height=200)
         self.logo_preview = Container(self.logo)
         self.logo_row = Row(
             [self.open_logo, self.delete_logo], alignment=MainAxisAlignment.CENTER
@@ -843,10 +843,14 @@ class App(UserControl):
         self.regenerate_preview(e)
 
     def remove_logo(self, e):
-        self.qr.logo_path = None
-        self.qr.use_logo = False
-        self.logo.update()
-        self.regenerate_preview(e)
+        if not self.delete_logo.disabled:
+            self.qr.logo_path = None
+            self.qr.use_logo = False
+            self.logo.src="Assets/logo.jpg"
+            self.logo.update()
+            self.regenerate_preview(e)
+            self.delete_logo.disabled = True
+            self.delete_logo.update()
 
     def update_scale_txt(self, e):
         self.regenerate_preview(e)
@@ -864,6 +868,8 @@ class App(UserControl):
             self.qr.use_logo = True
             self.logo.update()
             self.regenerate_preview(e)
+            self.delete_logo.disabled = False
+            self.delete_logo.update()
 
     def save_file_result(self, e: FilePickerResultEvent):
         if e.path:  # Prevents save a filename named "None" in the app path
