@@ -49,6 +49,7 @@ class App(UserControl):
                 allow=True, regex_string=r"[0-9+]", replacement_string=""
             ),
             max_length=16,
+            counter_style=TextStyle(size=0),
             on_change=self.regenerate_preview,
         )
 
@@ -57,7 +58,8 @@ class App(UserControl):
             [
                 dropdown.Option("Version 2.1"),
                 dropdown.Option("Version 3")
-            ]
+            ],
+            on_change=self.regenerate_preview
         )
 
         self.name_txt = TextField(
@@ -86,6 +88,7 @@ class App(UserControl):
                 allow=True, regex_string=r"[0-9+]", replacement_string=""
             ),
             max_length=16,
+            counter_style=TextStyle(size=0),
             width=360,
             on_change=self.regenerate_preview,
         )
@@ -95,6 +98,7 @@ class App(UserControl):
                 allow=True, regex_string=r"[0-9+]", replacement_string=""
             ),
             max_length=16,
+            counter_style=TextStyle(size=0),
             width=360,
             on_change=self.regenerate_preview,
         )
@@ -104,6 +108,7 @@ class App(UserControl):
                 allow=True, regex_string=r"[0-9+]", replacement_string=""
             ),
             max_length=12,
+            counter_style=TextStyle(size=0),
             width=360,
             on_change=self.regenerate_preview,
         )
@@ -113,6 +118,7 @@ class App(UserControl):
                 allow=True, regex_string=r"[0-9+]", replacement_string=""
             ),
             max_length=12,
+            counter_style=TextStyle(size=0),
             width=360,
             on_change=self.regenerate_preview,
         )
@@ -127,6 +133,7 @@ class App(UserControl):
                 allow=True, regex_string=r"[0-9+-]", replacement_string=""
             ),
             max_length=12,
+            counter_style=TextStyle(None, height=0),
             width=360,
             on_change=self.regenerate_preview,
         )
@@ -134,7 +141,6 @@ class App(UserControl):
             label="City", 
             width=360,
             on_change=self.regenerate_preview
-            
         )
         self.state_txt = TextField(
             label="State",
@@ -148,7 +154,9 @@ class App(UserControl):
         )
 
         self.nickname_txt = TextField(
-            label="Nickname", on_change=self.regenerate_preview
+            label="Nickname", 
+            width=360,
+            on_change=self.regenerate_preview
         )
 
         self.latitude_txt = TextField(
@@ -188,7 +196,7 @@ class App(UserControl):
             width=575,
             on_change=self.regenerate_preview,
         )
-        self.hidden = Checkbox("Hidden Network", value=False)
+        self.hidden = Checkbox("Hidden Network", value=False, on_change=self.regenerate_preview)
 
         self.title_txt = TextField(
             label="Title", on_change=self.regenerate_preview
@@ -213,7 +221,8 @@ class App(UserControl):
         
         self.app_txt = TextField(
             label="App package name",
-            hint_text="com.google.android.youtube",
+            hint_text="Example: com.google.android.youtube",
+            helper_text="Search the Internet or use an app to find the package name.",
             on_change=self.regenerate_preview
         )
 
@@ -246,36 +255,58 @@ class App(UserControl):
             on_change=self.regenerate_preview
         )
 
-        self.payament_drop = Dropdown(
+        self.payment_drop = Dropdown(
             options=[
                 dropdown.Option("Buy now"),
                 dropdown.Option("Add to cart"),
                 dropdown.Option("Donations"),
             ],
+            width=360,
+            on_change=self.regenerate_preview,
+        )
+        self.item_name_txt = TextField(
+            label="Item name",
+            width=360,
+            on_change=self.regenerate_preview
+        )
+        self.item_id_txt = TextField(
+            label="Item ID",
+            width=360,
+            on_change=self.regenerate_preview
+        )
+        self.price_txt = TextField(
+            label="Price",
+            input_filter=InputFilter(
+                allow=True, regex_string=r"[0-9.]", replacement_string=""
+            ),
             on_change=self.regenerate_preview,
         )
         self.currency_txt = TextField(
-            label="USD",
+            label="Currency",
             input_filter=InputFilter(
                 allow=True, regex_string=r"[a,...,z]", replacement_string=""
             ),
             max_length=3,
+            counter_style=TextStyle(size=0),
+            width=360,
             on_change=self.regenerate_preview,
             )
-
         self.ship_txt = TextField(
-            label="Ingrese el contenido",
+            label="Shipping",
             input_filter=InputFilter(
                 allow=True, regex_string=r"[0-9.]", replacement_string=""
             ),
+            width=360,
             on_change=self.regenerate_preview,
         )
         self.tax_txt = TextField(
-            label="Ingrese el contenido",
+            label="Tax rate",
             input_filter=InputFilter(
                 allow=True, regex_string=r"[0-9.]", replacement_string=""
             ),
             max_length=6,
+            counter_style=TextStyle(size=0),
+            width=360,
             on_change=self.regenerate_preview,
         )
 
@@ -626,6 +657,9 @@ class App(UserControl):
                 self.forward.visible = True
 
             case 6:
+                self.phone_txt.width = 360
+                self.mail_txt.width = 360
+                self.url_txt.width = 360
                 self.cont.content = Column(
                     [
                         self.vcard_ver,
@@ -641,7 +675,6 @@ class App(UserControl):
                 )
 
             case 7:
-
                 self.cont.content = Column(
                     [
                         Row([self.name_txt, self.lastname_txt]),
@@ -695,9 +728,9 @@ class App(UserControl):
             case 13:
                 self.cont.content = Column(
                     [
-                        Row([self.payament_drop, self.mail_txt]),
-                        Row([self.name_txt, self.nickname_txt]),
-                        Row([self.amount_txt, self.currency_txt]),
+                        Row([self.payment_drop, self.mail_txt]),
+                        Row([self.item_name_txt, self.item_id_txt]),
+                        Row([self.price_txt, self.currency_txt]),
                         Row([self.ship_txt, self.tax_txt])
                     ]
                 )
@@ -723,10 +756,15 @@ class App(UserControl):
     # --- QR Building ---
     def build_qr(self):
         wifi_encrypt = ""
+        network_hide = ""
+        vcard_v3_txt = ""
 
         match self.tabs.selected_index:
             case 6:
-                pass
+                if self.vcard_ver.value == "Version 3":
+                    vcard_v3_txt = f"BEGIN:VCARD\nVERSION:3.0\nN:{self.lastname_txt.value};{self.name_txt.value}\nFN:{self.name_txt.value} {self.lastname_txt.value}\nTITLE:{self.pos_txt.value}\nORG:{self.org_txt.value}\nURL:{self.url_txt.value}\nEMAIL;TYPE=INTERNET:{self.mail_txt.value}\nTEL;TYPE=voice,work,pref:{self.work_phone_txt.value}\nTEL;TYPE=voice,home,pref:{self.priv_phone_txt.value}\nTEL;TYPE=voice,cell,pref:{self.phone_txt.value}\nTEL;TYPE=fax,work,pref:{self.work_fax_txt.value}\nTEL;TYPE=fax,home,pref:{self.priv_fax_txt.value}\nADR:;;{self.street_txt.value};{self.city_txt.value};{self.state_txt.value};{self.zip_txt.value};{self.country_txt.value}\nEND:VCARD"
+                else:
+                    vcard_v3_txt = f"BEGIN:VCARD\nVERSION:2.1\nN:{self.lastname_txt.value};{self.name_txt.value}\nTITLE:{self.pos_txt.value}\nORG:{self.org_txt.value}\nURL:{self.url_txt.value}\nEMAIL;TYPE=INTERNET:{self.mail_txt.value}\nTEL;WORK;VOICE:{self.work_phone_txt.value}\nTEL;HOME;VOICE:{self.priv_phone_txt.value}\nTEL;CELL:{self.phone_txt.value}\nTEL;WORK;FAX:{self.work_fax_txt.value}\nTEL;HOME;FAX:{self.priv_fax_txt.value}\nADR:;;{self.street_txt.value};{self.city_txt.value};{self.state_txt.value};{self.zip_txt.value};{self.country_txt.value}\nEND:VCARD"
 
             case 8:
                 if float(self.latitude_txt.value) > 90:
@@ -744,21 +782,25 @@ class App(UserControl):
             case 9:
                 wifi_encrypt_map = {"None": "nopass", "WEP": "WEP", "WPA/WPA2": "WPA"}
                 wifi_encrypt = wifi_encrypt_map.get(self.encrypt_drop.value, None)
-                print(wifi_encrypt)
+                if self.hidden.value:
+                    network_hide = "true"
+                else:
+                    network_hide = "false"
             
             case 10:
                 pass
 
         qr_data_formats = {
-            0: (self.url_txt.value if self.tabs.selected_index <= 1 else None),
-            2: f"mailto:{self.mail_txt.value}?subject={self.filled_txt.value}&body={self.url_txt.value}",
+            0: self.url_txt.value,
+            1: self.filled_txt.value,
+            2: f"mailto:{self.mail_txt.value}?subject={self.subject_txt.value}&body={self.msg_txt.value}",
             3: f"tel:{self.phone_txt.value}",
-            4: f"SMSTO:{self.phone_txt.value}:{self.filled_txt.value}",
-            5: f"https://wa.me/{self.phone_txt.value}/?text={self.filled_txt.value}",
-            6: "",
-            7: "MECARD:N:{},{};NICKNAME:{};TEL:{};TEL:{};TEL:{};EMAIL:{};BDAY:{};NOTE:{};ADR:,,{},{},{},{},{};;",
+            4: f"SMSTO:{self.phone_txt.value}:{self.msg_txt.value}",
+            5: f"https://wa.me/{self.phone_txt.value}/?text={self.msg_txt.value}",
+            6: vcard_v3_txt,
+            7: F"MECARD:N:{self.lastname_txt.value},{self.name_txt.value};NICKNAME:{self.nickname_txt.value};TEL:{self.work_phone_txt.value};TEL:{self.priv_phone_txt.value};TEL:{self.phone_txt.value};EMAIL:{self.mail_txt.value};BDAY:;NOTE:{self.filled_txt.value};ADR:,,{self.street_txt.value},{self.city_txt.value},{self.state_txt.value},{self.zip_txt.value},{self.country_txt.value};;",
             8: f"https://maps.google.com/local?q={self.latitude_txt.value},{self.longitude_txt.value}",
-            9: f"WIFI:S:{self.url_txt.value};T:{wifi_encrypt};P:{self.pass_txt.value};;",
+            9: f"WIFI:S:{self.ssid_txt.value};T:{wifi_encrypt};P:{self.pass_txt.value};H:{network_hide};;",
             10: f"BEGIN:VEVENT\nUID:{self.url_txt.value}\nORGANIZER:\nSUMMARY:\nLOCATION:\nDTSTART:\nDTEND:\nEND:VEVENT",
             11: f"market://details?id={self.url_txt.value}",
             12: "MEBKM:TITLE:{};URL:{self.url_txt.value};;",
