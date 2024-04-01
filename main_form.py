@@ -30,12 +30,9 @@ class App(UserControl):
         self.mail_txt = TextField(
             label="Email Address",
             hint_text="example@email.com",
-            on_change=self.regenerate_preview
+            on_change=self.regenerate_preview,
         )
-        self.subject_txt = TextField(
-            label="Subject",
-            on_change=self.regenerate_preview
-        )
+        self.subject_txt = TextField(label="Subject", on_change=self.regenerate_preview)
         self.msg_txt = TextField(
             label="Message",
             on_change=self.regenerate_preview,
@@ -53,34 +50,24 @@ class App(UserControl):
             on_change=self.regenerate_preview,
         )
 
-        self.vcard_ver = Dropdown("Version 3",
-            options=
-            [
-                dropdown.Option("Version 2.1"),
-                dropdown.Option("Version 3")
-            ],
-            on_change=self.regenerate_preview
+        self.vcard_ver = Dropdown(
+            "Version 3",
+            label="VCard Version",
+            options=[dropdown.Option("Version 2.1"), dropdown.Option("Version 3")],
+            on_change=self.regenerate_preview,
         )
 
         self.name_txt = TextField(
-            label="First name", 
-            width=360,
-            on_change=self.regenerate_preview
+            label="First name", width=360, on_change=self.regenerate_preview
         )
         self.lastname_txt = TextField(
-            label="Last name", 
-            width=360,
-            on_change=self.regenerate_preview
+            label="Last name", width=360, on_change=self.regenerate_preview
         )
         self.org_txt = TextField(
-            label="Organization",
-            width=360,
-            on_change=self.regenerate_preview
+            label="Organization", width=360, on_change=self.regenerate_preview
         )
         self.pos_txt = TextField(
-            label="Position (Work)",
-            width=360,
-            on_change=self.regenerate_preview
+            label="Position (Work)", width=360, on_change=self.regenerate_preview
         )
         self.work_phone_txt = TextField(
             label="Phone (Work)",
@@ -123,9 +110,7 @@ class App(UserControl):
             on_change=self.regenerate_preview,
         )
         self.street_txt = TextField(
-            label="Street",
-            width=360,
-            on_change=self.regenerate_preview, multiline=True
+            label="Street", width=360, on_change=self.regenerate_preview, multiline=True
         )
         self.zip_txt = TextField(
             label="Zip code",
@@ -138,25 +123,17 @@ class App(UserControl):
             on_change=self.regenerate_preview,
         )
         self.city_txt = TextField(
-            label="City", 
-            width=360,
-            on_change=self.regenerate_preview
+            label="City", width=360, on_change=self.regenerate_preview
         )
         self.state_txt = TextField(
-            label="State",
-            width=360,
-            on_change=self.regenerate_preview
+            label="State", width=360, on_change=self.regenerate_preview
         )
         self.country_txt = TextField(
-            label="Country",
-            width=360,
-            on_change=self.regenerate_preview
+            label="Country", width=360, on_change=self.regenerate_preview
         )
 
         self.nickname_txt = TextField(
-            label="Nickname", 
-            width=360,
-            on_change=self.regenerate_preview
+            label="Nickname", width=360, on_change=self.regenerate_preview
         )
 
         self.latitude_txt = TextField(
@@ -177,17 +154,17 @@ class App(UserControl):
         )
 
         self.ssid_txt = TextField(
-            label="Network Name", 
-            hint_text="SSID",
-            on_change=self.regenerate_preview
+            label="Network Name", hint_text="SSID", on_change=self.regenerate_preview
         )
         self.pass_txt = TextField(
-            label="Password", 
-            password=True, can_reveal_password=True,
-            on_change=self.regenerate_preview
+            label="Password",
+            password=True,
+            can_reveal_password=True,
+            on_change=self.regenerate_preview,
         )
         self.encrypt_drop = Dropdown(
-            value="WPA/WPA2",
+            "WPA/WPA2",
+            label="Network type",
             options=[
                 dropdown.Option("None"),
                 dropdown.Option("WEP"),
@@ -196,11 +173,11 @@ class App(UserControl):
             width=575,
             on_change=self.regenerate_preview,
         )
-        self.hidden = Checkbox("Hidden Network", value=False, on_change=self.regenerate_preview)
-
-        self.title_txt = TextField(
-            label="Title", on_change=self.regenerate_preview
+        self.hidden = Checkbox(
+            "Hidden Network", value=False, on_change=self.regenerate_preview
         )
+
+        self.title_txt = TextField(label="Title", on_change=self.regenerate_preview)
         self.location_txt = TextField(
             label="Event Location", on_change=self.regenerate_preview
         )
@@ -218,17 +195,17 @@ class App(UserControl):
             on_change=self.regenerate_preview,
             read_only=True,
         )
-        
+
         self.app_txt = TextField(
             label="App package name",
             hint_text="Example: com.google.android.youtube",
             helper_text="Search the Internet or use an app to find the package name.",
-            on_change=self.regenerate_preview
+            on_change=self.regenerate_preview,
         )
 
-
         self.cypto_drop = Dropdown(
-            value="Bitcoin",
+            "Bitcoin",
+            label="Select Cryptocurrency",
             options=[
                 dropdown.Option("Bitcoin"),
                 dropdown.Option("Bitcoin Cash"),
@@ -241,7 +218,7 @@ class App(UserControl):
         self.crypto_adress_txt = TextField(
             label="Receiver",
             hint_text="Bitcoin Address",
-            on_change=self.regenerate_preview
+            on_change=self.regenerate_preview,
         )
         self.amount_txt = TextField(
             label="Amount",
@@ -250,12 +227,10 @@ class App(UserControl):
             ),
             on_change=self.regenerate_preview,
         )
-        self.id_txt = TextField(
-            label="ID",
-            on_change=self.regenerate_preview
-        )
+        self.id_txt = TextField(label="ID", on_change=self.regenerate_preview)
 
         self.payment_drop = Dropdown(
+            label="Payment type",
             options=[
                 dropdown.Option("Buy now"),
                 dropdown.Option("Add to cart"),
@@ -265,14 +240,10 @@ class App(UserControl):
             on_change=self.regenerate_preview,
         )
         self.item_name_txt = TextField(
-            label="Item name",
-            width=360,
-            on_change=self.regenerate_preview
+            label="Item name", width=360, on_change=self.regenerate_preview
         )
         self.item_id_txt = TextField(
-            label="Item ID",
-            width=360,
-            on_change=self.regenerate_preview
+            label="Item ID", width=360, on_change=self.regenerate_preview
         )
         self.price_txt = TextField(
             label="Price",
@@ -290,7 +261,7 @@ class App(UserControl):
             counter_style=TextStyle(size=0),
             width=360,
             on_change=self.regenerate_preview,
-            )
+        )
         self.ship_txt = TextField(
             label="Shipping",
             input_filter=InputFilter(
@@ -309,7 +280,6 @@ class App(UserControl):
             width=360,
             on_change=self.regenerate_preview,
         )
-
 
         # Tabs
         self.url_tab = Tab(
@@ -549,7 +519,8 @@ class App(UserControl):
         self.delete_logo = ElevatedButton(
             "Delete Logo",
             icon=icons.REMOVE_CIRCLE_OUTLINE_ROUNDED,
-            on_click=self.remove_logo, disabled=True
+            on_click=self.remove_logo,
+            disabled=True,
         )
         self.logo = ft.Image(src="Assets/logo.jpg", width=200, height=200)
         self.logo_preview = Container(self.logo)
@@ -670,7 +641,7 @@ class App(UserControl):
                         Row([self.priv_fax_txt, self.mail_txt]),
                         Row([self.url_txt, self.street_txt]),
                         Row([self.zip_txt, self.city_txt]),
-                        Row([self.state_txt, self.country_txt])
+                        Row([self.state_txt, self.country_txt]),
                     ]
                 )
 
@@ -684,7 +655,7 @@ class App(UserControl):
                         Row([self.street_txt]),
                         Row([self.zip_txt, self.city_txt]),
                         Row([self.state_txt, self.country_txt]),
-                        self.filled_txt
+                        self.filled_txt,
                     ]
                 )
 
@@ -698,7 +669,11 @@ class App(UserControl):
                 self.pass_txt.value = ""
                 self.encrypt_drop.value = "WPA/WPA2"
                 self.cont.content = Column(
-                    [self.ssid_txt, self.pass_txt, Row([self.encrypt_drop, self.hidden])]
+                    [
+                        self.ssid_txt,
+                        self.pass_txt,
+                        Row([self.encrypt_drop, self.hidden]),
+                    ]
                 )
 
             case 10:
@@ -731,19 +706,21 @@ class App(UserControl):
                         Row([self.payment_drop, self.mail_txt]),
                         Row([self.item_name_txt, self.item_id_txt]),
                         Row([self.price_txt, self.currency_txt]),
-                        Row([self.ship_txt, self.tax_txt])
+                        Row([self.ship_txt, self.tax_txt]),
                     ]
                 )
 
             case 14:
                 self.forward.visible = False
-                self.cont.content = Column([
-                    self.cypto_drop,
-                    self.crypto_adress_txt,
-                    self.amount_txt,
-                    self.id_txt,
-                    self.msg_txt
-                ])
+                self.cont.content = Column(
+                    [
+                        self.cypto_drop,
+                        self.crypto_adress_txt,
+                        self.amount_txt,
+                        self.id_txt,
+                        self.msg_txt,
+                    ]
+                )
 
             case _:
                 self.forward.visible = True
@@ -758,6 +735,7 @@ class App(UserControl):
         wifi_encrypt = ""
         network_hide = ""
         vcard_v3_txt = ""
+        crypto_currency = ""
 
         match self.tabs.selected_index:
             case 6:
@@ -786,10 +764,20 @@ class App(UserControl):
                     network_hide = "true"
                 else:
                     network_hide = "false"
-            
+
             case 10:
                 pass
 
+            case 14:
+                crypto_currencies = {
+                    "Bitcoin": "bitcoin",
+                    "Bitcoin Cash": "bitcoincash",
+                    "Ethereum": "ethereum",
+                    "Litecoin": "litecoin",
+                    "Dash": "dash",
+                }
+                crypto_currency = crypto_currencies.get(self.cypto_drop.value, None)
+        
         qr_data_formats = {
             0: self.url_txt.value,
             1: self.filled_txt.value,
@@ -798,14 +786,14 @@ class App(UserControl):
             4: f"SMSTO:{self.phone_txt.value}:{self.msg_txt.value}",
             5: f"https://wa.me/{self.phone_txt.value}/?text={self.msg_txt.value}",
             6: vcard_v3_txt,
-            7: F"MECARD:N:{self.lastname_txt.value},{self.name_txt.value};NICKNAME:{self.nickname_txt.value};TEL:{self.work_phone_txt.value};TEL:{self.priv_phone_txt.value};TEL:{self.phone_txt.value};EMAIL:{self.mail_txt.value};BDAY:;NOTE:{self.filled_txt.value};ADR:,,{self.street_txt.value},{self.city_txt.value},{self.state_txt.value},{self.zip_txt.value},{self.country_txt.value};;",
+            7: f"MECARD:N:{self.lastname_txt.value},{self.name_txt.value};NICKNAME:{self.nickname_txt.value};TEL:{self.work_phone_txt.value};TEL:{self.priv_phone_txt.value};TEL:{self.phone_txt.value};EMAIL:{self.mail_txt.value};BDAY:;NOTE:{self.filled_txt.value};ADR:,,{self.street_txt.value},{self.city_txt.value},{self.state_txt.value},{self.zip_txt.value},{self.country_txt.value};;",
             8: f"https://maps.google.com/local?q={self.latitude_txt.value},{self.longitude_txt.value}",
             9: f"WIFI:S:{self.ssid_txt.value};T:{wifi_encrypt};P:{self.pass_txt.value};H:{network_hide};;",
             10: f"BEGIN:VEVENT\nUID:{self.url_txt.value}\nORGANIZER:\nSUMMARY:\nLOCATION:\nDTSTART:\nDTEND:\nEND:VEVENT",
             11: f"market://details?id={self.url_txt.value}",
-            12: "MEBKM:TITLE:{};URL:{self.url_txt.value};;",
+            12: f"MEBKM:TITLE:{self.title_txt};URL:{self.url_txt.value};;",
             13: "https://www.paypal.com/cgi-bin/webscr?business={}&cmd=_xclick&currency_code={}&amount={}&item_name={}&return={}&cancel_return={}",
-            14: "{}:{}?amount={}&message={}",
+            14: f"{crypto_currency}:{self.id_txt.value}?amount={self.amount_txt.value}&message={self.msg_txt.value}",
         }
         self.qr.data = qr_data_formats.get(self.tabs.selected_index, None)
 
@@ -846,7 +834,7 @@ class App(UserControl):
         if not self.delete_logo.disabled:
             self.qr.logo_path = None
             self.qr.use_logo = False
-            self.logo.src="Assets/logo.jpg"
+            self.logo.src = "Assets/logo.jpg"
             self.logo.update()
             self.regenerate_preview(e)
             self.delete_logo.disabled = True
