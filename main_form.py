@@ -25,6 +25,7 @@ class App(UserControl):
             on_change=self.regenerate_preview,
             multiline=True,
             filled=True,
+            min_lines=5
         )
 
         self.mail_txt = TextField(
@@ -38,6 +39,7 @@ class App(UserControl):
             on_change=self.regenerate_preview,
             multiline=True,
             filled=True,
+            min_lines=5
         )
 
         self.phone_txt = TextField(
