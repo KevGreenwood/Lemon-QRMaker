@@ -9,18 +9,18 @@ from qrcode.image.styles.colormasks import *
 class QRGenerator:
     def __init__(self):
         self.qr = None # Instance of qrcode.QRCode
-        self.version = None
-        self.box_size = 50 # base: 33x33, so, just multiply by your desire number for scale your qr
-        self.border = 4
-        self.data = ""
-        self.use_logo = False
+        self.version: int = None
+        self.box_size: int = 50 # base: 33x33, so, just multiply by your desire number for scale your qr
+        self.border: int = 4
+        self.data: str = None
+        self.use_logo: bool = False
         # Can be hex values or RGB Tuples   
         self.main_color = None
         self.back_color = None
         self.alt_color = None
         # Paths
-        self.logo_path = ""
-        self.final_qr = ""
+        self.logo_path: str = None
+        self.final_qr: str = None
 
     def _building_qr(self):
         if self.use_logo:
@@ -45,18 +45,18 @@ class QRGenerator:
             self._adding_data()
             self.final_qr = self.qr.make_image(fill_color=self.main_color, back_color=self.back_color)
 
-    def _adding_data(self):
+    def _adding_data(self) -> None:
         self.qr.add_data(self.data)
         self.qr.make(fit=True)
 
-    def generate_preview(self):
+    def generate_preview(self) -> str:
         self._building_qr()
         byte_arr = io.BytesIO()
         self.final_qr.save(byte_arr, format='PNG')
         return base64.b64encode(byte_arr.getvalue()).decode("utf-8")
 
-    def generate_final(self, path):
+    def generate_final(self, path) -> None:
         self.final_qr.save(f"{path}.png")
 
-    def get_res(self):
+    def get_res(self) -> str:
         return f"{self.final_qr.size[0]} x {self.final_qr.size[1]}"

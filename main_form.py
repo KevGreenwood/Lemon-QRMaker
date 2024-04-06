@@ -9,23 +9,24 @@ class App(UserControl):
         super().__init__()
 
         self.qr = QRGenerator()
-        self.data = ""
-        self.start_time = ""
+        self.data: str = ""
+        self.start_time: str = ""
 
         # --- Left Layout ---
         # Text Fields
+        # 1
         self.url_txt = TextField(
             label="Website URL",
             value="https://github.com/KevGreenwood",
             hint_text="https://",
             on_change=self.regenerate_preview,
         )
+        # 2nd Tab
         self.filled_txt = TextField(
             label="Write your text here",
             on_change=self.regenerate_preview,
             multiline=True,
-            filled=True,
-            min_lines=5
+            filled=True
         )
 
         self.mail_txt = TextField(
@@ -38,8 +39,7 @@ class App(UserControl):
             label="Message",
             on_change=self.regenerate_preview,
             multiline=True,
-            filled=True,
-            min_lines=5
+            filled=True
         )
 
         self.phone_txt = TextField(
@@ -47,9 +47,7 @@ class App(UserControl):
             input_filter=InputFilter(
                 allow=True, regex_string=r"[0-9+]", replacement_string=""
             ),
-            max_length=16,
-            counter_style=TextStyle(size=0),
-            on_change=self.regenerate_preview,
+            on_change=self.regenerate_preview
         )
 
         self.vcard_ver = Dropdown(
@@ -76,8 +74,6 @@ class App(UserControl):
             input_filter=InputFilter(
                 allow=True, regex_string=r"[0-9+]", replacement_string=""
             ),
-            max_length=16,
-            counter_style=TextStyle(size=0),
             width=360,
             on_change=self.regenerate_preview,
         )
@@ -86,8 +82,6 @@ class App(UserControl):
             input_filter=InputFilter(
                 allow=True, regex_string=r"[0-9+]", replacement_string=""
             ),
-            max_length=16,
-            counter_style=TextStyle(size=0),
             width=360,
             on_change=self.regenerate_preview,
         )
@@ -96,8 +90,6 @@ class App(UserControl):
             input_filter=InputFilter(
                 allow=True, regex_string=r"[0-9+]", replacement_string=""
             ),
-            max_length=12,
-            counter_style=TextStyle(size=0),
             width=360,
             on_change=self.regenerate_preview,
         )
@@ -106,8 +98,6 @@ class App(UserControl):
             input_filter=InputFilter(
                 allow=True, regex_string=r"[0-9+]", replacement_string=""
             ),
-            max_length=12,
-            counter_style=TextStyle(size=0),
             width=360,
             on_change=self.regenerate_preview,
         )
@@ -119,8 +109,6 @@ class App(UserControl):
             input_filter=InputFilter(
                 allow=True, regex_string=r"[0-9+-]", replacement_string=""
             ),
-            max_length=12,
-            counter_style=TextStyle(None, height=0),
             width=360,
             on_change=self.regenerate_preview,
         )
@@ -184,19 +172,32 @@ class App(UserControl):
             label="Event Location", on_change=self.regenerate_preview
         )
 
+        # ----- REWORK NEEDED -----
         self.date_picker = DatePicker(on_change=self.regenerate_preview)
         self.time_picker = TimePicker(on_change=self.regenerate_preview)
 
-        self.start_txt = TextField(
-            label="Event Start",
+        self.start_date = TextField(
+            label="Event Start Date",
             on_change=self.regenerate_preview,
             read_only=True,
         )
-        self.end_txt = TextField(
-            label="Event End",
+        self.start_time = TextField(
+            label="Event Start Time",
             on_change=self.regenerate_preview,
             read_only=True,
         )
+
+        self.end_date = TextField(
+            label="Event End Date",
+            on_change=self.regenerate_preview,
+            read_only=True,
+        )
+        self.end_time = TextField(
+            label="Event End Time",
+            on_change=self.regenerate_preview,
+            read_only=True,
+        )
+        # ------------------------------------
 
         self.app_txt = TextField(
             label="App package name",
@@ -259,8 +260,6 @@ class App(UserControl):
             input_filter=InputFilter(
                 allow=True, regex_string=r"[a,...,z]", replacement_string=""
             ),
-            max_length=3,
-            counter_style=TextStyle(size=0),
             width=360,
             on_change=self.regenerate_preview,
         )
@@ -277,8 +276,6 @@ class App(UserControl):
             input_filter=InputFilter(
                 allow=True, regex_string=r"[0-9.]", replacement_string=""
             ),
-            max_length=6,
-            counter_style=TextStyle(size=0),
             width=360,
             on_change=self.regenerate_preview,
         )
@@ -410,7 +407,7 @@ class App(UserControl):
                 self.mcard_tab,
                 self.location_tab,
                 self.wifi_tab,
-                self.event_tab,
+                #self.event_tab,
                 self.app_tab,
                 self.fav_tab,
                 self.paypal_tab,
@@ -542,6 +539,37 @@ class App(UserControl):
             ]
         )
 
+
+
+
+        self.design_panel = ExpansionPanelList(
+            [
+                ExpansionPanel(
+                    header=ListTile(title=Text("CUSTOM DESIGN")),
+                )
+            ]
+        )
+
+
+        self.correction = Dropdown(label="Correction Level",
+            value = "Low",
+            options=
+            [
+                dropdown.Option("Low"),
+                dropdown.Option("Medium"),
+                dropdown.Option("High"),
+                dropdown.Option("Very High")
+            ]
+        )
+        self.advcanced_panel = ExpansionPanelList(
+            [
+                ExpansionPanel(
+                    header=ListTile(title=Text("ADVANCED SETTINGS")),
+                    content=self.correction
+                )
+            ]
+        )
+
         # --- Right Layout ---
         self.save_file_dialog = FilePicker(on_result=self.save_file_result)
         self.save_btn = ElevatedButton(
@@ -585,7 +613,7 @@ class App(UserControl):
         )
 
         self.main = Container(
-            Column([self.size_panel, self.color_panel, self.logo_panel]), width=750
+            Column([self.size_panel, self.color_panel, self.logo_panel, self.design_panel, self.advcanced_panel]), width=750
         )
 
     # Custom Tabs
@@ -677,23 +705,29 @@ class App(UserControl):
                         Row([self.encrypt_drop, self.hidden]),
                     ]
                 )
-
-            case 10:
+            
+            
+            case 15:
                 self.url_txt.value = ""
                 self.location_txt.value = ""
-                self.start_txt.value = self.end_txt.value = date.today()
-                start_cont = Container(
-                    self.start_txt,
-                    on_click=lambda _: self.pick_time_date("start"),
-                    bgcolor=colors.AMBER,
+                #self.start_date.value = self.end_txt.value = date.today()
+                self.start_date_cont = Container(
+                    self.start_date,
+                    on_click=lambda _: self.set_start_date()
                 )
-                end_cont = Container(
-                    self.end_txt, on_click=lambda _: self.pick_time_date()
+                start_time_cont = Container(
+                    self.start_time,
+                    on_click=lambda _: self.time_picker.pick_time()
+                )
+                
+                end_date_cont = Container(
+                    self.end_date, on_click=lambda _: self.pick_time_date()
                 )
 
                 self.cont.content = Column(
-                    [self.title_txt, self.location_txt, start_cont, end_cont]
+                    [self.title_txt, self.location_txt, Row([self.start_date_cont, start_time_cont]), end_date_cont]
                 )
+            
 
             case 11:
                 self.url_txt.value = ""
@@ -733,11 +767,11 @@ class App(UserControl):
         super().update()
 
     # --- QR Building ---
-    def build_qr(self):
-        wifi_encrypt = ""
-        network_hide = ""
-        vcard_v3_txt = ""
-        crypto_currency = ""
+    def build_qr(self) -> str:
+        wifi_encrypt: str = ""
+        network_hide: str = ""
+        vcard_v3_txt: str = ""
+        crypto_currency: str = ""
 
         match self.tabs.selected_index:
             case 6:
@@ -814,7 +848,7 @@ class App(UserControl):
         self.qr.back_color = self.back_color_txt.value
         self.qr.main_color = self.fore_color_txt.value
 
-        print(f"Version: {self.qr.version}\nSize: {self.qr.version}")
+        print(f"Version: {self.qr.version}\nSize: {self.qr.box_size}")
 
         return self.qr.generate_preview()
 
@@ -874,17 +908,10 @@ class App(UserControl):
             )
             self.page.update()
 
-    def pick_time_date(self, state):
+    def set_start_date(self):
         self.date_picker.pick_date()
-        if state == "start":
-            self.start_txt.value = f"{self.date_picker.value}"
-
-            self.start_txt.update()
-
-            pure_date = f"{self.date_picker.value}T"
-            self.start_time = (
-                pure_date.replace(" ", "").replace("-", "").replace(":", "")
-            )
+        self.start_date.value = self.date_picker.value
+        self.page.update()
 
     def build(self):
         return Row(
