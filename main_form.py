@@ -9,8 +9,8 @@ class App(UserControl):
         super().__init__()
 
         self.qr = QRGenerator()
-        self.data: str = ""
-        self.start_time: str = ""
+        self.data: str = None
+        self.start_time: str = None
 
         # --- Left Layout ---
         # Text Fields
@@ -218,7 +218,7 @@ class App(UserControl):
             ],
             on_change=self.regenerate_preview,
         )
-        self.crypto_adress_txt = TextField(
+        self.crypto_address_txt = TextField(
             label="Receiver",
             hint_text="Bitcoin Address",
             on_change=self.regenerate_preview,
@@ -407,7 +407,7 @@ class App(UserControl):
                 self.mcard_tab,
                 self.location_tab,
                 self.wifi_tab,
-                #self.event_tab,
+                self.event_tab,
                 self.app_tab,
                 self.fav_tab,
                 self.paypal_tab,
@@ -512,7 +512,7 @@ class App(UserControl):
             "Upload Logo",
             icon=icons.UPLOAD_FILE_ROUNDED,
             on_click=lambda _: self.pick_files_dialog.pick_files(
-                allow_multiple=False, allowed_extensions=["png", "jpeg"]
+                allow_multiple=False, allowed_extensions=["png", "jpeg", "jpg", "svg", "webp"]
             ),
         )
         self.delete_logo = ElevatedButton(
@@ -521,13 +521,13 @@ class App(UserControl):
             on_click=self.remove_logo,
             disabled=True,
         )
-        self.logo = ft.Image(src="Assets/logo.jpg", width=200, height=200)
+        self.logo = ft.Image(src="Assets/logo.jpg", width=300, height=300)
         self.logo_preview = Container(self.logo)
         self.logo_row = Row(
-            [self.open_logo, self.delete_logo], alignment=MainAxisAlignment.CENTER
+            [self.open_logo, self.delete_logo], alignment=MainAxisAlignment.CENTER, height=100
         )
         self.logo_column = Column(
-            [self.logo_preview, self.logo_row],
+            controls=[self.logo_preview, self.logo_row],
             horizontal_alignment=CrossAxisAlignment.CENTER,
         )
         self.logo_panel = ExpansionPanelList(
@@ -561,7 +561,7 @@ class App(UserControl):
                 dropdown.Option("Very High")
             ]
         )
-        self.advcanced_panel = ExpansionPanelList(
+        self.advanced_panel = ExpansionPanelList(
             [
                 ExpansionPanel(
                     header=ListTile(title=Text("ADVANCED SETTINGS")),
@@ -588,7 +588,7 @@ class App(UserControl):
             on_change=self.update_scale_txt,
         )
 
-        self.qr_preview = ft.Image(src_base64=self.build_qr(), width=300, height=300)
+        self.qr_preview = ft.Image(src_base64=self.build_qr(), width=400, height=400)
         self.prev_container = Container(
             alignment=alignment.top_center, content=self.qr_preview
         )
@@ -610,10 +610,11 @@ class App(UserControl):
             ),
             bgcolor="white",
             width=500,
+            height=1500
         )
 
         self.main = Container(
-            Column([self.size_panel, self.color_panel, self.logo_panel, self.design_panel, self.advcanced_panel]), width=750
+            Column([self.size_panel, self.color_panel, self.logo_panel, self.design_panel, self.advanced_panel]), width=750
         )
 
     # Custom Tabs
@@ -751,7 +752,7 @@ class App(UserControl):
                 self.cont.content = Column(
                     [
                         self.cypto_drop,
-                        self.crypto_adress_txt,
+                        self.crypto_address_txt,
                         self.amount_txt,
                         self.id_txt,
                         self.msg_txt,
