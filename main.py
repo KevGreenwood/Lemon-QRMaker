@@ -1,8 +1,9 @@
 from main_form import *
 
-def main(page: Page):
-    page.title = "Cassie-QRCodeMaker"
+def main(page: ft.Page):
+    page.title = "Lemon-QRCodeMaker"
+    page.bgcolor = ft.colors.AMBER
     page.add(App())
 
 if __name__ == "__main__":
-    app(target = main)
+    ft.app(target = main)
