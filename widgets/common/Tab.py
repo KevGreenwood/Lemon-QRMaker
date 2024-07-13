@@ -1,158 +1,71 @@
 import flet as ft
 
-url_tab = ft.Tab(
-            tab_content=ft.Column(
-                [ft.Icon(ft.icons.LINK), ft.Text("URL")],
-                spacing=0,
-                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-            )
+def create_tab(icon: ft.icons, text: str):
+    return ft.Tab(
+        tab_content=ft.Column(
+            controls=[ft.Icon(icon), ft.Text(text)],
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+            spacing=0
         )
-        text_tab = ft.Tab(
-            tab_content=ft.Column(
-                [ft.Icon(ft.icons.TEXT_SNIPPET), ft.Text("Text")],
-                spacing=0,
-                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-            )
-        )
-        mail_tab = ft.Tab(
-            tab_content=ft.Column(
-                [ft.Icon(ft.icons.MAIL), ft.Text("Email")],
-                spacing=0,
-                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-            )
-        )
-        phone_tab = ft.Tab(
-            tab_content=ft.Column(
-                [ft.Icon(ft.icons.PHONE), ft.Text("Phone")],
-                spacing=0,
-                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-            )
-        )
-        sms_tab = ft.Tab(
-            tab_content=ft.Column(
-                [ft.Icon(ft.icons.SMS), ft.Text("SMS")],
-                spacing=0,
-                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-            )
-        )
-        wa_tab = ft.Tab(
-            tab_content=ft.Column(
-                [
-                    ft.Image(
-                        src="assets\\icons\\whatsapp.svg",
-                        width=24,
-                        height=24,
-                        color=ft.colors.WHITE,
-                    ),
-                    ft.Text("Whatsapp"),
-                ],
-                spacing=0,
-                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-            )
-        )
-        vcard_tab = ft.Tab(
-            tab_content=ft.Column(
-                [ft.Icon(ft.icons.PERSON), ft.Text("VCard")],
-                spacing=0,
-                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-            )
-        )
-        mcard_tab = ft.Tab(
-            tab_content=ft.Column(
-                [ft.Icon(ft.icons.PERSON), ft.Text("MeCard")],
-                spacing=0,
-                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-            )
-        )
-        location_tab = ft.Tab(
-            tab_content=ft.Column(
-                [ft.Icon(ft.icons.LOCATION_ON), ft.Text("Location")],
-                spacing=0,
-                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-            )
-        )
-        wifi_tab = ft.Tab(
-            tab_content=ft.Column(
-                [ft.Icon(ft.icons.WIFI), ft.Text("WiFi")],
-                spacing=0,
-                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-            )
-        )
-        event_tab = ft.Tab(
-            tab_content=ft.Column(
-                [ft.Icon(ft.icons.EVENT), ft.Text("Event")],
-                spacing=0,
-                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-            )
-        )
-        app_tab = ft.Tab(
-            tab_content=ft.Column(
-                [ft.Icon(ft.icons.APPS), ft.Text("App")],
-                spacing=0,
-                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-            )
-        )
-        fav_tab = ft.Tab(
-            tab_content=ft.Column(
-                [ft.Icon(ft.icons.BOOKMARK), ft.Text("Favorite")],
-                spacing=0,
-                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-            )
-        )
-        paypal_tab = ft.Tab(
-            tab_content=ft.Column(
-                [ft.Icon(ft.icons.PAYPAL), ft.Text("PayPal")],
-                spacing=0,
-                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-            )
-        )
-        bitcoin_tab = ft.Tab(
-            tab_content=ft.Column(
-                [ft.Icon(ft.icons.CURRENCY_BITCOIN), ft.Text("Bitcoin")],
-                spacing=0,
-                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-            )
-        )
+    )
 
-        tabs = ft.Tabs(
-            tabs=[
-                url_tab,
-                text_tab,
-                mail_tab,
-                phone_tab,
-                sms_tab,
-                wa_tab,
-                vcard_tab,
-                mcard_tab,
-                location_tab,
-                wifi_tab,
-                event_tab,
-                app_tab,
-                fav_tab,
-                paypal_tab,
-                bitcoin_tab,
-            ],
-            on_change=update,
-            selected_index=0,
-        )
+whatsapp_icon = ft.Image(
+    src="assets\\icons\\whatsapp.svg",
+    width=24,
+    height=24,
+    color=ft.colors.ON_BACKGROUND
+)
 
-        # Custom ft.Tab
-        back = ft.IconButton(
-            icon=ft.icons.ARROW_BACK_IOS,
-            on_click=go_back,
-            icon_color=ft.colors.WHITE,
-            visible=False,
-        )
-        forward = ft.IconButton(
-            icon=ft.icons.ARROW_FORWARD_IOS,
-            on_click=go_forward,
-            icon_color=ft.colors.WHITE,
-        )
-        tab_row = ft.Row(
-            controls=[
-                back,
-                ft.Column(controls=[tabs], expand=True),
-                forward,
+tabs = [
+    create_tab(ft.icons.LINK, "URL"),
+    create_tab(ft.icons.TEXT_SNIPPET, "Text"),
+    create_tab(ft.icons.MAIL, "Email"),
+    create_tab(ft.icons.PHONE, "Phone"),
+    create_tab(ft.icons.SMS, "SMS"),
+    ft.Tab(
+        tab_content=ft.Column(
+            [
+                whatsapp_icon,
+                ft.Text("Whatsapp"),
             ],
-            width=750,
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+            spacing=0
         )
+    ),
+    create_tab(ft.icons.PERSON, "VCard"),
+    create_tab(ft.icons.PERSON, "MeCard"),
+    create_tab(ft.icons.LOCATION_ON, "Location"),
+    create_tab(ft.icons.WIFI, "WiFi"),
+    create_tab(ft.icons.EVENT, "Event"),
+    create_tab(ft.icons.APPS, "App"),
+    create_tab(ft.icons.BOOKMARK, "Favorite"),
+    create_tab(ft.icons.PAYPAL, "PayPal"),
+    create_tab(ft.icons.CURRENCY_BITCOIN, "Bitcoin")
+]
+
+tabs_widget = ft.Tabs(
+    tabs=tabs,
+    selected_index=0
+)
+
+# Custom ft.Tab
+back = ft.IconButton(
+    icon=ft.icons.ARROW_BACK_IOS,
+    icon_color=ft.colors.WHITE,
+    visible=False
+)
+
+forward = ft.IconButton(
+    icon=ft.icons.ARROW_FORWARD_IOS,
+    icon_color=ft.colors.WHITE
+)
+
+tab_row = ft.Row(
+    controls=[
+        back,
+        ft.Column(controls=[tabs_widget], expand=True),
+        forward
+    ],
+    width=750
+)
+

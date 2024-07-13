@@ -13,46 +13,12 @@ class App(ft.UserControl):
         self.start_time: str = None
 
         # --- Left Layout ---
-        # Text Fields
-        # 1
         url_txt.on_change = self.regenerate_preview
-
-
-
-        self.vcard_ver = ft.Dropdown(
-            "Version 3",
-            label="VCard Version",
-            options=[ft.dropdown.Option("Version 2.1"), ft.dropdown.Option("Version 3")],
-            on_change=self.regenerate_preview,
-        )
-
         
-        self.pass_txt = ft.TextField(
-            label="Password",
-            password=True,
-            can_reveal_password=True,
-            on_change=self.regenerate_preview,
-        )
-        self.encrypt_drop = ft.Dropdown(
-            "WPA/WPA2",
-            label="Network type",
-            options=[
-                ft.dropdown.Option("None"),
-                ft.dropdown.Option("WEP"),
-                ft.dropdown.Option("WPA/WPA2"),
-            ],
-            width=575,
-            on_change=self.regenerate_preview,
-        )
         self.hidden = ft.Checkbox(
             "Hidden Network", value=False, on_change=self.regenerate_preview
         )
-
-        self.title_txt = ft.TextField(label="Title", on_change=self.regenerate_preview)
-        self.location_txt = ft.TextField(
-            label="Event Location", on_change=self.regenerate_preview
-        )
-
+        
         # ----- REWORK NEEDED -----
         self.date_picker = ft.DatePicker(on_change=self.regenerate_preview)
         self.time_picker = ft.TimePicker(on_change=self.regenerate_preview)
@@ -80,91 +46,8 @@ class App(ft.UserControl):
         )
         # ------------------------------------
 
-        self.app_txt = ft.TextField(
-            label="App package name",
-            hint_text="Example: com.google.android.youtube",
-            helper_text="Search the Internet or use an app to find the package name.",
-            on_change=self.regenerate_preview
-        )
-
-        self.cypto_drop = ft.Dropdown(
-            "Bitcoin",
-            label="Select Cryptocurrency",
-            options=[
-                ft.dropdown.Option("Bitcoin"),
-                ft.dropdown.Option("Bitcoin Cash"),
-                ft.dropdown.Option("Ethereum"),
-                ft.dropdown.Option("Litecoin"),
-                ft.dropdown.Option("Dash"),
-            ],
-            on_change=self.regenerate_preview,
-        )
-        self.crypto_address_txt = ft.TextField(
-            label="Receiver",
-            hint_text="Bitcoin Address",
-            on_change=self.regenerate_preview,
-        )
-        self.amount_txt = ft.TextField(
-            label="Amount",
-            input_filter=ft.InputFilter(
-                allow=True, regex_string=r"[0-9.]", replacement_string=""
-            ),
-            on_change=self.regenerate_preview,
-        )
-        self.id_txt = ft.TextField(label="ID", on_change=self.regenerate_preview)
-
-        self.payment_drop = ft.Dropdown(
-            label="Payment type",
-            options=[
-                ft.dropdown.Option("Buy now"),
-                ft.dropdown.Option("Add to cart"),
-                ft.dropdown.Option("Donations"),
-            ],
-            width=360,
-            on_change=self.regenerate_preview,
-        )
-        self.item_name_txt = ft.TextField(
-            label="Item name", width=360, on_change=self.regenerate_preview
-        )
-        self.item_id_txt = ft.TextField(
-            label="Item ID", width=360, on_change=self.regenerate_preview
-        )
-        self.price_txt = ft.TextField(
-            label="Price",
-            input_filter=ft.InputFilter(
-                allow=True, regex_string=r"[0-9.]", replacement_string=""
-            ),
-            on_change=self.regenerate_preview,
-        )
-        self.currency_txt = ft.TextField(
-            label="Currency",
-            input_filter=ft.InputFilter(
-                allow=True, regex_string=r"[a,...,z]", replacement_string=""
-            ),
-            width=360,
-            on_change=self.regenerate_preview,
-        )
-        self.ship_txt = ft.TextField(
-            label="Shipping",
-            input_filter=ft.InputFilter(
-                allow=True, regex_string=r"[0-9.]", replacement_string=""
-            ),
-            width=360,
-            on_change=self.regenerate_preview,
-        )
-        self.tax_txt = ft.TextField(
-            label="Tax rate",
-            input_filter=ft.InputFilter(
-                allow=True, regex_string=r"[0-9.]", replacement_string=""
-            ),
-            width=360,
-            on_change=self.regenerate_preview,
-        )
-
         self.cont = ft.Container(url_txt, padding=10, width=750)
-
-
-        self.tabs_container = ft.Container(
+        self.tabs_widget_container = ft.Container(
             ft.Column([tab_row, self.cont]), width=770, alignment=ft.alignment.top_left
         )
 
@@ -264,9 +147,6 @@ class App(ft.UserControl):
             ]
         )
 
-
-
-
         self.design_panel = ft.ExpansionPanelList(
             [
                 ft.ExpansionPanel(
@@ -274,18 +154,7 @@ class App(ft.UserControl):
                 )
             ]
         )
-
-
-        self.correction = ft.Dropdown(label="Correction Level",
-            value = "Low",
-            options=
-            [
-                ft.dropdown.Option("Low"),
-                ft.dropdown.Option("Medium"),
-                ft.dropdown.Option("High"),
-                ft.dropdown.Option("Very High")
-            ]
-        )
+        
         self.advanced_panel = ft.ExpansionPanelList(
             [
                 ft.ExpansionPanel(
@@ -341,26 +210,30 @@ class App(ft.UserControl):
         self.main = ft.Container(
             ft.Column([self.size_panel, self.color_panel, self.logo_panel, self.design_panel, self.advanced_panel]), width=750
         )
-
+        
+        tabs_widget.on_change = self.update
+        back.on_click = self.go_back
+        forward.on_click = self.go_forward
+    
     # Custom ft.Tabs
     def go_back(self, e):
-        if self.tabs.selected_index > 0:
-            self.tabs.selected_index -= 1
-            self.back.icon_color = ft.colors.WHITE
+        if tabs_widget.selected_index > 0:
+            tabs_widget.selected_index -= 1
+            #back.icon_color = ft.colors.ON_BACKGROUND
         self.update(e)
 
     def go_forward(self, e):
-        if self.tabs.selected_index < 12:
-            self.tabs.selected_index += 1
-            self.forward.icon_color = ft.colors.WHITE
+        if tabs_widget.selected_index < 12:
+            tabs_widget.selected_index += 1
+            forward.icon_color = ft.colors.ON_BACKGROUND
         self.update(e)
 
     def update(self, e):
-        match self.tabs.selected_index:
+        match tabs_widget.selected_index:
             case 0:
                 url_txt.value = "https://github.com/KevGreenwood"
                 self.cont.content = url_txt
-                self.back.visible = False
+                back.visible = False
 
             case 1:
                 filled_txt.value = ""
@@ -378,10 +251,16 @@ class App(ft.UserControl):
                 phone_txt.value = ""
                 self.cont.content = phone_txt
 
-            case 4 | 5:
+            case 4:
                 phone_txt.value = ""
                 self.cont.content = ft.Column([phone_txt, msg_txt])
-                self.forward.visible = True
+                forward.visible = True
+                
+            case 5:
+                whatsapp_icon.color = ft.colors.PRIMARY
+                phone_txt.value = ""
+                self.cont.content = ft.Column([phone_txt, msg_txt])
+                forward.visible = True
 
             case 6:
                 phone_txt.width = 360
@@ -390,49 +269,48 @@ class App(ft.UserControl):
                 self.cont.content = ft.Column(
                     [
                         self.vcard_ver,
-                        ft.Row([self.name_txt, self.lastname_txt]),
-                        ft.Row([self.org_txt, self.pos_txt]),
-                        ft.Row([self.work_phone_txt, self.priv_phone_txt]),
-                        ft.Row([phone_txt, self.work_fax_txt]),
-                        ft.Row([self.priv_fax_txt, mail_txt]),
-                        ft.Row([url_txt, self.street_txt]),
-                        ft.Row([self.zip_txt, self.city_txt]),
-                        ft.Row([self.state_txt, self.country_txt]),
+                        ft.Row([name_txt, lastname_txt]),
+                        ft.Row([org_txt, pos_txt]),
+                        ft.Row([work_phone_txt, priv_phone_txt]),
+                        ft.Row([phone_txt, work_fax_txt]),
+                        ft.Row([priv_fax_txt, mail_txt]),
+                        ft.Row([url_txt, street_txt]),
+                        ft.Row([zip_txt, city_txt]),
+                        ft.Row([state_txt, country_txt]),
                     ]
                 )
 
             case 7:
                 self.cont.content = ft.Column(
                     [
-                        ft.Row([self.name_txt, self.lastname_txt]),
-                        ft.Row([self.nickname_txt, self.work_phone_txt]),
-                        ft.Row([self.priv_phone_txt, phone_txt]),
+                        ft.Row([name_txt, lastname_txt]),
+                        ft.Row([nickname_txt, work_phone_txt]),
+                        ft.Row([priv_phone_txt, phone_txt]),
                         ft.Row([mail_txt, url_txt]),
-                        ft.Row([self.street_txt]),
-                        ft.Row([self.zip_txt, self.city_txt]),
-                        ft.Row([self.state_txt, self.country_txt]),
+                        ft.Row([street_txt]),
+                        ft.Row([zip_txt, city_txt]),
+                        ft.Row([state_txt, country_txt]),
                         filled_txt,
                     ]
                 )
 
             case 8:
-                self.latitude_txt.value = ""
-                self.longitude_txt.value = ""
-                self.cont.content = ft.Row([self.latitude_txt, self.longitude_txt])
+                latitude_txt.value = ""
+                longitude_txt.value = ""
+                self.cont.content = ft.Row([latitude_txt, longitude_txt])
 
             case 9:
                 self.encrypt_drop.value = ""
-                self.pass_txt.value = ""
+                pass_txt.value = ""
                 self.encrypt_drop.value = "WPA/WPA2"
                 self.cont.content = ft.Column(
                     [
-                        self.ssid_txt,
-                        self.pass_txt,
+                        ssid_txt,
+                        pass_txt,
                         ft.Row([self.encrypt_drop, self.hidden]),
                     ]
                 )
-            
-            
+                        
             case 15:
                 url_txt.value = ""
                 self.location_txt.value = ""
@@ -456,38 +334,41 @@ class App(ft.UserControl):
             
 
             case 11:
-                self.cont.content = ft.Column([self.app_txt])
+                self.cont.content = ft.Column([app_txt])
 
             case 12:
-                self.cont.content = ft.Column([self.title_txt, url_txt])
+                self.cont.content = ft.Column([title_txt, url_txt])
 
             case 13:
                 self.cont.content = ft.Column(
                     [
                         ft.Row([self.payment_drop, mail_txt]),
-                        ft.Row([self.item_name_txt, self.item_id_txt]),
-                        ft.Row([self.price_txt, self.currency_txt]),
-                        ft.Row([self.ship_txt, self.tax_txt]),
+                        ft.Row([item_name_txt, item_id_txt]),
+                        ft.Row([price_txt, currency_txt]),
+                        ft.Row([ship_txt, tax_txt]),
                     ]
                 )
 
             case 14:
-                self.forward.visible = False
+                forward.visible = False
                 self.cont.content = ft.Column(
                     [
                         self.cypto_drop,
-                        self.crypto_address_txt,
-                        self.amount_txt,
-                        self.id_txt,
+                        crypto_address_txt,
+                        amount_txt,
+                        id_txt,
                         msg_txt,
                     ]
                 )
 
             case _:
-                self.forward.visible = True
+                forward.visible = True
 
-        if self.tabs.selected_index > 0:
-            self.back.visible = True
+        if tabs_widget.selected_index != 5:
+            whatsapp_icon.color = ft.colors.ON_BACKGROUND
+        
+        if tabs_widget.selected_index > 0:
+            back.visible = True
 
         super().update()
 
@@ -498,25 +379,25 @@ class App(ft.UserControl):
         vcard_v3_txt: str = ""
         crypto_currency: str = ""
 
-        match self.tabs.selected_index:
+        match tabs_widget.selected_index:
             case 6:
                 if self.vcard_ver.value == "Version 3":
-                    vcard_v3_txt = f"BEGIN:VCARD\nVERSION:3.0\nN:{self.lastname_txt.value};{self.name_txt.value}\nFN:{self.name_txt.value} {self.lastname_txt.value}\nTITLE:{self.pos_txt.value}\nORG:{self.org_txt.value}\nURL:{url_txt.value}\nEMAIL;TYPE=INTERNET:{mail_txt.value}\nTEL;TYPE=voice,work,pref:{self.work_phone_txt.value}\nTEL;TYPE=voice,home,pref:{self.priv_phone_txt.value}\nTEL;TYPE=voice,cell,pref:{phone_txt.value}\nTEL;TYPE=fax,work,pref:{self.work_fax_txt.value}\nTEL;TYPE=fax,home,pref:{self.priv_fax_txt.value}\nADR:;;{self.street_txt.value};{self.city_txt.value};{self.state_txt.value};{self.zip_txt.value};{self.country_txt.value}\nEND:VCARD"
+                    vcard_v3_txt = f"BEGIN:VCARD\nVERSION:3.0\nN:{lastname_txt.value};{name_txt.value}\nFN:{name_txt.value} {lastname_txt.value}\nTITLE:{pos_txt.value}\nORG:{org_txt.value}\nURL:{url_txt.value}\nEMAIL;TYPE=INTERNET:{mail_txt.value}\nTEL;TYPE=voice,work,pref:{work_phone_txt.value}\nTEL;TYPE=voice,home,pref:{priv_phone_txt.value}\nTEL;TYPE=voice,cell,pref:{phone_txt.value}\nTEL;TYPE=fax,work,pref:{work_fax_txt.value}\nTEL;TYPE=fax,home,pref:{priv_fax_txt.value}\nADR:;;{street_txt.value};{city_txt.value};{state_txt.value};{zip_txt.value};{country_txt.value}\nEND:VCARD"
                 else:
-                    vcard_v3_txt = f"BEGIN:VCARD\nVERSION:2.1\nN:{self.lastname_txt.value};{self.name_txt.value}\nTITLE:{self.pos_txt.value}\nORG:{self.org_txt.value}\nURL:{url_txt.value}\nEMAIL;TYPE=INTERNET:{mail_txt.value}\nTEL;WORK;VOICE:{self.work_phone_txt.value}\nTEL;HOME;VOICE:{self.priv_phone_txt.value}\nTEL;CELL:{phone_txt.value}\nTEL;WORK;FAX:{self.work_fax_txt.value}\nTEL;HOME;FAX:{self.priv_fax_txt.value}\nADR:;;{self.street_txt.value};{self.city_txt.value};{self.state_txt.value};{self.zip_txt.value};{self.country_txt.value}\nEND:VCARD"
+                    vcard_v3_txt = f"BEGIN:VCARD\nVERSION:2.1\nN:{lastname_txt.value};{name_txt.value}\nTITLE:{pos_txt.value}\nORG:{org_txt.value}\nURL:{url_txt.value}\nEMAIL;TYPE=INTERNET:{mail_txt.value}\nTEL;WORK;VOICE:{work_phone_txt.value}\nTEL;HOME;VOICE:{priv_phone_txt.value}\nTEL;CELL:{phone_txt.value}\nTEL;WORK;FAX:{work_fax_txt.value}\nTEL;HOME;FAX:{priv_fax_txt.value}\nADR:;;{street_txt.value};{city_txt.value};{state_txt.value};{zip_txt.value};{country_txt.value}\nEND:VCARD"
 
             case 8:
-                if float(self.latitude_txt.value) > 90:
-                    self.latitude_txt.value = 90
-                if float(self.latitude_txt.value) < -90:
-                    self.latitude_txt.value = -90
-                self.latitude_txt.update()
+                if float(latitude_txt.value) > 90:
+                    latitude_txt.value = 90
+                if float(latitude_txt.value) < -90:
+                    latitude_txt.value = -90
+                latitude_txt.update()
 
-                if float(self.longitude_txt.value) > 180:
-                    self.longitude_txt.value = 180
-                if float(self.longitude_txt.value) < -180:
-                    self.longitude_txt.value = -180
-                self.longitude_txt.update()
+                if float(longitude_txt.value) > 180:
+                    longitude_txt.value = 180
+                if float(longitude_txt.value) < -180:
+                    longitude_txt.value = -180
+                longitude_txt.update()
 
             case 9:
                 wifi_encrypt_map = {"None": "nopass", "WEP": "WEP", "WPA/WPA2": "WPA"}
@@ -547,16 +428,16 @@ class App(ft.UserControl):
             4: f"SMSTO:{phone_txt.value}:{msg_txt.value}",
             5: f"https://wa.me/{phone_txt.value}/?text={msg_txt.value}",
             6: vcard_v3_txt,
-            7: f"MECARD:N:{self.lastname_txt.value},{self.name_txt.value};NICKNAME:{self.nickname_txt.value};TEL:{self.work_phone_txt.value};TEL:{self.priv_phone_txt.value};TEL:{phone_txt.value};EMAIL:{mail_txt.value};BDAY:;NOTE:{filled_txt.value};ADR:,,{self.street_txt.value},{self.city_txt.value},{self.state_txt.value},{self.zip_txt.value},{self.country_txt.value};;",
-            8: f"https://maps.google.com/local?q={self.latitude_txt.value},{self.longitude_txt.value}",
-            9: f"WIFI:S:{self.ssid_txt.value};T:{wifi_encrypt};P:{self.pass_txt.value};H:{network_hide};;",
+            7: f"MECARD:N:{lastname_txt.value},{name_txt.value};NICKNAME:{nickname_txt.value};TEL:{work_phone_txt.value};TEL:{priv_phone_txt.value};TEL:{phone_txt.value};EMAIL:{mail_txt.value};BDAY:;NOTE:{filled_txt.value};ADR:,,{street_txt.value},{city_txt.value},{state_txt.value},{zip_txt.value},{country_txt.value};;",
+            8: f"https://maps.google.com/local?q={latitude_txt.value},{longitude_txt.value}",
+            9: f"WIFI:S:{ssid_txt.value};T:{wifi_encrypt};P:{pass_txt.value};H:{network_hide};;",
             10: f"BEGIN:VEVENT\nUID:{url_txt.value}\nORGANIZER:\nSUMMARY:\nLOCATION:\nDTSTART:\nDTEND:\nEND:VEVENT",
-            11: f"market://details?id={self.app_txt.value}",
-            12: f"MEBKM:TITLE:{self.title_txt};URL:{url_txt.value};;",
+            11: f"market://details?id={app_txt.value}",
+            12: f"MEBKM:TITLE:{title_txt};URL:{url_txt.value};;",
             13: "https://www.paypal.com/cgi-bin/webscr?business={}&cmd=_xclick&currency_code={}&amount={}&item_name={}&return={}&cancel_return={}",
-            14: f"{crypto_currency}:{self.id_txt.value}?amount={self.amount_txt.value}&message={msg_txt.value}",
+            14: f"{crypto_currency}:{id_txt.value}?amount={amount_txt.value}&message={msg_txt.value}",
         }
-        self.qr.data = qr_data_formats.get(self.tabs.selected_index, None)
+        self.qr.data = qr_data_formats.get(tabs_widget.selected_index, None)
 
         if self.ver_auto_box.value:
             self.qr.version = None
@@ -642,7 +523,7 @@ class App(ft.UserControl):
         return ft.Row(
             [
                 ft.Column(
-                    [self.tabs_container, self.main],
+                    [self.tabs_widget_container, self.main],
                     height=650,
                     scroll=ft.ScrollMode.ADAPTIVE,
                 ),
