@@ -1,4 +1,4 @@
-from widgets.main_form import *
+from widgets.main_page import *
 
 def main(page: ft.Page):
     page.title = "Lemon-QRCodeMaker"

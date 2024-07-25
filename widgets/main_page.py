@@ -1,6 +1,8 @@
 from utils.qr_core import *
 from widgets.common.TextField import *
 from widgets.common.Tab import *
+from widgets.common.Dropdown import *
+from widgets.common.Checkbox import *
 from datetime import date
 
 
@@ -15,9 +17,6 @@ class App(ft.UserControl):
         # --- Left Layout ---
         url_txt.on_change = self.regenerate_preview
         
-        self.hidden = ft.Checkbox(
-            "Hidden Network", value=False, on_change=self.regenerate_preview
-        )
         
         # ----- REWORK NEEDED -----
         self.date_picker = ft.DatePicker(on_change=self.regenerate_preview)
@@ -61,22 +60,18 @@ class App(ft.UserControl):
             disabled=True,
             on_change=self.regenerate_preview,
         )
-        self.ver_auto_box = ft.Checkbox(
-            label="Auto", value=True, on_change=self.switch_version
-        )
-        self.size_row = ft.Row([self.version_slider, self.ver_auto_box])
-        self.border_txt = ft.TextField(
-            label="Ingrese el tamaño del borde",
-            value="4",
-            input_filter=ft.NumbersOnlyInputFilter(),
-            on_change=self.regenerate_preview,
-        )
+        
+        ver_auto_box.on_change=self.switch_version
+        
+        
+        self.size_row = ft.Row([self.version_slider, ver_auto_box])
+        
         
         self.size_panel = ft.ExpansionPanelList(
             [
                 ft.ExpansionPanel(
                     header=ft.ListTile(title=ft.Text("SET SIZE")),
-                    content=ft.Container(ft.Column([self.size_row, self.border_txt]), padding=20),
+                    content=ft.Container(ft.Column([self.size_row, border_txt]), padding=20),
                 )
             ]
         )
@@ -90,22 +85,10 @@ class App(ft.UserControl):
                 ]
             ), value="normal"
         )
-        self.custom_eye = ft.Checkbox(label="Custom Eye Color")
-        self.fore_color_txt = ft.TextField(
-            label="Foreground Color",
-            prefix_icon=ft.icons.COLOR_LENS,
-            value="#000000",
-            on_change=self.regenerate_preview,
-        )
-        self.back_color_txt = ft.TextField(
-            label="Background Color",
-            prefix_icon=ft.icons.COLOR_LENS,
-            value="#FFFFFF",
-            on_change=self.regenerate_preview,
-        )
-        self.fore_color_row = ft.Row([self.fore_color_txt])
+        
+        self.fore_color_row = ft.Row([fore_color_txt])
         self.color_column = ft.Column(
-            [self.color_radio_group, self.custom_eye, self.fore_color_row, self.back_color_txt]
+            [self.color_radio_group, custom_eye, self.fore_color_row, back_color_txt]
         )
         
         self.color_panel = ft.ExpansionPanelList(
@@ -159,7 +142,7 @@ class App(ft.UserControl):
             [
                 ft.ExpansionPanel(
                     header=ft.ListTile(title=ft.Text("ADVANCED SETTINGS")),
-                    content=ft.Container(self.correction, padding=20)
+                    content=ft.Container(correction, padding=20)
                 )
             ]
         )
@@ -243,9 +226,7 @@ class App(ft.UserControl):
             case 2:
                 mail_txt.value = ""
                 subject_txt.value = ""
-                self.cont.content = ft.Column(
-                    [mail_txt, subject_txt, msg_txt]
-                )
+                self.cont.content = ft.Column([mail_txt, subject_txt, msg_txt])
 
             case 3:
                 phone_txt.value = ""
@@ -307,7 +288,7 @@ class App(ft.UserControl):
                     [
                         ssid_txt,
                         pass_txt,
-                        ft.Row([self.encrypt_drop, self.hidden]),
+                        ft.Row([self.encrypt_drop, hidden_check]),
                     ]
                 )
                         
@@ -315,15 +296,8 @@ class App(ft.UserControl):
                 url_txt.value = ""
                 self.location_txt.value = ""
                 #self.start_date.value = self.end_txt.value = date.today()
-                self.start_date_cont = ft.Container(
-                    self.start_date,
-                    on_click=lambda _: self.set_start_date()
-                )
-                start_time_cont = ft.Container(
-                    self.start_time,
-                    on_click=lambda _: self.time_picker.pick_time()
-                )
-                
+                self.start_date_cont = ft.Container(self.start_date, on_click=lambda _: self.set_start_date())
+                start_time_cont = ft.Container(self.start_time, on_click=lambda _: self.time_picker.pick_time())
                 end_date_cont = ft.Container(
                     self.end_date, on_click=lambda _: self.pick_time_date()
                 )
@@ -402,7 +376,7 @@ class App(ft.UserControl):
             case 9:
                 wifi_encrypt_map = {"None": "nopass", "WEP": "WEP", "WPA/WPA2": "WPA"}
                 wifi_encrypt = wifi_encrypt_map.get(self.encrypt_drop.value, None)
-                if self.hidden.value:
+                if hidden_check.value:
                     network_hide = "true"
                 else:
                     network_hide = "false"
@@ -439,20 +413,20 @@ class App(ft.UserControl):
         }
         self.qr.data = qr_data_formats.get(tabs_widget.selected_index, None)
 
-        if self.ver_auto_box.value:
+        if ver_auto_box.value:
             self.qr.version = None
         else:
             self.qr.version = int(self.version_slider.value)
 
         self.qr.box_size = int(self.qr_size_slider.value)
 
-        if self.border_txt.value == "":
+        if border_txt.value == "":
             self.qr.border = 4
         else:
-            self.qr.border = int(self.border_txt.value)
+            self.qr.border = int(border_txt.value)
 
-        self.qr.back_color = self.back_color_txt.value
-        self.qr.main_color = self.fore_color_txt.value
+        self.qr.back_color = back_color_txt.value
+        self.qr.main_color = fore_color_txt.value
 
         print(f"Version: {self.qr.version}\nSize: {self.qr.box_size}")
 
@@ -464,7 +438,7 @@ class App(ft.UserControl):
         self.qr_preview.update()
 
     def switch_version(self, e):
-        if self.ver_auto_box.value:
+        if ver_auto_box.value:
             self.version_slider.disabled = True
             self.version_slider.value = 1
         else:

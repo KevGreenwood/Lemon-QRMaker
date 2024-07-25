@@ -1,15 +1,16 @@
 import flet as ft
 
-def create_text_field(label, hint_text=None, multiline=False, filled=False, 
-                        input_filter=None, password=False, can_reveal_password=False, width=None):
+def create_text_field(label, value=None, multiline=False, password=False, can_reveal_password=False, 
+                        input_filter=None, filled=False, hint_text=None, width=None):
     return ft.TextField(
-        label=label,
-        hint_text=hint_text,
+        value=value,
         multiline=multiline,
-        filled=filled,
-        input_filter=input_filter,
         password=password,
         can_reveal_password=can_reveal_password,
+        input_filter=input_filter,
+        label=label,
+        filled=filled,
+        hint_text=hint_text,
         width=width
     )
 
@@ -60,3 +61,14 @@ price_txt = create_text_field("Price", input_filter=input_filter("money"))
 currency_txt = create_text_field("Currency", input_filter=ft.InputFilter(allow=True, regex_string=r"[a,...,z]"), width=360)
 ship_txt = create_text_field("Shipping", input_filter=input_filter("money"), width=360)
 tax_txt = create_text_field("Tax rate", input_filter=input_filter("money"), width=360)
+border_txt = create_text_field("Ingrese el tamaño del borde", "4", input_filter=ft.NumbersOnlyInputFilter())
+fore_color_txt = ft.TextField(
+    label="Foreground Color",
+    prefix_icon=ft.icons.COLOR_LENS,
+    value="#000000"
+)
+back_color_txt = ft.TextField(
+    label="Background Color",
+    prefix_icon=ft.icons.COLOR_LENS,
+    value="#FFFFFF"
+)
