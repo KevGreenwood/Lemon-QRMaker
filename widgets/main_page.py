@@ -6,7 +6,7 @@ from widgets.common.Checkbox import *
 from datetime import date
 
 
-class App(ft.UserControl):
+class App(ft.Row):
     def __init__(self):
         super().__init__()
         
@@ -14,10 +14,59 @@ class App(ft.UserControl):
         self.data: str = None
         self.start_time: str = None
 
-        # --- Left Layout ---
+        """ --- TextField --- """
         url_txt.on_change = self.regenerate_preview
+        filled_txt.on_change = self.regenerate_preview
+        mail_txt.on_change = self.regenerate_preview
+        subject_txt.on_change = self.regenerate_preview
+        msg_txt.on_change = self.regenerate_preview
+        phone_txt.on_change = self.regenerate_preview
+        name_txt.on_change = self.regenerate_preview
+        lastname_txt.on_change = self.regenerate_preview
+        org_txt.on_change = self.regenerate_preview
+        pos_txt.on_change = self.regenerate_preview
+        work_phone_txt.on_change = self.regenerate_preview
+        priv_phone_txt.on_change = self.regenerate_preview
+        work_fax_txt.on_change = self.regenerate_preview
+        priv_fax_txt.on_change = self.regenerate_preview
+        street_txt.on_change = self.regenerate_preview
+        zip_txt.on_change = self.regenerate_preview
+        city_txt.on_change = self.regenerate_preview
+        state_txt.on_change = self.regenerate_preview
+        country_txt.on_change = self.regenerate_preview
+        nickname_txt.on_change = self.regenerate_preview
+        latitude_txt.on_change = self.regenerate_preview
+        longitude_txt.on_change = self.regenerate_preview
+        ssid_txt.on_change = self.regenerate_preview
+        pass_txt.on_change = self.regenerate_preview
+        title_txt.on_change = self.regenerate_preview
+        location_txt.on_change = self.regenerate_preview
+        app_txt.on_change = self.regenerate_preview
+        crypto_address_txt.on_change = self.regenerate_preview
+        amount_txt.on_change = self.regenerate_preview
+        id_txt.on_change = self.regenerate_preview
+        item_name_txt.on_change = self.regenerate_preview
+        item_id_txt.on_change = self.regenerate_preview
+        price_txt.on_change = self.regenerate_preview
+        currency_txt.on_change = self.regenerate_preview
+        ship_txt.on_change = self.regenerate_preview
+        tax_txt.on_change = self.regenerate_preview
+        border_txt.on_change = self.regenerate_preview
+        fore_color_txt.on_change = self.regenerate_preview
+        back_color_txt.on_change = self.regenerate_preview
         
+        """ --- Dropdown --- """
+        vcard_ver.on_change = self.regenerate_preview
+        encrypt_drop.on_change = self.regenerate_preview
+        crypto_drop.on_change = self.regenerate_preview
+        payment_drop.on_change = self.regenerate_preview
+        correction_drop.on_change = self.regenerate_preview
         
+        """ --- Checkbox --- """
+        hidden_check.on_change = self.regenerate_preview
+        ver_auto_box.on_change = self.switch_version
+        #custom_eye = self.regenerate_preview
+                
         # ----- REWORK NEEDED -----
         self.date_picker = ft.DatePicker(on_change=self.regenerate_preview)
         self.time_picker = ft.TimePicker(on_change=self.regenerate_preview)
@@ -61,11 +110,7 @@ class App(ft.UserControl):
             on_change=self.regenerate_preview,
         )
         
-        ver_auto_box.on_change=self.switch_version
-        
-        
         self.size_row = ft.Row([self.version_slider, ver_auto_box])
-        
         
         self.size_panel = ft.ExpansionPanelList(
             [
@@ -142,7 +187,7 @@ class App(ft.UserControl):
             [
                 ft.ExpansionPanel(
                     header=ft.ListTile(title=ft.Text("ADVANCED SETTINGS")),
-                    content=ft.Container(correction, padding=20)
+                    content=ft.Container(correction_drop, padding=20)
                 )
             ]
         )
@@ -249,7 +294,7 @@ class App(ft.UserControl):
                 url_txt.width = 360
                 self.cont.content = ft.Column(
                     [
-                        self.vcard_ver,
+                        vcard_ver,
                         ft.Row([name_txt, lastname_txt]),
                         ft.Row([org_txt, pos_txt]),
                         ft.Row([work_phone_txt, priv_phone_txt]),
@@ -281,20 +326,20 @@ class App(ft.UserControl):
                 self.cont.content = ft.Row([latitude_txt, longitude_txt])
 
             case 9:
-                self.encrypt_drop.value = ""
+                encrypt_drop.value = ""
                 pass_txt.value = ""
-                self.encrypt_drop.value = "WPA/WPA2"
+                encrypt_drop.value = "WPA/WPA2"
                 self.cont.content = ft.Column(
                     [
                         ssid_txt,
                         pass_txt,
-                        ft.Row([self.encrypt_drop, hidden_check]),
+                        ft.Row([encrypt_drop, hidden_check]),
                     ]
                 )
                         
             case 15:
                 url_txt.value = ""
-                self.location_txt.value = ""
+                location_txt.value = ""
                 #self.start_date.value = self.end_txt.value = date.today()
                 self.start_date_cont = ft.Container(self.start_date, on_click=lambda _: self.set_start_date())
                 start_time_cont = ft.Container(self.start_time, on_click=lambda _: self.time_picker.pick_time())
@@ -303,7 +348,7 @@ class App(ft.UserControl):
                 )
 
                 self.cont.content = ft.Column(
-                    [self.title_txt, self.location_txt, ft.Row([self.start_date_cont, start_time_cont]), end_date_cont]
+                    [title_txt, location_txt, ft.Row([self.start_date_cont, start_time_cont]), end_date_cont]
                 )
             
 
@@ -316,7 +361,7 @@ class App(ft.UserControl):
             case 13:
                 self.cont.content = ft.Column(
                     [
-                        ft.Row([self.payment_drop, mail_txt]),
+                        ft.Row([payment_drop, mail_txt]),
                         ft.Row([item_name_txt, item_id_txt]),
                         ft.Row([price_txt, currency_txt]),
                         ft.Row([ship_txt, tax_txt]),
@@ -327,7 +372,7 @@ class App(ft.UserControl):
                 forward.visible = False
                 self.cont.content = ft.Column(
                     [
-                        self.cypto_drop,
+                        crypto_drop,
                         crypto_address_txt,
                         amount_txt,
                         id_txt,
@@ -355,7 +400,7 @@ class App(ft.UserControl):
 
         match tabs_widget.selected_index:
             case 6:
-                if self.vcard_ver.value == "Version 3":
+                if vcard_ver.value == "Version 3":
                     vcard_v3_txt = f"BEGIN:VCARD\nVERSION:3.0\nN:{lastname_txt.value};{name_txt.value}\nFN:{name_txt.value} {lastname_txt.value}\nTITLE:{pos_txt.value}\nORG:{org_txt.value}\nURL:{url_txt.value}\nEMAIL;TYPE=INTERNET:{mail_txt.value}\nTEL;TYPE=voice,work,pref:{work_phone_txt.value}\nTEL;TYPE=voice,home,pref:{priv_phone_txt.value}\nTEL;TYPE=voice,cell,pref:{phone_txt.value}\nTEL;TYPE=fax,work,pref:{work_fax_txt.value}\nTEL;TYPE=fax,home,pref:{priv_fax_txt.value}\nADR:;;{street_txt.value};{city_txt.value};{state_txt.value};{zip_txt.value};{country_txt.value}\nEND:VCARD"
                 else:
                     vcard_v3_txt = f"BEGIN:VCARD\nVERSION:2.1\nN:{lastname_txt.value};{name_txt.value}\nTITLE:{pos_txt.value}\nORG:{org_txt.value}\nURL:{url_txt.value}\nEMAIL;TYPE=INTERNET:{mail_txt.value}\nTEL;WORK;VOICE:{work_phone_txt.value}\nTEL;HOME;VOICE:{priv_phone_txt.value}\nTEL;CELL:{phone_txt.value}\nTEL;WORK;FAX:{work_fax_txt.value}\nTEL;HOME;FAX:{priv_fax_txt.value}\nADR:;;{street_txt.value};{city_txt.value};{state_txt.value};{zip_txt.value};{country_txt.value}\nEND:VCARD"
@@ -375,7 +420,7 @@ class App(ft.UserControl):
 
             case 9:
                 wifi_encrypt_map = {"None": "nopass", "WEP": "WEP", "WPA/WPA2": "WPA"}
-                wifi_encrypt = wifi_encrypt_map.get(self.encrypt_drop.value, None)
+                wifi_encrypt = wifi_encrypt_map.get(encrypt_drop.value, None)
                 if hidden_check.value:
                     network_hide = "true"
                 else:
@@ -392,7 +437,7 @@ class App(ft.UserControl):
                     "Litecoin": "litecoin",
                     "Dash": "dash",
                 }
-                crypto_currency = crypto_currencies.get(self.cypto_drop.value, None)
+                crypto_currency = crypto_currencies.get(crypto_drop.value, None)
         
         qr_data_formats = {
             0: url_txt.value,
@@ -427,9 +472,7 @@ class App(ft.UserControl):
 
         self.qr.back_color = back_color_txt.value
         self.qr.main_color = fore_color_txt.value
-
-        print(f"Version: {self.qr.version}\nSize: {self.qr.box_size}")
-
+        
         return self.qr.generate_preview()
 
     # --- Realtime Building ---

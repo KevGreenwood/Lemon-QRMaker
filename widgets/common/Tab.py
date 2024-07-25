@@ -68,4 +68,3 @@ tab_row = ft.Row(
     ],
     width=750
 )
-
