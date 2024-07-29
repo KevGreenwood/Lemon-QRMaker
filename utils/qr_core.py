@@ -43,7 +43,10 @@ class QRGenerator:
                 border=self.border
             )
             self.__adding_data()
-            self.final_qr = self.qr.make_image(fill_color=self.main_color, back_color=self.back_color)
+            try:
+                self.final_qr = self.qr.make_image(fill_color=self.main_color, back_color=self.back_color)
+            except ValueError as e:
+                print(e)
 
     def __adding_data(self) -> None:
         self.qr.add_data(self.data)

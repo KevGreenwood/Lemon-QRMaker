@@ -4,7 +4,7 @@ import flet as ft
 class CustomTextField(ft.TextField):
     def __init__(self, label, value=None, multiline=False, password=False,
                 can_reveal_password=False, input_filter=None, filled=False,
-                hint_text=None, prefix_icon=None, width=None):
+                hint_text=None, prefix_icon=None, prefix_text=None, suffix_text=None, width=None):
         super().__init__()
         self.value = value
         self.multiline = multiline
@@ -15,6 +15,8 @@ class CustomTextField(ft.TextField):
         self.filled = filled
         self.hint_text = hint_text
         self.prefix_icon = prefix_icon
+        self.prefix_text = prefix_text
+        self.suffix_text = suffix_text
         self.width = width
     
     def get_input_filter(self, filter_type):
@@ -57,14 +59,64 @@ location_txt = CustomTextField("Event Location")
 app_txt = CustomTextField("App package name", hint_text="Example: com.google.android.youtube")
 app_txt.helper_text="Search the Internet or use an app to find the package name."
 crypto_address_txt = CustomTextField("Receiver", hint_text="Bitcoin Address")
-amount_txt = CustomTextField("Amount", input_filter="money")
+amount_txt = CustomTextField("Amount", input_filter="money", prefix_text="$")
 id_txt = CustomTextField("ID")
 item_name_txt = CustomTextField("Item name", width=360)
 item_id_txt = CustomTextField("Item ID", width=360)
-price_txt = CustomTextField("Price", input_filter="money")
-currency_txt = CustomTextField("Currency", input_filter="currency", width=360)
-ship_txt = CustomTextField("Shipping", input_filter="money", width=360)
-tax_txt = CustomTextField("Tax rate", input_filter="money", width=360)
+price_txt = CustomTextField("Price", input_filter="money", prefix_text="$", width=360)
+currency_txt = CustomTextField("Currency Code", input_filter="currency", hint_text="USD", width=360)
+ship_txt = CustomTextField("Shipping", input_filter="money", prefix_text="$", width=360)
+tax_txt = CustomTextField("Tax rate", input_filter="money", suffix_text="%", width=360)
 border_txt = CustomTextField("Ingrese el tamaño del borde", "4", input_filter="num")
 fore_color_txt = CustomTextField("Foreground Color", "#000000", prefix_icon=ft.icons.COLOR_LENS)
 back_color_txt = CustomTextField("Background Color", "#FFFFFF", prefix_icon=ft.icons.COLOR_LENS)
+thanks_url_txt = CustomTextField("Thank you URL", hint_text="https://", width=360)
+cancel_url_txt = CustomTextField("Cancel URL", hint_text="https://", width=360)
+
+
+def reset_text(placeholder: bool = False):
+    if placeholder:
+        url_txt.value = "https://github.com/KevGreenwood"
+    else:
+        url_txt.value = None
+    filled_txt.value = None
+    mail_txt.value = None
+    subject_txt.value = None
+    msg_txt.value = None
+    phone_txt.value = None
+    name_txt.value = None
+    lastname_txt.value = None
+    org_txt.value = None
+    pos_txt.value = None
+    work_phone_txt.value = None
+    priv_phone_txt.value = None
+    work_fax_txt.value = None
+    priv_fax_txt.value = None
+    street_txt.value = None
+    zip_txt.value = None
+    city_txt.value = None
+    state_txt.value = None
+    country_txt.value = None
+    nickname_txt.value = None
+    latitude_txt.value = None
+    longitude_txt.value = None
+    ssid_txt.value = None
+    pass_txt.value = None
+    title_txt.value = None
+    location_txt.value = None
+    app_txt.value = None
+    crypto_address_txt.value = None
+    amount_txt.value = None
+    id_txt.value = None
+    item_name_txt.value = None
+    item_id_txt.value = None
+    price_txt.value = None
+    currency_txt.value = None
+    ship_txt.value = None
+    tax_txt.value = None
+    
+def card_pages():
+    reset_text()
+    phone_txt.width = 360
+    mail_txt.width = 360
+    url_txt.width = 360

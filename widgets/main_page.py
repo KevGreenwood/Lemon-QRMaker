@@ -54,6 +54,8 @@ class App(ft.Row):
         border_txt.on_change = self.regenerate_preview
         fore_color_txt.on_change = self.regenerate_preview
         back_color_txt.on_change = self.regenerate_preview
+        thanks_url_txt.on_change = self.regenerate_preview
+        cancel_url_txt.on_change = self.regenerate_preview
         
         """ --- Dropdown --- """
         vcard_ver.on_change = self.regenerate_preview
@@ -259,39 +261,37 @@ class App(ft.Row):
     def update(self, e):
         match tabs_widget.selected_index:
             case 0:
-                url_txt.value = "https://github.com/KevGreenwood"
+                reset_text(True)
                 self.cont.content = url_txt
                 back.visible = False
 
             case 1:
-                filled_txt.value = ""
+                reset_text()
                 filled_txt.label = "Write your text here"
                 self.cont.content = filled_txt
 
             case 2:
-                mail_txt.value = ""
-                subject_txt.value = ""
+                reset_text()
                 self.cont.content = ft.Column([mail_txt, subject_txt, msg_txt])
 
             case 3:
-                phone_txt.value = ""
+                reset_text()
                 self.cont.content = phone_txt
 
             case 4:
-                phone_txt.value = ""
+                reset_text()
                 self.cont.content = ft.Column([phone_txt, msg_txt])
                 forward.visible = True
                 
             case 5:
+                reset_text()
                 whatsapp_icon.color = ft.colors.PRIMARY
-                phone_txt.value = ""
                 self.cont.content = ft.Column([phone_txt, msg_txt])
                 forward.visible = True
 
             case 6:
-                phone_txt.width = 360
-                mail_txt.width = 360
-                url_txt.width = 360
+                card_pages()
+                reset_drop()
                 self.cont.content = ft.Column(
                     [
                         vcard_ver,
@@ -307,6 +307,7 @@ class App(ft.Row):
                 )
 
             case 7:
+                card_pages()
                 self.cont.content = ft.Column(
                     [
                         ft.Row([name_txt, lastname_txt]),
@@ -321,14 +322,12 @@ class App(ft.Row):
                 )
 
             case 8:
-                latitude_txt.value = ""
-                longitude_txt.value = ""
+                reset_text()
                 self.cont.content = ft.Row([latitude_txt, longitude_txt])
 
             case 9:
-                encrypt_drop.value = ""
-                pass_txt.value = ""
-                encrypt_drop.value = "WPA/WPA2"
+                reset_text()
+                reset_drop()
                 self.cont.content = ft.Column(
                     [
                         ssid_txt,
@@ -353,22 +352,29 @@ class App(ft.Row):
             
 
             case 11:
+                reset_text()
                 self.cont.content = ft.Column([app_txt])
 
             case 12:
+                reset_text(True)
                 self.cont.content = ft.Column([title_txt, url_txt])
 
             case 13:
+                reset_text()
+                reset_drop()
                 self.cont.content = ft.Column(
                     [
                         ft.Row([payment_drop, mail_txt]),
                         ft.Row([item_name_txt, item_id_txt]),
                         ft.Row([price_txt, currency_txt]),
                         ft.Row([ship_txt, tax_txt]),
+                        ft.Row([thanks_url_txt, cancel_url_txt])
                     ]
                 )
 
             case 14:
+                reset_text()
+                reset_drop()
                 forward.visible = False
                 self.cont.content = ft.Column(
                     [
@@ -403,20 +409,28 @@ class App(ft.Row):
                 if vcard_ver.value == "Version 3":
                     vcard_v3_txt = f"BEGIN:VCARD\nVERSION:3.0\nN:{lastname_txt.value};{name_txt.value}\nFN:{name_txt.value} {lastname_txt.value}\nTITLE:{pos_txt.value}\nORG:{org_txt.value}\nURL:{url_txt.value}\nEMAIL;TYPE=INTERNET:{mail_txt.value}\nTEL;TYPE=voice,work,pref:{work_phone_txt.value}\nTEL;TYPE=voice,home,pref:{priv_phone_txt.value}\nTEL;TYPE=voice,cell,pref:{phone_txt.value}\nTEL;TYPE=fax,work,pref:{work_fax_txt.value}\nTEL;TYPE=fax,home,pref:{priv_fax_txt.value}\nADR:;;{street_txt.value};{city_txt.value};{state_txt.value};{zip_txt.value};{country_txt.value}\nEND:VCARD"
                 else:
-                    vcard_v3_txt = f"BEGIN:VCARD\nVERSION:2.1\nN:{lastname_txt.value};{name_txt.value}\nTITLE:{pos_txt.value}\nORG:{org_txt.value}\nURL:{url_txt.value}\nEMAIL;TYPE=INTERNET:{mail_txt.value}\nTEL;WORK;VOICE:{work_phone_txt.value}\nTEL;HOME;VOICE:{priv_phone_txt.value}\nTEL;CELL:{phone_txt.value}\nTEL;WORK;FAX:{work_fax_txt.value}\nTEL;HOME;FAX:{priv_fax_txt.value}\nADR:;;{street_txt.value};{city_txt.value};{state_txt.value};{zip_txt.value};{country_txt.value}\nEND:VCARD"
-
+                    vcard_v3_txt = f"BEGIN:VCARD\nVERSION:2.1\nN:{lastname_txt.value};{name_txt.value}\nTITLE:{pos_txt.value}\nORG:{org_txt.value}\nURL:{url_txt.value}\nEMAIL;TYPE=INTERNET:{mail_txt.value}\nTEL;WORK;VOICE:{work_phone_txt.value}\nTEL;HOME;VOICE:{priv_phone_txt.value}\nTEL;CELL:{phone_txt.value}\nTEL;WORK;FAX:{work_fax_txt.value}\nTEL;HOME;FAX:{priv_fax_txt.value}\nADR:;;{street_txt.value};{city_txt.value};{state_txt.value};{zip_txt.value};{country_txt.value}\nEND:VCARD"                
+            
             case 8:
-                if float(latitude_txt.value) > 90:
-                    latitude_txt.value = 90
-                if float(latitude_txt.value) < -90:
-                    latitude_txt.value = -90
-                latitude_txt.update()
-
-                if float(longitude_txt.value) > 180:
-                    longitude_txt.value = 180
-                if float(longitude_txt.value) < -180:
-                    longitude_txt.value = -180
-                longitude_txt.update()
+                try:
+                    latitude = float(latitude_txt.value)
+                    if latitude > 90:
+                        latitude_txt.value = "90"
+                    if latitude < -90:
+                        latitude_txt.value = "-90"
+                    latitude_txt.update()
+                except ValueError as e:
+                    print(f"Latitude: {e}")
+                    
+                try:
+                    longitude = float(longitude_txt.value)
+                    if longitude > 180:
+                        longitude_txt.value = "180"
+                    if longitude < -180:
+                        longitude_txt.value = "-180"
+                    longitude_txt.update()
+                except ValueError as e:
+                    print(f"Longitude: {e}")
 
             case 9:
                 wifi_encrypt_map = {"None": "nopass", "WEP": "WEP", "WPA/WPA2": "WPA"}
@@ -452,8 +466,8 @@ class App(ft.Row):
             9: f"WIFI:S:{ssid_txt.value};T:{wifi_encrypt};P:{pass_txt.value};H:{network_hide};;",
             10: f"BEGIN:VEVENT\nUID:{url_txt.value}\nORGANIZER:\nSUMMARY:\nLOCATION:\nDTSTART:\nDTEND:\nEND:VEVENT",
             11: f"market://details?id={app_txt.value}",
-            12: f"MEBKM:TITLE:{title_txt};URL:{url_txt.value};;",
-            13: "https://www.paypal.com/cgi-bin/webscr?business={}&cmd=_xclick&currency_code={}&amount={}&item_name={}&return={}&cancel_return={}",
+            12: f"MEBKM:TITLE:{title_txt.value};URL:{url_txt.value};;",
+            13: f"https://www.paypal.com/cgi-bin/webscr?business={mail_txt.value}&cmd=_xclick&currency_code={currency_txt.value}&amount={price_txt.value}&item_name={item_name_txt.value}&return={thanks_url_txt.value}&cancel_return={cancel_url_txt.value}",
             14: f"{crypto_currency}:{id_txt.value}?amount={amount_txt.value}&message={msg_txt.value}",
         }
         self.qr.data = qr_data_formats.get(tabs_widget.selected_index, None)
