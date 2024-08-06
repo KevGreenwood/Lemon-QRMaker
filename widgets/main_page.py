@@ -3,7 +3,7 @@ from widgets.common.TextField import *
 from widgets.common.Tab import *
 from widgets.common.Dropdown import *
 from widgets.common.Checkbox import *
-from datetime import date
+from widgets.common.DateTime import *
 
 
 class App(ft.Row):
@@ -68,31 +68,12 @@ class App(ft.Row):
         hidden_check.on_change = self.regenerate_preview
         ver_auto_box.on_change = self.switch_version
         #custom_eye = self.regenerate_preview
-                
+        
+   
         # ----- REWORK NEEDED -----
-        self.date_picker = ft.DatePicker(on_change=self.regenerate_preview)
-        self.time_picker = ft.TimePicker(on_change=self.regenerate_preview)
-
-        self.start_date = ft.TextField(
-            label="Event Start Date",
-            on_change=self.regenerate_preview,
-            read_only=True,
-        )
-        self.start_time = ft.TextField(
-            label="Event Start Time",
-            on_change=self.regenerate_preview,
-            read_only=True,
-        )
-
-        self.end_date = ft.TextField(
-            label="Event End Date",
-            on_change=self.regenerate_preview,
-            read_only=True,
-        )
-        self.end_time = ft.TextField(
-            label="Event End Time",
-            on_change=self.regenerate_preview,
-            read_only=True,
+        start_date.on_click = lambda e: self.page.open(
+            ft.CupertinoDatePicker(date_picker_mode=ft.CupertinoDatePickerMode.DATE_AND_TIME,
+        on_change=self.datetime_picker(0))
         )
         # ------------------------------------
 
@@ -168,6 +149,11 @@ class App(ft.Row):
         tabs_widget.on_change = self.update
         back.on_click = self.go_back
         forward.on_click = self.go_forward
+    
+    def datetime_picker(self, type: int):
+        if type == 0:
+            current_start_date.value == e.control.value.strftime('%Y-%m-%d %H:%M')
+            self.update()
     
     # Custom ft.Tabs
     def go_back(self, e):
@@ -260,18 +246,13 @@ class App(ft.Row):
                     ]
                 )
                         
-            case 15:
-                url_txt.value = ""
-                location_txt.value = ""
-                #self.start_date.value = self.end_txt.value = date.today()
-                self.start_date_cont = ft.Container(self.start_date, on_click=lambda _: self.set_start_date())
-                start_time_cont = ft.Container(self.start_time, on_click=lambda _: self.time_picker.pick_time())
-                end_date_cont = ft.Container(
-                    self.end_date, on_click=lambda _: self.pick_time_date()
-                )
-
+            case 10:
+                reset_text()
                 self.cont.content = ft.Column(
-                    [title_txt, location_txt, ft.Row([self.start_date_cont, start_time_cont]), end_date_cont]
+                    [title_txt, 
+                     location_txt, 
+                     ft.Row([start_date, end_date]), 
+                    ]
                 )
             
             case 11:
@@ -384,7 +365,7 @@ class App(ft.Row):
             4: f"SMSTO:{phone_txt.value}:{msg_txt.value}",
             5: f"https://wa.me/{phone_txt.value}/?text={msg_txt.value}",
             6: vcard_txt,
-            7: f"MECARD:N:{lastname_txt.value},{name_txt.value};NICKNAME:{nickname_txt.value};TEL:{work_phone_txt.value};TEL:{priv_phone_txt.value};TEL:{phone_txt.value};EMAIL:{mail_txt.value};BDAY:;NOTE:{filled_txt.value};ADR:,,{street_txt.value},{city_txt.value},{state_txt.value},{zip_txt.value},{country_txt.value};;",
+            7: f"MECARD:N:{lastname_txt.value},{name_txt.value};NICKNAME:{nickname_txt.value};TEL:{work_phone_txt.value};TEL:{priv_phone_txt.value};TEL:{phone_txt.value};EMAIL:{mail_txt.value};BDAY:;URL:{url_txt.value}NOTE:{filled_txt.value};ADR:,,{street_txt.value},{city_txt.value},{state_txt.value},{zip_txt.value},{country_txt.value};;",
             8: f"https://maps.google.com/local?q={latitude_txt.value},{longitude_txt.value}",
             9: f"WIFI:S:{ssid_txt.value};T:{wifi_encrypt};P:{pass_txt.value};H:{network_hide};;",
             10: f"BEGIN:VEVENT\nUID:{url_txt.value}\nORGANIZER:\nSUMMARY:\nLOCATION:\nDTSTART:\nDTEND:\nEND:VEVENT",
@@ -453,8 +434,8 @@ class App(ft.Row):
             print(f"Image saved in {e.path}")
 
             self.page.snack_bar = ft.SnackBar(
-                content=ft.ft.Text(f"Image saved in {e.path}"),
-                open=True,
+                ft.ft.Text(f"Image saved in {e.path}"),
+                True,
                 bgcolor=ft.colors.GREEN,
             )
             self.page.update()
@@ -472,13 +453,11 @@ class App(ft.Row):
                     height=650,
                     scroll=ft.ScrollMode.ADAPTIVE,
                 ),
-                self.right,
+                self.right
             ],
-            alignment=ft.MainAxisAlignment.CENTER,
-            vertical_alignment=ft.CrossAxisAlignment.START,
+            ft.MainAxisAlignment.CENTER, ft.CrossAxisAlignment.START
         )
 
     def did_mount(self):
-        self.page.overlay.append(ft.Column([self.date_picker, self.time_picker]))
         self.page.overlay.extend([self.save_file_dialog, self.pick_files_dialog])
         self.page.update()

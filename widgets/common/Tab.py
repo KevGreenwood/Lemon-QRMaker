@@ -3,7 +3,7 @@ import flet as ft
 def create_tab(icon: ft.icons, text: str):
     return ft.Tab(
         tab_content=ft.Column(
-            controls=[ft.Icon(icon), ft.Text(text)],
+            [ft.Icon(icon), ft.Text(text)],
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
             spacing=0
         )
@@ -43,25 +43,19 @@ tabs = [
     create_tab(ft.icons.CURRENCY_BITCOIN, "Bitcoin")
 ]
 
-tabs_widget = ft.Tabs(
-    tabs=tabs,
-    selected_index=0
-)
+tabs_widget = ft.Tabs(tabs, 0)
 
 # Custom ft.Tab
 back = ft.IconButton(
-    icon=ft.icons.ARROW_BACK_IOS,
-    icon_color=ft.colors.WHITE,
+    ft.icons.ARROW_BACK_IOS,
+    ft.colors.WHITE,
     visible=False
 )
 
-forward = ft.IconButton(
-    icon=ft.icons.ARROW_FORWARD_IOS,
-    icon_color=ft.colors.WHITE
-)
+forward = ft.IconButton(ft.icons.ARROW_FORWARD_IOS, ft.colors.WHITE)
 
 tab_row = ft.Row(
-    controls=[
+    [
         back,
         ft.Column(controls=[tabs_widget], expand=True),
         forward
