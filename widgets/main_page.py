@@ -97,149 +97,73 @@ class App(ft.Row):
         # ------------------------------------
 
         self.cont = ft.Container(url_txt, padding=10, width=750)
-        self.tabs_widget_container = ft.Container(
-            ft.Column([tab_row, self.cont]), width=770, alignment=ft.alignment.top_left
-        )
+        self.tabs_widget_container = ft.Container(ft.Column([tab_row, self.cont]), alignment=ft.alignment.top_left, width=770)
 
         # --- Size Section ---
-        self.version_slider = ft.Slider(
-            min=1,
-            max=40,
-            divisions=39,
-            label="{value}",
-            value=1,
-            disabled=True,
-            on_change=self.regenerate_preview,
-        )
+        self.version_slider = ft.Slider(1, "{value}", 1, 40, 39, on_change=self.regenerate_preview, disabled=True)
         
         self.size_row = ft.Row([self.version_slider, ver_auto_box])
         
-        self.size_panel = ft.ExpansionPanelList(
-            [
-                ft.ExpansionPanel(
-                    header=ft.ListTile(title=ft.Text("SET SIZE")),
-                    content=ft.Container(ft.Column([self.size_row, border_txt]), padding=20),
-                )
-            ]
-        )
+        self.size_panel = ft.ExpansionPanelList([ft.ExpansionPanel(ft.ListTile(title=ft.Text("SET SIZE")),
+                            ft.Container(ft.Column([self.size_row, border_txt]), 20),)])
 
         # --- Color Section ---
-        self.color_radio_group = ft.RadioGroup(
-            content=ft.Row(
+        self.color_radio_group = ft.RadioGroup(ft.Row(
                 [
-                    ft.Radio(value="normal", label="Single Color"),
-                    ft.Radio(value="gradient", label="Color Gradient")
+                    ft.Radio("Single Color", value="normal"),
+                    ft.Radio("Color Gradient", value="gradient")
                 ]
-            ), value="normal"
+            ), "normal"
         )
         
         self.fore_color_row = ft.Row([fore_color_txt])
-        self.color_column = ft.Column(
-            [self.color_radio_group, custom_eye, self.fore_color_row, back_color_txt]
-        )
+        self.color_column = ft.Column([self.color_radio_group, custom_eye, self.fore_color_row, back_color_txt])
         
-        self.color_panel = ft.ExpansionPanelList(
-            [
-                ft.ExpansionPanel(
-                    header=ft.ListTile(title=ft.Text("SET COLORS")), content=ft.Container(self.color_column, padding=20))
-            ]
-        )
+        self.color_panel = ft.ExpansionPanelList([ft.ExpansionPanel(ft.ListTile(title=ft.Text("SET COLORS")), 
+                            ft.Container(self.color_column, 20))])
 
         # --- Logo Section ---
         self.pick_files_dialog = ft.FilePicker(on_result=self.pick_files_result)
-        self.open_logo = ft.ElevatedButton(
-            "Upload Logo",
-            icon=ft.icons.UPLOAD_FILE_ROUNDED,
-            on_click=lambda _: self.pick_files_dialog.pick_files(
-                allow_multiple=False, allowed_extensions=["png", "jpeg", "jpg", "svg", "webp"]
-            ),
-        )
-        self.delete_logo = ft.ElevatedButton(
-            "Delete Logo",
-            icon=ft.icons.REMOVE_CIRCLE_OUTLINE_ROUNDED,
-            on_click=self.remove_logo,
-            disabled=True,
-        )
-        self.logo = ft.Image(src="Assets/logo.jpg", width=250, height=250)
+        self.open_logo = ft.ElevatedButton("Upload Logo", ft.icons.UPLOAD_FILE_ROUNDED,
+            on_click=lambda _: self.pick_files_dialog.pick_files(allow_multiple=False, allowed_extensions=["png", "jpeg", "jpg", "svg", "webp"]))
+        self.delete_logo = ft.ElevatedButton("Delete Logo", ft.icons.REMOVE_CIRCLE_OUTLINE_ROUNDED,
+                            on_click=self.remove_logo, disabled=True)
+        self.logo = ft.Image("Assets/logo.jpg", width=250, height=250)
         
-        self.logo_row = ft.Row(
-            [self.open_logo, self.delete_logo], alignment=ft.MainAxisAlignment.CENTER, height=50
-        )
-        self.logo_column = ft.Column(
-            controls=[self.logo, self.logo_row], horizontal_alignment=ft.CrossAxisAlignment.CENTER
-        )
-        self.logo_panel = ft.ExpansionPanelList(
-            [
-                ft.ExpansionPanel(
-                    header=ft.ListTile(title=ft.Text("ADD LOGO IMAGE")),
-                    content=ft.Container(self.logo_column, padding=20),
-                )
-            ]
-        )
+        self.logo_row = ft.Row([self.open_logo, self.delete_logo], ft.MainAxisAlignment.CENTER, height=50)
+        self.logo_column = ft.Column([self.logo, self.logo_row], horizontal_alignment=ft.CrossAxisAlignment.CENTER)
+        
+        self.logo_panel = ft.ExpansionPanelList([ft.ExpansionPanel(ft.ListTile(title=ft.Text("ADD LOGO IMAGE")),
+                            ft.Container(self.logo_column, 20))])
 
-        self.design_panel = ft.ExpansionPanelList(
-            [
-                ft.ExpansionPanel(
-                    header=ft.ListTile(title=ft.Text("CUSTOM DESIGN")),
-                )
-            ]
-        )
+        self.design_panel = ft.ExpansionPanelList([ft.ExpansionPanel(ft.ListTile(title=ft.Text("CUSTOM DESIGN")),
+                            ft.Container( padding=20))])
         
-        self.advanced_panel = ft.ExpansionPanelList(
-            [
-                ft.ExpansionPanel(
-                    header=ft.ListTile(title=ft.Text("ADVANCED SETTINGS")),
-                    content=ft.Container(correction_drop, padding=20)
-                )
-            ]
-        )
+        self.advanced_panel = ft.ExpansionPanelList([ft.ExpansionPanel(ft.ListTile(title=ft.Text("ADVANCED SETTINGS")),
+                            ft.Container(correction_drop, 20))])
 
         # --- Right Layout ---
         self.save_file_dialog = ft.FilePicker(on_result=self.save_file_result)
-        self.save_btn = ft.ElevatedButton(
-            "Save",
-            icon=ft.icons.SAVE,
-            on_click=lambda _: self.save_file_dialog.save_file(
-                file_type=ft.FilePickerFileType.IMAGE
-            ),
-        )
-        self.qr_size_slider = ft.Slider(
-            min=10,
-            max=100,
-            divisions=9,
-            label="{value}",
-            value=50,
-            on_change=self.update_scale_txt,
-        )
+        self.save_btn = ft.ElevatedButton("Save", ft.icons.SAVE,
+                            on_click=lambda _: self.save_file_dialog.save_file(file_type=ft.FilePickerFileType.IMAGE))
+        
+        self.qr_size_slider = ft.Slider(50, "{value}", 10, 100, 9, on_change=self.update_scale_txt)
 
         self.qr_preview = ft.Image(src_base64=self.build_qr(), width=400, height=400)
-        self.prev_container = ft.Container(
-            alignment=ft.alignment.top_center, content=self.qr_preview
-        )
+        self.prev_container = ft.Container(self.qr_preview, alignment=ft.alignment.top_center)
 
-        self.scale_txt = ft.Text(value=self.qr.get_res(), weight=ft.FontWeight.BOLD)
-        self.size_row = ft.Row(
-            [ft.Text("Low Quality"), self.scale_txt, ft.Text("High Quality")],
-            alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
-        )
-        self.right = ft.Container(
-            ft.Column(
-                [
-                    self.prev_container,
-                    self.qr_size_slider,
-                    self.size_row,
-                    self.save_btn,
-                ],
-                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-            ),
-            bgcolor="white",
-            width=500,
-            height=1500
-        )
+        self.scale_txt = ft.Text(self.qr.get_res(), weight=ft.FontWeight.BOLD)
+        self.size_row = ft.Row([ft.Text("Low Quality"), self.scale_txt, ft.Text("High Quality")],
+                            ft.MainAxisAlignment.SPACE_BETWEEN)
+        self.right = ft.Container(ft.Column(
+            [
+                self.prev_container, self.qr_size_slider, 
+                self.size_row, self.save_btn
+            ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
+            bgcolor="white", width=500, height=1500)
 
-        self.main = ft.Container(
-            ft.Column([self.size_panel, self.color_panel, self.logo_panel, self.design_panel, self.advanced_panel]), width=750
-        )
+        self.main = ft.Container(ft.Column([self.size_panel, self.color_panel, self.logo_panel,
+                                            self.design_panel, self.advanced_panel]), width=750)
         
         tabs_widget.on_change = self.update
         back.on_click = self.go_back
@@ -258,7 +182,7 @@ class App(ft.Row):
             forward.icon_color = ft.colors.ON_BACKGROUND
         self.update(e)
 
-    def update(self, e):
+    def __manage_tabs(self):
         match tabs_widget.selected_index:
             case 0:
                 reset_text(True)
@@ -350,7 +274,6 @@ class App(ft.Row):
                     [title_txt, location_txt, ft.Row([self.start_date_cont, start_time_cont]), end_date_cont]
                 )
             
-
             case 11:
                 reset_text()
                 self.cont.content = ft.Column([app_txt])
@@ -388,10 +311,12 @@ class App(ft.Row):
 
             case _:
                 forward.visible = True
+    
+    def update(self, e):
+        self.__manage_tabs()
 
         if tabs_widget.selected_index != 5:
             whatsapp_icon.color = ft.colors.ON_BACKGROUND
-        
         if tabs_widget.selected_index > 0:
             back.visible = True
 
@@ -401,15 +326,15 @@ class App(ft.Row):
     def build_qr(self) -> str:
         wifi_encrypt: str = ""
         network_hide: str = ""
-        vcard_v3_txt: str = ""
+        vcard_txt: str = ""
         crypto_currency: str = ""
 
         match tabs_widget.selected_index:
             case 6:
                 if vcard_ver.value == "Version 3":
-                    vcard_v3_txt = f"BEGIN:VCARD\nVERSION:3.0\nN:{lastname_txt.value};{name_txt.value}\nFN:{name_txt.value} {lastname_txt.value}\nTITLE:{pos_txt.value}\nORG:{org_txt.value}\nURL:{url_txt.value}\nEMAIL;TYPE=INTERNET:{mail_txt.value}\nTEL;TYPE=voice,work,pref:{work_phone_txt.value}\nTEL;TYPE=voice,home,pref:{priv_phone_txt.value}\nTEL;TYPE=voice,cell,pref:{phone_txt.value}\nTEL;TYPE=fax,work,pref:{work_fax_txt.value}\nTEL;TYPE=fax,home,pref:{priv_fax_txt.value}\nADR:;;{street_txt.value};{city_txt.value};{state_txt.value};{zip_txt.value};{country_txt.value}\nEND:VCARD"
+                    vcard_txt = f"BEGIN:VCARD\nVERSION:3.0\nN:{lastname_txt.value};{name_txt.value}\nFN:{name_txt.value} {lastname_txt.value}\nTITLE:{pos_txt.value}\nORG:{org_txt.value}\nURL:{url_txt.value}\nEMAIL;TYPE=INTERNET:{mail_txt.value}\nTEL;TYPE=voice,work,pref:{work_phone_txt.value}\nTEL;TYPE=voice,home,pref:{priv_phone_txt.value}\nTEL;TYPE=voice,cell,pref:{phone_txt.value}\nTEL;TYPE=fax,work,pref:{work_fax_txt.value}\nTEL;TYPE=fax,home,pref:{priv_fax_txt.value}\nADR:;;{street_txt.value};{city_txt.value};{state_txt.value};{zip_txt.value};{country_txt.value}\nEND:VCARD"
                 else:
-                    vcard_v3_txt = f"BEGIN:VCARD\nVERSION:2.1\nN:{lastname_txt.value};{name_txt.value}\nTITLE:{pos_txt.value}\nORG:{org_txt.value}\nURL:{url_txt.value}\nEMAIL;TYPE=INTERNET:{mail_txt.value}\nTEL;WORK;VOICE:{work_phone_txt.value}\nTEL;HOME;VOICE:{priv_phone_txt.value}\nTEL;CELL:{phone_txt.value}\nTEL;WORK;FAX:{work_fax_txt.value}\nTEL;HOME;FAX:{priv_fax_txt.value}\nADR:;;{street_txt.value};{city_txt.value};{state_txt.value};{zip_txt.value};{country_txt.value}\nEND:VCARD"                
+                    vcard_txt = f"BEGIN:VCARD\nVERSION:2.1\nN:{lastname_txt.value};{name_txt.value}\nTITLE:{pos_txt.value}\nORG:{org_txt.value}\nURL:{url_txt.value}\nEMAIL;TYPE=INTERNET:{mail_txt.value}\nTEL;WORK;VOICE:{work_phone_txt.value}\nTEL;HOME;VOICE:{priv_phone_txt.value}\nTEL;CELL:{phone_txt.value}\nTEL;WORK;FAX:{work_fax_txt.value}\nTEL;HOME;FAX:{priv_fax_txt.value}\nADR:;;{street_txt.value};{city_txt.value};{state_txt.value};{zip_txt.value};{country_txt.value}\nEND:VCARD"                
             
             case 8:
                 try:
@@ -435,10 +360,8 @@ class App(ft.Row):
             case 9:
                 wifi_encrypt_map = {"None": "nopass", "WEP": "WEP", "WPA/WPA2": "WPA"}
                 wifi_encrypt = wifi_encrypt_map.get(encrypt_drop.value, None)
-                if hidden_check.value:
-                    network_hide = "true"
-                else:
-                    network_hide = "false"
+                network_hide = "true" if hidden_check.value else "false"
+
 
             case 10:
                 pass
@@ -460,7 +383,7 @@ class App(ft.Row):
             3: f"tel:{phone_txt.value}",
             4: f"SMSTO:{phone_txt.value}:{msg_txt.value}",
             5: f"https://wa.me/{phone_txt.value}/?text={msg_txt.value}",
-            6: vcard_v3_txt,
+            6: vcard_txt,
             7: f"MECARD:N:{lastname_txt.value},{name_txt.value};NICKNAME:{nickname_txt.value};TEL:{work_phone_txt.value};TEL:{priv_phone_txt.value};TEL:{phone_txt.value};EMAIL:{mail_txt.value};BDAY:;NOTE:{filled_txt.value};ADR:,,{street_txt.value},{city_txt.value},{state_txt.value},{zip_txt.value},{country_txt.value};;",
             8: f"https://maps.google.com/local?q={latitude_txt.value},{longitude_txt.value}",
             9: f"WIFI:S:{ssid_txt.value};T:{wifi_encrypt};P:{pass_txt.value};H:{network_hide};;",
@@ -472,18 +395,9 @@ class App(ft.Row):
         }
         self.qr.data = qr_data_formats.get(tabs_widget.selected_index, None)
 
-        if ver_auto_box.value:
-            self.qr.version = None
-        else:
-            self.qr.version = int(self.version_slider.value)
-
+        self.qr.version = None if ver_auto_box.value else int(self.version_slider.value)
         self.qr.box_size = int(self.qr_size_slider.value)
-
-        if border_txt.value == "":
-            self.qr.border = 4
-        else:
-            self.qr.border = int(border_txt.value)
-
+        self.qr.border = 4 if border_txt.value == "" else int(border_txt.value)
         self.qr.back_color = back_color_txt.value
         self.qr.main_color = fore_color_txt.value
         
