@@ -69,11 +69,25 @@ class App(ft.Row):
         ver_auto_box.on_change = self.switch_version
         #custom_eye = self.regenerate_preview
         
-   
-        # ----- REWORK NEEDED -----
+        start_date_picker.on_change = self.get_start_datetime
+        end_date_picker.on_change = self.get_end_datetime
+
+
+
+        
         start_date.on_click = lambda e: self.page.open(
-            ft.CupertinoDatePicker(date_picker_mode=ft.CupertinoDatePickerMode.DATE_AND_TIME,
-        on_change=self.datetime_picker(0))
+            ft.CupertinoBottomSheet(
+                start_date_picker,
+                height=216,
+                padding=ft.padding.only(top=6)
+            )
+        )
+        end_date.on_click = lambda e: self.page.open(
+            ft.CupertinoBottomSheet(
+                end_date_picker,
+                height=216,
+                padding=ft.padding.only(top=6)
+            )
         )
         # ------------------------------------
 
@@ -150,10 +164,17 @@ class App(ft.Row):
         back.on_click = self.go_back
         forward.on_click = self.go_forward
     
-    def datetime_picker(self, type: int):
-        if type == 0:
-            current_start_date.value == e.control.value.strftime('%Y-%m-%d %H:%M')
-            self.update()
+    def get_start_datetime(self, e):
+        current_start_date = e.control.value.strftime('%Y/%m/%d %H:%M')
+        current_start_date_Text.value = current_start_date
+        self.regenerate_preview(e)
+        self.update(e)
+
+    def get_end_datetime(self, e):
+        current_end_date = e.control.value.strftime('%Y/%m/%d %H:%M')
+        current_end_date_Text.value = current_end_date
+        self.regenerate_preview(e)
+        self.update(e)
     
     # Custom ft.Tabs
     def go_back(self, e):
@@ -309,6 +330,8 @@ class App(ft.Row):
         network_hide: str = ""
         vcard_txt: str = ""
         crypto_currency: str = ""
+        start_dt: str = None
+        end_dt: str = None
 
         match tabs_widget.selected_index:
             case 6:
@@ -343,9 +366,9 @@ class App(ft.Row):
                 wifi_encrypt = wifi_encrypt_map.get(encrypt_drop.value, None)
                 network_hide = "true" if hidden_check.value else "false"
 
-
             case 10:
-                pass
+                start_dt = format(0)
+                end_dt = format(1)
 
             case 14:
                 crypto_currencies = {
@@ -368,7 +391,7 @@ class App(ft.Row):
             7: f"MECARD:N:{lastname_txt.value},{name_txt.value};NICKNAME:{nickname_txt.value};TEL:{work_phone_txt.value};TEL:{priv_phone_txt.value};TEL:{phone_txt.value};EMAIL:{mail_txt.value};BDAY:;URL:{url_txt.value}NOTE:{filled_txt.value};ADR:,,{street_txt.value},{city_txt.value},{state_txt.value},{zip_txt.value},{country_txt.value};;",
             8: f"https://maps.google.com/local?q={latitude_txt.value},{longitude_txt.value}",
             9: f"WIFI:S:{ssid_txt.value};T:{wifi_encrypt};P:{pass_txt.value};H:{network_hide};;",
-            10: f"BEGIN:VEVENT\nUID:{url_txt.value}\nORGANIZER:\nSUMMARY:\nLOCATION:\nDTSTART:\nDTEND:\nEND:VEVENT",
+            10: f"BEGIN:VEVENT\nUID:{title_txt.value}\nORGANIZER:\nSUMMARY:\nLOCATION:{location_txt.value}\nDTSTART:{start_dt}\nDTEND:{end_dt}\nEND:VEVENT",
             11: f"market://details?id={app_txt.value}",
             12: f"MEBKM:TITLE:{title_txt.value};URL:{url_txt.value};;",
             13: f"https://www.paypal.com/cgi-bin/webscr?business={mail_txt.value}&cmd=_xclick&currency_code={currency_txt.value}&amount={price_txt.value}&item_name={item_name_txt.value}&return={thanks_url_txt.value}&cancel_return={cancel_url_txt.value}",
@@ -439,11 +462,6 @@ class App(ft.Row):
                 bgcolor=ft.colors.GREEN,
             )
             self.page.update()
-
-    def set_start_date(self):
-        self.date_picker.pick_date()
-        self.start_date.value = self.date_picker.value
-        self.page.update()
 
     def build(self):
         return ft.Row(
