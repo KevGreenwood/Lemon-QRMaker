@@ -49,7 +49,7 @@ tabs_widget = ft.Tabs(tabs, 0)
 back = ft.IconButton(
     ft.icons.ARROW_BACK_IOS,
     ft.colors.WHITE,
-    visible=False
+    disabled=True
 )
 
 forward = ft.IconButton(ft.icons.ARROW_FORWARD_IOS, ft.colors.WHITE)

@@ -14,6 +14,7 @@ class App(ft.Row):
         self.data: str = None
         self.start_datetime: str = None
         self.end_datetime: str = None
+        self.birthday: str = None
 
         """ --- TextField --- """
         url_txt.on_change = self.regenerate_preview
@@ -90,6 +91,9 @@ class App(ft.Row):
                 height=216,
                 padding=ft.padding.only(top=6)
             )
+        )
+        birthday_Button.on_click = lambda e: self.page.open(
+            ft.DatePicker(on_change=self.get_birthday)
         )
 
 
@@ -171,14 +175,20 @@ class App(ft.Row):
         self.start_datetime = e.control.value.strftime("%Y%m%dT%H%M")
         start_dt_Text.value = e.control.value.strftime('%Y/%m/%d %H:%M')
         self.regenerate_preview(e)
-        self.update(e)
+        start_dt_Text.update()
 
     def get_end_datetime(self, e):
         self.end_datetime = e.control.value.strftime("%Y%m%dT%H%M")
         end_dt_Text.value = e.control.value.strftime('%Y/%m/%d %H:%M')
         self.regenerate_preview(e)
-        self.update(e)
+        end_dt_Text.update()
     
+    def get_birthday(self, e):
+        self.birthday = e.control.value.strftime("%Y%m%d")
+        birthday_Text.value = e.control.value.strftime('%Y/%m/%d')
+        self.regenerate_preview(e)
+        birthday_Text.update()
+
     # Custom ft.Tabs
     def go_back(self, e):
         if tabs_widget.selected_index > 0:
@@ -187,7 +197,7 @@ class App(ft.Row):
         self.update(e)
 
     def go_forward(self, e):
-        if tabs_widget.selected_index < 12:
+        if tabs_widget.selected_index < 14:
             tabs_widget.selected_index += 1
             forward.icon_color = ft.colors.ON_BACKGROUND
         self.update(e)
@@ -197,7 +207,6 @@ class App(ft.Row):
             case 0:
                 reset_text(True)
                 self.cont.content = url_txt
-                back.visible = False
 
             case 1:
                 reset_text()
@@ -215,13 +224,11 @@ class App(ft.Row):
             case 4:
                 reset_text()
                 self.cont.content = ft.Column([phone_txt, msg_txt])
-                forward.visible = True
                 
             case 5:
                 reset_text()
                 whatsapp_icon.color = ft.colors.PRIMARY
                 self.cont.content = ft.Column([phone_txt, msg_txt])
-                forward.visible = True
 
             case 6:
                 card_pages()
@@ -248,7 +255,7 @@ class App(ft.Row):
                         ft.Row([nickname_txt, work_phone_txt]),
                         ft.Row([priv_phone_txt, phone_txt]),
                         ft.Row([mail_txt, url_txt]),
-                        ft.Row([street_txt]),
+                        ft.Row([street_txt, birthday_Button]),
                         ft.Row([zip_txt, city_txt]),
                         ft.Row([state_txt, country_txt]),
                         filled_txt,
@@ -305,7 +312,6 @@ class App(ft.Row):
             case 14:
                 reset_text()
                 reset_drop()
-                forward.visible = False
                 self.cont.content = ft.Column(
                     [
                         crypto_drop,
@@ -315,17 +321,22 @@ class App(ft.Row):
                         msg_txt,
                     ]
                 )
-
-            case _:
-                forward.visible = True
     
     def update(self, e):
         self.__manage_tabs()
 
         if tabs_widget.selected_index != 5:
             whatsapp_icon.color = ft.colors.ON_BACKGROUND
+            
         if tabs_widget.selected_index > 0:
-            back.visible = True
+            back.disabled = False
+        else:
+            back.disabled = True
+
+        if tabs_widget.selected_index < 14:
+            forward.disabled = False
+        else:
+            forward.disabled = True
 
         super().update()
 
@@ -387,7 +398,7 @@ class App(ft.Row):
             4: f"SMSTO:{phone_txt.value}:{msg_txt.value}",
             5: f"https://wa.me/{phone_txt.value}/?text={msg_txt.value}",
             6: vcard_txt,
-            7: f"MECARD:N:{lastname_txt.value},{name_txt.value};NICKNAME:{nickname_txt.value};TEL:{work_phone_txt.value};TEL:{priv_phone_txt.value};TEL:{phone_txt.value};EMAIL:{mail_txt.value};BDAY:;URL:{url_txt.value}NOTE:{filled_txt.value};ADR:,,{street_txt.value},{city_txt.value},{state_txt.value},{zip_txt.value},{country_txt.value};;",
+            7: f"MECARD:N:{lastname_txt.value},{name_txt.value};NICKNAME:{nickname_txt.value};TEL:{work_phone_txt.value};TEL:{priv_phone_txt.value};TEL:{phone_txt.value};EMAIL:{mail_txt.value};BDAY:{self.birthday};URL:{url_txt.value}NOTE:{filled_txt.value};ADR:,,{street_txt.value},{city_txt.value},{state_txt.value},{zip_txt.value},{country_txt.value};;",
             8: f"https://maps.google.com/local?q={latitude_txt.value},{longitude_txt.value}",
             9: f"WIFI:S:{ssid_txt.value};T:{wifi_encrypt};P:{pass_txt.value};H:{network_hide};;",
             10: f"BEGIN:VEVENT\nUID:{title_txt.value}\nORGANIZER:{organizer_txt.value}\nLOCATION:{location_txt.value}\nDTSTART:{self.start_datetime}\nDTEND:{self.end_datetime}\nSUMMARY:{summary_txt.value}\nEND:VEVENT",
@@ -404,6 +415,10 @@ class App(ft.Row):
         self.qr.back_color = back_color_txt.value
         self.qr.main_color = fore_color_txt.value
         
+        error_correction_map = {"Low": 0, "Medium": 1, "High": 2, "Very High": 3}
+        error_correction = error_correction_map.get(correction_drop.value, None)
+        self.qr.get_error_correction(error_correction)
+
         return self.qr.generate_preview()
 
     # --- Realtime Building ---
@@ -456,7 +471,7 @@ class App(ft.Row):
             print(f"Image saved in {e.path}")
 
             self.page.snack_bar = ft.SnackBar(
-                ft.ft.Text(f"Image saved in {e.path}"),
+                ft.Text(f"Image saved in {e.path}"),
                 True,
                 bgcolor=ft.colors.GREEN,
             )

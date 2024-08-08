@@ -22,11 +22,13 @@ class QRGenerator:
         self.logo_path: str = None
         self.final_qr: str = None
 
+        self.error_correction = None
+
     def __building_qr(self):
         if self.use_logo:
             self.qr = qrcode.QRCode(
                 version=self.version, 
-                error_correction=qrcode.constants.ERROR_CORRECT_H,
+                error_correction=self.error_correction,
                 box_size=self.box_size,
                 border=self.border
             )
@@ -64,4 +66,13 @@ class QRGenerator:
     def get_res(self) -> str:
         return f"{self.final_qr.size[0]} x {self.final_qr.size[1]}"
     
-    
+    def get_error_correction(self, index):
+        match index:
+            case 0:
+                self.error_correction = qrcode.constants.ERROR_CORRECT_L
+            case 1:
+                self.error_correction = qrcode.constants.ERROR_CORRECT_M
+            case 2:
+                self.error_correction = qrcode.constants.ERROR_CORRECT_Q
+            case 3:
+                self.error_correction = qrcode.constants.ERROR_CORRECT_H
