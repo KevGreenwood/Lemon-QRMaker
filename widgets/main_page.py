@@ -12,7 +12,8 @@ class App(ft.Row):
         
         self.qr = QRGenerator()
         self.data: str = None
-        self.start_time: str = None
+        self.start_datetime: str = None
+        self.end_datetime: str = None
 
         """ --- TextField --- """
         url_txt.on_change = self.regenerate_preview
@@ -41,6 +42,8 @@ class App(ft.Row):
         pass_txt.on_change = self.regenerate_preview
         title_txt.on_change = self.regenerate_preview
         location_txt.on_change = self.regenerate_preview
+        organizer_txt.on_change = self.regenerate_preview
+        summary_txt.on_change = self.regenerate_preview
         app_txt.on_change = self.regenerate_preview
         crypto_address_txt.on_change = self.regenerate_preview
         amount_txt.on_change = self.regenerate_preview
@@ -69,31 +72,31 @@ class App(ft.Row):
         ver_auto_box.on_change = self.switch_version
         #custom_eye = self.regenerate_preview
         
-        start_date_picker.on_change = self.get_start_datetime
-        end_date_picker.on_change = self.get_end_datetime
+        """ --- DatePicker --- """
+        start_dt_Picker.on_change = self.get_start_datetime
+        end_dt_Picker.on_change = self.get_end_datetime
 
 
-
-        
-        start_date.on_click = lambda e: self.page.open(
+        start_dt_Button.on_click = lambda e: self.page.open(
             ft.CupertinoBottomSheet(
-                start_date_picker,
+                start_dt_Picker,
                 height=216,
                 padding=ft.padding.only(top=6)
             )
         )
-        end_date.on_click = lambda e: self.page.open(
+        end_dt_Button.on_click = lambda e: self.page.open(
             ft.CupertinoBottomSheet(
-                end_date_picker,
+                end_dt_Picker,
                 height=216,
                 padding=ft.padding.only(top=6)
             )
         )
+
+
         # ------------------------------------
 
         self.cont = ft.Container(url_txt, padding=10, width=750)
         self.tabs_widget_container = ft.Container(ft.Column([tab_row, self.cont]), alignment=ft.alignment.top_left, width=770)
-
         # --- Size Section ---
         self.version_slider = ft.Slider(1, "{value}", 1, 40, 39, on_change=self.regenerate_preview, disabled=True)
         
@@ -165,14 +168,14 @@ class App(ft.Row):
         forward.on_click = self.go_forward
     
     def get_start_datetime(self, e):
-        current_start_date = e.control.value.strftime('%Y/%m/%d %H:%M')
-        current_start_date_Text.value = current_start_date
+        self.start_datetime = e.control.value.strftime("%Y%m%dT%H%M")
+        start_dt_Text.value = e.control.value.strftime('%Y/%m/%d %H:%M')
         self.regenerate_preview(e)
         self.update(e)
 
     def get_end_datetime(self, e):
-        current_end_date = e.control.value.strftime('%Y/%m/%d %H:%M')
-        current_end_date_Text.value = current_end_date
+        self.end_datetime = e.control.value.strftime("%Y%m%dT%H%M")
+        end_dt_Text.value = e.control.value.strftime('%Y/%m/%d %H:%M')
         self.regenerate_preview(e)
         self.update(e)
     
@@ -272,7 +275,9 @@ class App(ft.Row):
                 self.cont.content = ft.Column(
                     [title_txt, 
                      location_txt, 
-                     ft.Row([start_date, end_date]), 
+                     organizer_txt,
+                     summary_txt,
+                     ft.Row([start_dt_Button, end_dt_Button]), 
                     ]
                 )
             
@@ -330,8 +335,6 @@ class App(ft.Row):
         network_hide: str = ""
         vcard_txt: str = ""
         crypto_currency: str = ""
-        start_dt: str = None
-        end_dt: str = None
 
         match tabs_widget.selected_index:
             case 6:
@@ -366,10 +369,6 @@ class App(ft.Row):
                 wifi_encrypt = wifi_encrypt_map.get(encrypt_drop.value, None)
                 network_hide = "true" if hidden_check.value else "false"
 
-            case 10:
-                start_dt = format(0)
-                end_dt = format(1)
-
             case 14:
                 crypto_currencies = {
                     "Bitcoin": "bitcoin",
@@ -391,7 +390,7 @@ class App(ft.Row):
             7: f"MECARD:N:{lastname_txt.value},{name_txt.value};NICKNAME:{nickname_txt.value};TEL:{work_phone_txt.value};TEL:{priv_phone_txt.value};TEL:{phone_txt.value};EMAIL:{mail_txt.value};BDAY:;URL:{url_txt.value}NOTE:{filled_txt.value};ADR:,,{street_txt.value},{city_txt.value},{state_txt.value},{zip_txt.value},{country_txt.value};;",
             8: f"https://maps.google.com/local?q={latitude_txt.value},{longitude_txt.value}",
             9: f"WIFI:S:{ssid_txt.value};T:{wifi_encrypt};P:{pass_txt.value};H:{network_hide};;",
-            10: f"BEGIN:VEVENT\nUID:{title_txt.value}\nORGANIZER:\nSUMMARY:\nLOCATION:{location_txt.value}\nDTSTART:{start_dt}\nDTEND:{end_dt}\nEND:VEVENT",
+            10: f"BEGIN:VEVENT\nUID:{title_txt.value}\nORGANIZER:{organizer_txt.value}\nLOCATION:{location_txt.value}\nDTSTART:{self.start_datetime}\nDTEND:{self.end_datetime}\nSUMMARY:{summary_txt.value}\nEND:VEVENT",
             11: f"market://details?id={app_txt.value}",
             12: f"MEBKM:TITLE:{title_txt.value};URL:{url_txt.value};;",
             13: f"https://www.paypal.com/cgi-bin/webscr?business={mail_txt.value}&cmd=_xclick&currency_code={currency_txt.value}&amount={price_txt.value}&item_name={item_name_txt.value}&return={thanks_url_txt.value}&cancel_return={cancel_url_txt.value}",

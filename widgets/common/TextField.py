@@ -56,6 +56,8 @@ ssid_txt = CustomTextField("Network Name", hint_text="SSID")
 pass_txt = CustomTextField("Password", password=True, can_reveal_password=True)
 title_txt = CustomTextField("Title")
 location_txt = CustomTextField("Event Location")
+organizer_txt = CustomTextField("Organizer")
+summary_txt = CustomTextField("Summary")
 app_txt = CustomTextField("App package name", hint_text="Example: com.google.android.youtube")
 app_txt.helper_text="Search the Internet or use an app to find the package name."
 crypto_address_txt = CustomTextField("Receiver", hint_text="Bitcoin Address")
