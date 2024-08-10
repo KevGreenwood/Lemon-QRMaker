@@ -4,7 +4,7 @@ from widgets.common.Tab import *
 from widgets.common.Dropdown import *
 from widgets.common.Checkbox import *
 from widgets.common.DateTime import *
-
+from widgets.common.ColorPicker import *
 
 class App(ft.Row):
     def __init__(self):
@@ -78,6 +78,9 @@ class App(ft.Row):
         end_dt_Picker.on_change = self.get_end_datetime
 
 
+        confirm_text.on_click = lambda e: change_color(e, self.regenerate_preview)
+        d.on_dismiss = lambda e: change_color(e, self.regenerate_preview)
+
         start_dt_Button.on_click = lambda e: self.page.open(
             ft.CupertinoBottomSheet(
                 start_dt_Picker,
@@ -119,7 +122,7 @@ class App(ft.Row):
         )
         
         self.fore_color_row = ft.Row([fore_color_txt])
-        self.color_column = ft.Column([self.color_radio_group, custom_eye, self.fore_color_row, back_color_txt])
+        self.color_column = ft.Column([self.color_radio_group, custom_eye, self.fore_color_row, background_Button])
         
         self.color_panel = ft.ExpansionPanelList([ft.ExpansionPanel(ft.ListTile(title=ft.Text("SET COLORS")), 
                             ft.Container(self.color_column, 20))])
@@ -170,6 +173,7 @@ class App(ft.Row):
         tabs_widget.on_change = self.update
         back.on_click = self.go_back
         forward.on_click = self.go_forward
+    
     
     def get_start_datetime(self, e):
         self.start_datetime = e.control.value.strftime("%Y%m%dT%H%M")
@@ -412,7 +416,7 @@ class App(ft.Row):
         self.qr.version = None if ver_auto_box.value else int(self.version_slider.value)
         self.qr.box_size = int(self.qr_size_slider.value)
         self.qr.border = 4 if border_txt.value == "" else int(border_txt.value)
-        self.qr.back_color = back_color_txt.value
+        self.qr.back_color = background_Picker.color
         self.qr.main_color = fore_color_txt.value
         
         error_correction_map = {"Low": 0, "Medium": 1, "High": 2, "Very High": 3}

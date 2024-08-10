@@ -15,9 +15,9 @@ class QRGenerator:
         self.data: str = None
         self.use_logo: bool = False
         # Can be hex values or RGB Tuples   
-        self.main_color: str | tuple = None
-        self.back_color: str | tuple = None
-        self.alt_color: str | tuple = None
+        self.main_color: str = None
+        self.back_color: str = None
+        self.alt_color: str = None
         # Paths
         self.logo_path: str = None
         self.final_qr: str = None
