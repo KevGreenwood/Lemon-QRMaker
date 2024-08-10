@@ -56,8 +56,6 @@ class App(ft.Row):
         ship_txt.on_change = self.regenerate_preview
         tax_txt.on_change = self.regenerate_preview
         border_txt.on_change = self.regenerate_preview
-        fore_color_txt.on_change = self.regenerate_preview
-        back_color_txt.on_change = self.regenerate_preview
         thanks_url_txt.on_change = self.regenerate_preview
         cancel_url_txt.on_change = self.regenerate_preview
         
@@ -77,9 +75,8 @@ class App(ft.Row):
         start_dt_Picker.on_change = self.get_start_datetime
         end_dt_Picker.on_change = self.get_end_datetime
 
-
-        confirm_text.on_click = lambda e: change_color(e, self.regenerate_preview)
-        d.on_dismiss = lambda e: change_color(e, self.regenerate_preview)
+        background_Button.fx =  self.regenerate_preview
+        foreground_Button.fx = self.regenerate_preview
 
         start_dt_Button.on_click = lambda e: self.page.open(
             ft.CupertinoBottomSheet(
@@ -118,10 +115,10 @@ class App(ft.Row):
                     ft.Radio("Single Color", value="normal"),
                     ft.Radio("Color Gradient", value="gradient")
                 ]
-            ), "normal"
+            ), "normal", on_change=self.manage_color_style
         )
         
-        self.fore_color_row = ft.Row([fore_color_txt])
+        self.fore_color_row = ft.Row([foreground_Button])
         self.color_column = ft.Column([self.color_radio_group, custom_eye, self.fore_color_row, background_Button])
         
         self.color_panel = ft.ExpansionPanelList([ft.ExpansionPanel(ft.ListTile(title=ft.Text("SET COLORS")), 
@@ -175,6 +172,15 @@ class App(ft.Row):
         forward.on_click = self.go_forward
     
     
+    def manage_color_style(self, e):
+        if self.color_radio_group.value == "gradient":
+            self.fore_color_row.controls.append(gradient_Button)
+            self.fore_color_row.controls.append(gradiant_drop)
+            self.page.update()
+        else:
+            self.fore_color_row.controls.remove(gradient_Button)
+            self.page.update()
+
     def get_start_datetime(self, e):
         self.start_datetime = e.control.value.strftime("%Y%m%dT%H%M")
         start_dt_Text.value = e.control.value.strftime('%Y/%m/%d %H:%M')
@@ -416,8 +422,8 @@ class App(ft.Row):
         self.qr.version = None if ver_auto_box.value else int(self.version_slider.value)
         self.qr.box_size = int(self.qr_size_slider.value)
         self.qr.border = 4 if border_txt.value == "" else int(border_txt.value)
-        self.qr.back_color = background_Picker.color
-        self.qr.main_color = fore_color_txt.value
+        self.qr.back_color = background_Button.icon_color
+        self.qr.main_color = foreground_Button.icon_color
         
         error_correction_map = {"Low": 0, "Medium": 1, "High": 2, "Very High": 3}
         error_correction = error_correction_map.get(correction_drop.value, None)

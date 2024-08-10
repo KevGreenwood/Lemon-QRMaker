@@ -15,9 +15,9 @@ class QRGenerator:
         self.data: str = None
         self.use_logo: bool = False
         # Can be hex values or RGB Tuples   
-        self.main_color: str = None
-        self.back_color: str = None
-        self.alt_color: str = None
+        self.main_color: str | tuple = None
+        self.back_color: str | tuple = None
+        self.alt_color: tuple = None
         # Paths
         self.logo_path: str = None
         self.final_qr: str = None
@@ -45,10 +45,9 @@ class QRGenerator:
                 border=self.border
             )
             self.__adding_data()
-            try:
-                self.final_qr = self.qr.make_image(fill_color=self.main_color, back_color=self.back_color)
-            except ValueError as e:
-                print(e)
+            
+            self.final_qr = self.qr.make_image(fill_color=self.main_color, back_color=self.back_color)
+
 
     def __adding_data(self) -> None:
         self.qr.add_data(self.data)
@@ -76,3 +75,8 @@ class QRGenerator:
                 self.error_correction = qrcode.constants.ERROR_CORRECT_Q
             case 3:
                 self.error_correction = qrcode.constants.ERROR_CORRECT_H
+    
+    def get_gradiant_style(self, index):
+        match index:
+            case 0:
+                self.final_qr = self.qr.make_image(image_factory=StyledPilImage, color_mask=RadialGradiantColorMask(self.back_color, self.main_color, self.alt_color))

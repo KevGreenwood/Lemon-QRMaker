@@ -4,7 +4,7 @@ import flet as ft
 class CustomTextField(ft.TextField):
     def __init__(self, label, value=None, multiline=False, password=False,
                 can_reveal_password=False, input_filter=None, filled=False,
-                hint_text=None, prefix_icon=None, prefix_text=None, suffix_text=None, width=None):
+                hint_text=None, prefix_text=None, suffix_text=None, width=None):
         super().__init__()
         self.value = value
         self.multiline = multiline
@@ -14,7 +14,6 @@ class CustomTextField(ft.TextField):
         self.label = label
         self.filled = filled
         self.hint_text = hint_text
-        self.prefix_icon = prefix_icon
         self.prefix_text = prefix_text
         self.suffix_text = suffix_text
         self.width = width
@@ -70,8 +69,6 @@ currency_txt = CustomTextField("Currency Code", input_filter="currency", hint_te
 ship_txt = CustomTextField("Shipping", input_filter="money", prefix_text="$", width=360)
 tax_txt = CustomTextField("Tax rate", input_filter="money", suffix_text="%", width=360)
 border_txt = CustomTextField("Ingrese el tamaño del borde", "4", input_filter="num")
-fore_color_txt = CustomTextField("Foreground Color", "#000000", prefix_icon=ft.icons.COLOR_LENS)
-back_color_txt = CustomTextField("Background Color", "#FFFFFF", prefix_icon=ft.icons.COLOR_LENS)
 thanks_url_txt = CustomTextField("Thank you URL", hint_text="https://", width=360)
 cancel_url_txt = CustomTextField("Cancel URL", hint_text="https://", width=360)
 
