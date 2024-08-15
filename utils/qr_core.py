@@ -1,61 +1,56 @@
-import qrcode
 from qrcode.image.styledpil import StyledPilImage
 from qrcode.image.styles.moduledrawers import *
 from qrcode.image.styles.colormasks import *
 import io
 import base64
+from qrcode.main import QRCode
 
-import qrcode.main
-
-
-class QRGenerator(qrcode.main.QRCode):
+class QRGenerator(QRCode):
     def __init__(self):
-        super().__init__(box_size=50)
+        super().__init__()
         # box_size base: 33x33, so, just multiply by your desire number for scale your qr
+        
         self.data: str = None
         self.use_logo: bool = False
         self.use_gradiant: bool = False
-        self.main_color: tuple = (0, 0, 0)
+        
+        # Using StyledPilImage with pure black color as background cause that the whole QR Code turns fully black
+        self.REAL_BLACK: tuple = (0, 0, 0)
+        self.FAKE_BLACK: tuple = (1, 0, 0)
+        self.main_color: tuple = self.REAL_BLACK
         self.back_color: tuple = (255, 255, 255)
         self.alt_color: tuple = (0, 0, 255)
         self.logo_path: str = None
-        self.error_correction: int = 0
         self.img = None
+
+        self.index: int = 0
+        
     
     def __build_qr(self):
         self.clear()
         self.add_data(self.data)
         self.make()
-        if self.use_logo:
-            self.img = self.make_image(StyledPilImage, color_mask=SolidFillColorMask(self.back_color, self.main_color), 
-                module_drawer = SquareModuleDrawer(),
-                embeded_image_path = self.logo_path)
-        else:
-            self.img = self.make_image(StyledPilImage, color_mask=SolidFillColorMask(self.back_color, self.main_color))
-    
-    def get_error_correction(self, index):
-        match index:
-            case 0:
-                self.error_correction = 1
-            case 1:
-                self.error_correction = 0
-            case 2:
-                self.error_correction = 3
-            case 3:
-                self.error_correction = 2
+        self.get_colors_style()
 
-    def get_colors_style(self, index):
+    def get_colors_style(self):
+        color_masks = {
+            0: SolidFillColorMask,
+            1: RadialGradiantColorMask,
+            2: SquareGradiantColorMask,
+            3: HorizontalGradiantColorMask,
+            4: VerticalGradiantColorMask
+        }
+
+        color_mask_class = color_masks.get(self.index, None)
+        self.back_color = self.FAKE_BLACK if self.back_color == self.REAL_BLACK else self.back_color
+        
+        embed_image = self.logo_path if self.use_logo else None
+
         if self.use_gradiant:
-            match index:
-                case 0:
-                    self.img = self.make_image(StyledPilImage, color_mask=RadialGradiantColorMask(self.back_color, self.main_color, self.alt_color))
-                case 1:
-                    self.img = self.make_image(StyledPilImage, color_mask=SquareGradiantColorMask(self.back_color, self.main_color, self.alt_color))
-                case 2:
-                    self.img = self.make_image(StyledPilImage, color_mask=HorizontalGradiantColorMask(self.back_color, self.main_color, self.alt_color))
-                case 3:
-                    self.img = self.make_image(StyledPilImage, color_mask=VerticalGradiantColorMask(self.back_color, self.main_color, self.alt_color))
-    
+            self.img = self.make_image(StyledPilImage, color_mask=color_mask_class(self.back_color, self.main_color, self.alt_color), embeded_image_path=embed_image)
+        else:
+            self.img = self.make_image(StyledPilImage, color_mask=color_mask_class(self.back_color, self.main_color), embeded_image_path=embed_image)
+
     def generate_preview(self):
         self.__build_qr()
         byte_arr = io.BytesIO()
@@ -67,86 +62,3 @@ class QRGenerator(qrcode.main.QRCode):
 
     def get_res(self):
         return f"{self.img.size[0]} x {self.img.size[1]}"
-    
-
-"""
-class QRGenerator:
-    def __init__(self):
-        self.version: int = None
-        self.error_correction: int = 0
-        self.box_size: int = 50 # base: 33x33, so, just multiply by your desire number for scale your qr
-        self.border: int = 4
-
-        self.data: str = None
-        self.main_color: tuple = (0, 0, 0)
-        self.back_color: tuple = (255, 255, 255)
-        self.alt_color: tuple = (0, 0, 255)
-        self.use_logo: bool = False
-        
-        # Paths
-        self.logo_path: str = None
-        self.final_qr
-
-        
-
-        self.qr = None # Instance of qrcode.QRCode
-
-    def __building_qr(self):
-        if self.use_logo:
-            self.qr = qrcode.QRCode(
-                version=self.version, 
-                error_correction=self.error_correction,
-                box_size=self.box_size,
-                border=self.border
-            )
-            self.__adding_data()
-            self.final_qr = self.qr.make_image(
-                image_factory = StyledPilImage, 
-                module_drawer = SquareModuleDrawer(),
-                embeded_image_path = self.logo_path
-            )
-        else:
-            self.qr = qrcode.QRCode(
-                version=self.version, 
-                box_size=self.box_size,
-                border=self.border
-            )
-            self.__adding_data()
-            
-            self.final_qr = self.qr.make_image(image_factory=StyledPilImage, 
-                                                   color_mask=SolidFillColorMask(self.back_color, self.main_color))
-
-
-    def __adding_data(self) -> None:
-        add_data(self.data)
-        self.qr.make(fit=True)
-
-    def generate_preview(self) -> str:
-        self.__building_qr()
-        byte_arr = io.BytesIO()
-        self.final_qr.save(byte_arr, format='PNG')
-        return base64.b64encode(byte_arr.getvalue()).decode("utf-8")
-
-    def generate_final(self, path) -> None:
-        self.final_qr.save(f"{path}.png")
-
-    def get_res(self) -> str:
-        return f"{self.final_qr.size[0]} x {self.final_qr.size[1]}"
-    
-    def get_error_correction(self, index):
-        match index:
-            case 0:
-                self.error_correction = qrcode.constants.ERROR_CORRECT_L
-            case 1:
-                self.error_correction = qrcode.constants.ERROR_CORRECT_M
-            case 2:
-                self.error_correction = qrcode.constants.ERROR_CORRECT_Q
-            case 3:
-                self.error_correction = qrcode.constants.ERROR_CORRECT_H
-    
-    def get_gradiant_style(self, index):
-        match index:
-            case 0:
-                self.final_qr = self.qr.make_image(image_factory=StyledPilImage, 
-                                                   color_mask=RadialGradiantColorMask(self.back_color, self.main_color, self.alt_color))
-"""

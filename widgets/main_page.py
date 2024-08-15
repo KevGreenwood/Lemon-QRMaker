@@ -64,6 +64,7 @@ class App(ft.Row):
         crypto_drop.on_change = self.regenerate_preview
         payment_drop.on_change = self.regenerate_preview
         correction_drop.on_change = self.regenerate_preview
+        gradiant_drop.on_change = self.regenerate_preview
         
         """ --- Checkbox --- """
         hidden_check.on_change = self.regenerate_preview
@@ -177,11 +178,13 @@ class App(ft.Row):
             self.fore_color_row.controls.append(gradient_Button)
             self.fore_color_row.controls.append(gradiant_drop)
             self.qr.use_gradiant = True
+            self.regenerate_preview(e)
             self.page.update()
-        else:
+        elif self.color_radio_group.value == "normal":
             self.fore_color_row.controls.remove(gradient_Button)
             self.fore_color_row.controls.remove(gradiant_drop)
             self.qr.use_gradiant = False
+            self.regenerate_preview(e)
             self.page.update()
 
     def get_start_datetime(self, e):
@@ -423,9 +426,8 @@ class App(ft.Row):
         self.qr.data = qr_data_formats.get(tabs_widget.selected_index, None)
 
         self.qr.version = None if ver_auto_box.value else int(self.version_slider.value)
-        self.qr.box_size = int(self.qr_size_slider.value)
+        self.qr.box_size = 10
         self.qr.border = 4 if border_txt.value == "" else int(border_txt.value)
-        print(background_Button.qr_color)
 
 
         self.qr.back_color = background_Button.qr_color
@@ -433,14 +435,18 @@ class App(ft.Row):
 
         error_correction_map = {"Low": 0, "Medium": 1, "High": 2, "Very High": 3}
         error_correction = error_correction_map.get(correction_drop.value, None)
-        self.qr.get_error_correction(error_correction)
+        if self.qr.use_logo:
+            correction_drop.value = "High"
+            correction_drop.update()
+            self.qr.error_correction = 2
+        else:
+            self.qr.error_correction = error_correction
 
         if self.color_radio_group.value == "gradient":
-            pass
-            #self.qr.alt_color = gradient_Button.qr_color
-            #gradiant_style_map = {"Radial Gradiant": 0, "Square Gradiant": 1, "Hoirzontal Gradient": 2, "Vertical Gradiant": 3}
-            #gradiant_style = gradiant_style_map.get(gradiant_drop.value, None)
-            #self.qr.get_colors_style(gradiant_style)
+            self.qr.alt_color = gradient_Button.qr_color
+            gradiant_style_map = {"Radial Gradiant": 1, "Square Gradiant": 2, "Hoirzontal Gradient": 3, "Vertical Gradiant": 4}
+            self.qr.index = gradiant_style_map.get(gradiant_drop.value, None)
+            
 
         return self.qr.generate_preview()
 
@@ -462,6 +468,8 @@ class App(ft.Row):
         if not self.delete_logo.disabled:
             self.qr.logo_path = None
             self.qr.use_logo = False
+            correction_drop.value = "Low"
+            correction_drop.update()
             self.logo.src = "assets/logo.jpg"
             self.logo.update()
             self.regenerate_preview(e)

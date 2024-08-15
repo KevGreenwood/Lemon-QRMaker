@@ -1,4 +1,4 @@
-from widgets.main_page import *
+from widgets.main_page import (ft, App)
 
 def main(page: ft.Page):
     page.title = "Lemon-QRCodeMaker"
@@ -6,4 +6,4 @@ def main(page: ft.Page):
     page.add(App())
 
 if __name__ == "__main__":
-    ft.app(target = main)
+    ft.app(main)
