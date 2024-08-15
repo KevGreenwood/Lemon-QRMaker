@@ -11,7 +11,6 @@ class App(ft.Row):
         super().__init__()
         
         self.qr = QRGenerator()
-        self.data: str = None
         self.start_datetime: str = None
         self.end_datetime: str = None
         self.birthday: str = None
@@ -77,6 +76,7 @@ class App(ft.Row):
 
         background_Button.fx =  self.regenerate_preview
         foreground_Button.fx = self.regenerate_preview
+        gradient_Button.fx = self.regenerate_preview
 
         start_dt_Button.on_click = lambda e: self.page.open(
             ft.CupertinoBottomSheet(
@@ -176,9 +176,12 @@ class App(ft.Row):
         if self.color_radio_group.value == "gradient":
             self.fore_color_row.controls.append(gradient_Button)
             self.fore_color_row.controls.append(gradiant_drop)
+            self.qr.use_gradiant = True
             self.page.update()
         else:
             self.fore_color_row.controls.remove(gradient_Button)
+            self.fore_color_row.controls.remove(gradiant_drop)
+            self.qr.use_gradiant = False
             self.page.update()
 
     def get_start_datetime(self, e):
@@ -422,12 +425,22 @@ class App(ft.Row):
         self.qr.version = None if ver_auto_box.value else int(self.version_slider.value)
         self.qr.box_size = int(self.qr_size_slider.value)
         self.qr.border = 4 if border_txt.value == "" else int(border_txt.value)
-        self.qr.back_color = background_Button.icon_color
-        self.qr.main_color = foreground_Button.icon_color
-        
+        print(background_Button.qr_color)
+
+
+        self.qr.back_color = background_Button.qr_color
+        self.qr.main_color = foreground_Button.qr_color
+
         error_correction_map = {"Low": 0, "Medium": 1, "High": 2, "Very High": 3}
         error_correction = error_correction_map.get(correction_drop.value, None)
         self.qr.get_error_correction(error_correction)
+
+        if self.color_radio_group.value == "gradient":
+            pass
+            #self.qr.alt_color = gradient_Button.qr_color
+            #gradiant_style_map = {"Radial Gradiant": 0, "Square Gradiant": 1, "Hoirzontal Gradient": 2, "Vertical Gradiant": 3}
+            #gradiant_style = gradiant_style_map.get(gradiant_drop.value, None)
+            #self.qr.get_colors_style(gradiant_style)
 
         return self.qr.generate_preview()
 

@@ -9,6 +9,8 @@ class ColorButtonPicker(ft.ElevatedButton):
         super().__init__(text, icon, icon_color=color, on_click=self.open_color_picker, **kwargs)
         
         self.start_color = color
+        self.qr_color: tuple = None
+        self.hex_to_rgb(color)
         
         self.fx = None
         self.color_Picker = ColorPicker(color, 300)
@@ -22,10 +24,10 @@ class ColorButtonPicker(ft.ElevatedButton):
                 actions_alignment=ft.MainAxisAlignment.END,
             )
     
-    def hex_to_rgb(self, hex_value):
-        hex_value = hex_value.lstrip("#")
-        return tuple(int(hex_value[i:i+2], 16) for i in (0, 2, 4))
-
+    def hex_to_rgb(self, hex_color):
+        hex_value = hex_color.lstrip("#")
+        self.qr_color = tuple(int(hex_value[i:i+2], 16) for i in (0, 2, 4))
+    
     def open_color_picker(self, e):
         e.page.overlay.append(self.color_dialog)
         self.color_dialog.open = True
@@ -37,10 +39,13 @@ class ColorButtonPicker(ft.ElevatedButton):
         e.page.update()
 
     def change_color(self, e):
+        print(e)
         self.icon_color = self.color_Picker.color
-        print(self.hex_to_rgb(self.icon_color))
+        self.hex_to_rgb(self.color_Picker.color)
+        
         self.color_dialog.open = False
         self.fx(e)
+        
         e.page.update()
 
 background_Button = ColorButtonPicker("Background Color", ft.icons.SQUARE, "#FFFFFF")

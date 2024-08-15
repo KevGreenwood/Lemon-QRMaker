@@ -14,7 +14,7 @@ encrypt_drop = CustomDropdown("WPA/WPA2", ["None", "WEP", "WPA/WPA2"], "Network 
 crypto_drop = CustomDropdown("Bitcoin", ["Bitcoin", "Bitcoin Cash", "Ethereum", "Litecoin", "Dash"], "Select Cryptocurrency")
 payment_drop = CustomDropdown(None, ["Buy now", "Add to cart", "Donation"], "Payment type", width=360)
 correction_drop = CustomDropdown("Low", ["Low", "Medium", "High", "Very High"], "Correction Level")
-gradiant_drop = CustomDropdown(None, ["Radial Gradiant", "Square Gradiant", "Hoirzontal Gradient", "Vertical Gradiant"], "Gradiant Styles")
+gradiant_drop = CustomDropdown("Radial Gradiant", ["Radial Gradiant", "Square Gradiant", "Hoirzontal Gradient", "Vertical Gradiant"], "Gradiant Styles")
 
 def reset_drop():
     vcard_ver.value = "Version 3"
