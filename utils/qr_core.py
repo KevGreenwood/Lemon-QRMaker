@@ -52,6 +52,9 @@ class QRGenerator(QRCode):
         else:
             self.img = self.make_image(StyledPilImage, color_mask=color_mask_class(self.back_color, self.main_color), embeded_image_path=embed_image)
 
+    def get_draw_style(self):
+        pass
+
     def generate_preview(self):
         self.box_size = 10
         self.__build_qr()
