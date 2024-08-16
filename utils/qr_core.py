@@ -8,7 +8,7 @@ from qrcode.main import QRCode
 class QRGenerator(QRCode):
     def __init__(self):
         super().__init__()
-        # box_size base: 33x33, so, just multiply by your desire number for scale your qr
+        # box_size base: 37x37, so, just multiply by your desire number for scale your qr
         
         self.data: str = None
         self.use_logo: bool = False
@@ -24,7 +24,8 @@ class QRGenerator(QRCode):
         self.img = None
 
         self.index: int = 0
-        
+
+        self.real_box_size: int = None
     
     def __build_qr(self):
         self.clear()
@@ -52,13 +53,16 @@ class QRGenerator(QRCode):
             self.img = self.make_image(StyledPilImage, color_mask=color_mask_class(self.back_color, self.main_color), embeded_image_path=embed_image)
 
     def generate_preview(self):
+        self.box_size = 10
         self.__build_qr()
         byte_arr = io.BytesIO()
-        self.img.save(byte_arr, format='PNG')
+        self.img.save(byte_arr, format='WEBP')
         return base64.b64encode(byte_arr.getvalue()).decode("utf-8")
 
     def generate_final(self, path) -> None:
+        self.box_size = self.real_box_size
+        self.__build_qr()
         self.img.save(f"{path}.png")
 
     def get_res(self):
-        return f"{self.img.size[0]} x {self.img.size[1]}"
+        return f"{int(self.img.size[0]/10 * self.real_box_size)} x {int(self.img.size[1]/10 * self.real_box_size)}"

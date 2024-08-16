@@ -150,7 +150,7 @@ class App(ft.Row):
         self.save_btn = ft.ElevatedButton("Save", ft.icons.SAVE,
                             on_click=lambda _: self.save_file_dialog.save_file(file_type=ft.FilePickerFileType.IMAGE))
         
-        self.qr_size_slider = ft.Slider(50, "{value}", 10, 100, 9, on_change=self.update_scale_txt)
+        self.qr_size_slider = ft.Slider(32, "{value}", 10, 55, on_change=self.update_scale_txt)
 
         self.qr_preview = ft.Image(src_base64=self.build_qr(), width=400, height=400)
         self.prev_container = ft.Container(self.qr_preview, alignment=ft.alignment.top_center)
@@ -426,7 +426,7 @@ class App(ft.Row):
         self.qr.data = qr_data_formats.get(tabs_widget.selected_index, None)
 
         self.qr.version = None if ver_auto_box.value else int(self.version_slider.value)
-        self.qr.box_size = 10
+        self.qr.real_box_size = int(self.qr_size_slider.value)
         self.qr.border = 4 if border_txt.value == "" else int(border_txt.value)
 
 
@@ -446,7 +446,6 @@ class App(ft.Row):
             self.qr.alt_color = gradient_Button.qr_color
             gradiant_style_map = {"Radial Gradiant": 1, "Square Gradiant": 2, "Hoirzontal Gradient": 3, "Vertical Gradiant": 4}
             self.qr.index = gradiant_style_map.get(gradiant_drop.value, None)
-            
 
         return self.qr.generate_preview()
 
@@ -501,11 +500,11 @@ class App(ft.Row):
 
             print(f"Image saved in {e.path}")
 
-            self.page.snack_bar = ft.SnackBar(
+            self.page.overlay.append(ft.SnackBar(
                 ft.Text(f"Image saved in {e.path}"),
                 True,
                 bgcolor=ft.colors.GREEN,
-            )
+            ))
             self.page.update()
 
     def build(self):
