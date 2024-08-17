@@ -16,6 +16,8 @@ class QRGenerator(QRCode):
         
         self.data: str = None
         self.use_logo: bool = False
+        self.inner_use_gradiant: bool = False
+        self.outter_use_gradient: bool = False
         self.use_gradiant: bool = False
         self.custom_eye_color: bool = False
         
@@ -26,10 +28,10 @@ class QRGenerator(QRCode):
         self.back_color: tuple = (255, 255, 255)
         self.alt_color: tuple = (0, 0, 255)
 
-        self.main_color_inner_eyes: tuple = (255, 0, 0)
+        self.main_color_inner_eyes: tuple = self.REAL_BLACK
         self.alt_color_inner_eyes: tuple = self.alt_color
 
-        self.main_color_outter_eyes: tuple = (255, 100, 50)
+        self.main_color_outter_eyes: tuple = self.REAL_BLACK
         self.alt_color_outter_eyes: tuple = self.alt_color
         
         self.logo_path: str = None
@@ -38,6 +40,14 @@ class QRGenerator(QRCode):
         self.index: int = 0
 
         self.real_box_size: int = None
+
+        self.color_masks = {
+            0: SolidFillColorMask,
+            1: RadialGradiantColorMask,
+            2: SquareGradiantColorMask,
+            3: HorizontalGradiantColorMask,
+            4: VerticalGradiantColorMask
+        }
     
     def __build_qr(self):
         self.clear()
@@ -71,15 +81,8 @@ class QRGenerator(QRCode):
         return mask  
 
     def get_colors_style(self):
-        color_masks = {
-            0: SolidFillColorMask,
-            1: RadialGradiantColorMask,
-            2: SquareGradiantColorMask,
-            3: HorizontalGradiantColorMask,
-            4: VerticalGradiantColorMask
-        }
 
-        color_mask_class = color_masks.get(self.index, None)
+        color_mask_class = self.color_masks.get(self.index, None)
         self.back_color = self.FAKE_BLACK if self.back_color == self.REAL_BLACK else self.back_color
         
         embed_image = self.logo_path if self.use_logo else None
@@ -90,13 +93,24 @@ class QRGenerator(QRCode):
             self.img = self.make_image(StyledPilImage, color_mask=SolidFillColorMask(self.back_color, self.main_color), embeded_image_path=embed_image)
         
         if self.custom_eye_color:
-            inner_eyes = self.make_image(StyledPilImage, color_mask=SolidFillColorMask(self.back_color, self.main_color_inner_eyes))
-            outter_eyes = self.make_image(StyledPilImage, color_mask=SolidFillColorMask(self.back_color, self.main_color_outter_eyes))
+            if self.inner_use_gradiant:
+                inner_eyes = self.make_image(StyledPilImage, color_mask=color_mask_class(self.back_color, self.main_color_inner_eyes, self.alt_color_inner_eyes))
+            else:
+                inner_eyes = self.make_image(StyledPilImage, color_mask=SolidFillColorMask(self.back_color, self.main_color_inner_eyes))
+            
+            if self.outter_use_gradient:
+                outter_eyes = self.make_image(StyledPilImage, color_mask=color_mask_class(self.back_color, self.main_color_outter_eyes, self.alt_color_outter_eyes))
+            else:
+                outter_eyes = self.make_image(StyledPilImage, color_mask=SolidFillColorMask(self.back_color, self.main_color_outter_eyes))
+            
             inner_eye_mask = self.style_inner_eyes(self.img)
             outter_eye_mask = self.style_outer_eyes(self.img)
 
             temp = Image.composite(inner_eyes, self.img, inner_eye_mask)
             self.img = Image.composite(outter_eyes, temp, outter_eye_mask)
+    
+    def set_inner_color_style(self):
+
 
     def get_draw_style(self):
         pass

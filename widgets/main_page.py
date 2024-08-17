@@ -65,11 +65,14 @@ class App(ft.Row):
         payment_drop.on_change = self.regenerate_preview
         correction_drop.on_change = self.regenerate_preview
         gradiant_drop.on_change = self.regenerate_preview
+        inner_eye_gradiant_drop.on_change = self.manage_eye_color_style
+        outter_eye_gradiant_drop.on_change = self.manage_eye_color_style
+
         
         """ --- Checkbox --- """
         hidden_check.on_change = self.regenerate_preview
         ver_auto_box.on_change = self.switch_version
-        custom_eye.on_change = self.manage_eye_color_style
+        custom_eye.on_change = self.manage_eye_style
         
         """ --- DatePicker --- """
         start_dt_Picker.on_change = self.get_start_datetime
@@ -124,7 +127,6 @@ class App(ft.Row):
                 ]
             ), "normal", on_change=self.manage_color_style
         )
-        
         self.fore_color_row = ft.Row([foreground_Button])
         self.color_column = ft.Column([ft.Row([self.color_radio_group, custom_eye]), self.fore_color_row, background_Button])
         
@@ -174,18 +176,42 @@ class App(ft.Row):
         self.main = ft.Container(ft.Column([self.size_panel, self.color_panel, self.logo_panel,
                                             self.design_panel, self.advanced_panel]), width=750)
         
-        self.inner_eye_row = ft.Row([inner_eye_Button])
-        self.outter_eye_row = ft.Row([outter_eye_Button])
+        self.inner_eye_row = ft.Row([inner_eye_Button, inner_eye_gradiant_drop])
+        self.outter_eye_row = ft.Row([outter_eye_Button, outter_eye_gradiant_drop])
         self.eye_column = ft.Column([self.inner_eye_row, self.outter_eye_row])
         self.qr_colors_row = ft.Row([gradient_Button, gradiant_drop])
         
         tabs_widget.on_change = self.update
         back.on_click = self.go_back
         forward.on_click = self.go_forward
+
+    def manage_eye_color_style(self, e):
+        if inner_eye_gradiant_drop.value != "Solid Color":
+            self.inner_eye_row.controls.append(inner_eye_gradient_Button)
+            self.qr.inner_use_gradiant = True
+        else:
+            try:
+                self.inner_eye_row.controls.remove(inner_eye_gradient_Button)
+                self.qr.inner_use_gradiant = False
+            except:
+                pass
+        
+        if outter_eye_gradiant_drop.value != "Solid Color":
+            self.outter_eye_row.controls.append(outter_eye_gradient_Button)
+            self.qr.outter_use_gradiant = True
+        else:
+            try:
+                self.outter_eye_row.controls.remove(outter_eye_gradient_Button)
+                self.qr.outter_use_gradient = False
+            except:
+                pass
+        self.regenerate_preview(e)
+        self.page.update()
+
     
     def manage_color_style(self, e):
         if self.color_radio_group.value == "gradient":
-            self.fore_color_row.controls.append(self.qr_colors_row)            
+            self.fore_color_row.controls.append(self.qr_colors_row)
             self.qr.use_gradiant = True
         else:
             self.fore_color_row.controls.remove(self.qr_colors_row)
@@ -193,7 +219,7 @@ class App(ft.Row):
         self.regenerate_preview(e)
         self.page.update()
 
-    def manage_eye_color_style(self, e):
+    def manage_eye_style(self, e):
         if custom_eye.value:
             self.color_column.controls.append(self.eye_column)
         else:
@@ -376,6 +402,7 @@ class App(ft.Row):
         network_hide: str = ""
         vcard_txt: str = ""
         crypto_currency: str = ""
+        gradiant_style_map = {"Radial Gradiant": 1, "Square Gradiant": 2, "Hoirzontal Gradient": 3, "Vertical Gradiant": 4}
 
         match tabs_widget.selected_index:
             case 6:
@@ -449,9 +476,8 @@ class App(ft.Row):
 
         self.qr.custom_eye_color = True if custom_eye.value else False
         self.qr.main_color_inner_eyes = inner_eye_Button.qr_color
-        self.qr.alt_color_inner_eyes = inner_eye_gradient_Button.qr_color
         self.qr.main_color_outter_eyes = outter_eye_Button.qr_color
-        self.qr.alt_color_outter_eyes = outter_eye_gradient_Button.qr_color
+        
 
         error_correction_map = {"Low": 0, "Medium": 1, "High": 2, "Very High": 3}
         error_correction = error_correction_map.get(correction_drop.value, None)
@@ -464,9 +490,17 @@ class App(ft.Row):
 
         if self.color_radio_group.value == "gradient":
             self.qr.alt_color = gradient_Button.qr_color
-            gradiant_style_map = {"Radial Gradiant": 1, "Square Gradiant": 2, "Hoirzontal Gradient": 3, "Vertical Gradiant": 4}
+            
             self.qr.index = gradiant_style_map.get(gradiant_drop.value, None)
 
+        if inner_eye_gradiant_drop.value != "Solid Color":
+            self.qr.alt_color_inner_eyes = inner_eye_gradient_Button.qr_color
+            self.qr.index = gradiant_style_map.get(inner_eye_gradiant_drop.value, None)
+        
+        if outter_eye_gradiant_drop.value != "Solid Color":
+            self.qr.alt_color_outter_eyes = outter_eye_gradient_Button.qr_color
+            self.qr.index = gradiant_style_map.get(outter_eye_gradiant_drop.value, None)
+        
         return self.qr.generate_preview()
 
     # --- Realtime Building ---

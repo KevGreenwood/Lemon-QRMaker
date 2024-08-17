@@ -16,8 +16,8 @@ payment_drop = CustomDropdown(None, ["Buy now", "Add to cart", "Donation"], "Pay
 correction_drop = CustomDropdown("Low", ["Low", "Medium", "High", "Very High"], "Correction Level")
 gradiant_drop = CustomDropdown("Radial Gradiant", ["Radial Gradiant", "Square Gradiant", "Hoirzontal Gradient", "Vertical Gradiant"], "Gradiant Styles")
 
-inner_eye_gradiant_drop = gradiant_drop
-outter_eye_gradiant_drop = gradiant_drop
+inner_eye_gradiant_drop = CustomDropdown("Solid Color", ["Solid Color", "Radial Gradiant", "Square Gradiant", "Hoirzontal Gradient", "Vertical Gradiant"], "Color Styles")
+outter_eye_gradiant_drop = CustomDropdown("Solid Color", ["Solid Color", "Radial Gradiant", "Square Gradiant", "Hoirzontal Gradient", "Vertical Gradiant"], "Color Styles")
 
 def reset_drop():
     vcard_ver.value = "Version 3"

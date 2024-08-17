@@ -34,7 +34,7 @@ class ColorButtonPicker(ft.ElevatedButton):
 
     def close_dialog(self, e):
         self.color_Picker.color = self.start_color
-        self.qr_color = self.hex_to_rgb(self.color_Picker.color)
+        self.qr_color = hex_to_rgb(self.color_Picker.color)
         self.color_dialog.open = False
         e.page.update()
 
