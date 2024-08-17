@@ -41,3 +41,9 @@ class ColorButtonPicker(ft.ElevatedButton):
 background_Button = ColorButtonPicker("Background Color", ft.icons.SQUARE, "#FFFFFF")
 foreground_Button = ColorButtonPicker("Foreground Color", ft.icons.SQUARE, "#000000")
 gradient_Button = ColorButtonPicker("Gradient Color", ft.icons.SQUARE, "#0000FF")
+
+inner_eye_Button = ColorButtonPicker("Inner Eye Color", ft.icons.SQUARE, "#000000")
+inner_eye_gradient_Button = ColorButtonPicker("Inner Eye Gradient Color", ft.icons.SQUARE, "#0000FF")
+
+outter_eye_Button = ColorButtonPicker("Outter Eye Color", ft.icons.SQUARE, "#000000")
+outter_eye_gradient_Button = ColorButtonPicker("Outter Eye Gradient Color", ft.icons.SQUARE, "#0000FF")

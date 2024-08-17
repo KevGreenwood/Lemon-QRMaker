@@ -16,6 +16,9 @@ payment_drop = CustomDropdown(None, ["Buy now", "Add to cart", "Donation"], "Pay
 correction_drop = CustomDropdown("Low", ["Low", "Medium", "High", "Very High"], "Correction Level")
 gradiant_drop = CustomDropdown("Radial Gradiant", ["Radial Gradiant", "Square Gradiant", "Hoirzontal Gradient", "Vertical Gradiant"], "Gradiant Styles")
 
+inner_eye_gradiant_drop = gradiant_drop
+outter_eye_gradiant_drop = gradiant_drop
+
 def reset_drop():
     vcard_ver.value = "Version 3"
     encrypt_drop.value = "WPA/WPA2"

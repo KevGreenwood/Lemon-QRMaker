@@ -69,7 +69,7 @@ class App(ft.Row):
         """ --- Checkbox --- """
         hidden_check.on_change = self.regenerate_preview
         ver_auto_box.on_change = self.switch_version
-        #custom_eye = self.regenerate_preview
+        custom_eye.on_change = self.manage_eye_color_style
         
         """ --- DatePicker --- """
         start_dt_Picker.on_change = self.get_start_datetime
@@ -78,6 +78,12 @@ class App(ft.Row):
         background_Button.fx =  self.regenerate_preview
         foreground_Button.fx = self.regenerate_preview
         gradient_Button.fx = self.regenerate_preview
+
+        inner_eye_Button.fx = self.regenerate_preview
+        inner_eye_gradient_Button.fx = self.regenerate_preview
+
+        outter_eye_Button.fx = self.regenerate_preview
+        outter_eye_gradient_Button.fx = self.regenerate_preview
 
         start_dt_Button.on_click = lambda e: self.page.open(
             ft.CupertinoBottomSheet(
@@ -120,7 +126,7 @@ class App(ft.Row):
         )
         
         self.fore_color_row = ft.Row([foreground_Button])
-        self.color_column = ft.Column([self.color_radio_group, custom_eye, self.fore_color_row, background_Button])
+        self.color_column = ft.Column([ft.Row([self.color_radio_group, custom_eye]), self.fore_color_row, background_Button])
         
         self.color_panel = ft.ExpansionPanelList([ft.ExpansionPanel(ft.ListTile(title=ft.Text("SET COLORS")), 
                             ft.Container(self.color_column, 20))])
@@ -168,24 +174,32 @@ class App(ft.Row):
         self.main = ft.Container(ft.Column([self.size_panel, self.color_panel, self.logo_panel,
                                             self.design_panel, self.advanced_panel]), width=750)
         
+        self.inner_eye_row = ft.Row([inner_eye_Button])
+        self.outter_eye_row = ft.Row([outter_eye_Button])
+        self.eye_column = ft.Column([self.inner_eye_row, self.outter_eye_row])
+        self.qr_colors_row = ft.Row([gradient_Button, gradiant_drop])
+        
         tabs_widget.on_change = self.update
         back.on_click = self.go_back
         forward.on_click = self.go_forward
     
-    
     def manage_color_style(self, e):
         if self.color_radio_group.value == "gradient":
-            self.fore_color_row.controls.append(gradient_Button)
-            self.fore_color_row.controls.append(gradiant_drop)
+            self.fore_color_row.controls.append(self.qr_colors_row)            
             self.qr.use_gradiant = True
-            self.regenerate_preview(e)
-            self.page.update()
-        elif self.color_radio_group.value == "normal":
-            self.fore_color_row.controls.remove(gradient_Button)
-            self.fore_color_row.controls.remove(gradiant_drop)
+        else:
+            self.fore_color_row.controls.remove(self.qr_colors_row)
             self.qr.use_gradiant = False
-            self.regenerate_preview(e)
-            self.page.update()
+        self.regenerate_preview(e)
+        self.page.update()
+
+    def manage_eye_color_style(self, e):
+        if custom_eye.value:
+            self.color_column.controls.append(self.eye_column)
+        else:
+            self.color_column.controls.remove(self.eye_column)
+        self.regenerate_preview(e)
+        self.page.update()
 
     def get_start_datetime(self, e):
         self.start_datetime = e.control.value.strftime("%Y%m%dT%H%M")
@@ -429,9 +443,15 @@ class App(ft.Row):
         self.qr.real_box_size = int(self.qr_size_slider.value)
         self.qr.border = 4 if border_txt.value == "" else int(border_txt.value)
 
-
         self.qr.back_color = background_Button.qr_color
         self.qr.main_color = foreground_Button.qr_color
+
+
+        self.qr.custom_eye_color = True if custom_eye.value else False
+        self.qr.main_color_inner_eyes = inner_eye_Button.qr_color
+        self.qr.alt_color_inner_eyes = inner_eye_gradient_Button.qr_color
+        self.qr.main_color_outter_eyes = outter_eye_Button.qr_color
+        self.qr.alt_color_outter_eyes = outter_eye_gradient_Button.qr_color
 
         error_correction_map = {"Low": 0, "Medium": 1, "High": 2, "Very High": 3}
         error_correction = error_correction_map.get(correction_drop.value, None)
