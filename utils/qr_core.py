@@ -108,12 +108,15 @@ class QRGenerator(QRCode):
 
             temp = Image.composite(inner_eyes, self.img, inner_eye_mask)
             self.img = Image.composite(outter_eyes, temp, outter_eye_mask)
+
+    """
     
     def set_inner_color_style(self):
 
 
     def get_draw_style(self):
         pass
+    """
 
     def generate_preview(self):
         self.box_size = 10
