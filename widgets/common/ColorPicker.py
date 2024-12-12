@@ -8,7 +8,7 @@ class ColorButtonPicker(ft.ElevatedButton):
         super().__init__(text, icon, icon_color=color, on_click=self.open_color_picker, **kwargs)
         self.start_color = color
         self.qr_color: tuple = hex_to_rgb(color)
-        self.fx: function = None
+        self.fx = None
         self.color_Picker = ColorPicker(color, 300)
         self.confirm_text = ft.TextButton("OK", on_click=self.change_color)
         self.color_dialog = ft.AlertDialog(
@@ -38,12 +38,12 @@ class ColorButtonPicker(ft.ElevatedButton):
         self.color_dialog.open = False
         e.page.update()
 
-background_Button = ColorButtonPicker("Background Color", ft.icons.SQUARE, "#FFFFFF")
-foreground_Button = ColorButtonPicker("Foreground Color", ft.icons.SQUARE, "#000000")
-gradient_Button = ColorButtonPicker("Gradient Color", ft.icons.SQUARE, "#0000FF")
+background_Button = ColorButtonPicker("Background Color", ft.Icons.SQUARE, "#FFFFFF")
+foreground_Button = ColorButtonPicker("Foreground Color", ft.Icons.SQUARE, "#000000")
+gradient_Button = ColorButtonPicker("Gradient Color", ft.Icons.SQUARE, "#0000FF")
 
-inner_eye_Button = ColorButtonPicker("Inner Eye Color", ft.icons.SQUARE, "#000000")
-inner_eye_gradient_Button = ColorButtonPicker("Inner Eye Gradient Color", ft.icons.SQUARE, "#0000FF")
+inner_eye_Button = ColorButtonPicker("Inner Eye Color", ft.Icons.SQUARE, "#FFFFFF")
+inner_eye_gradient_Button = ColorButtonPicker("Inner Eye Gradient Color", ft.Icons.SQUARE, "#0000FF")
 
-outter_eye_Button = ColorButtonPicker("Outter Eye Color", ft.icons.SQUARE, "#000000")
-outter_eye_gradient_Button = ColorButtonPicker("Outter Eye Gradient Color", ft.icons.SQUARE, "#0000FF")
+outer_eye_Button = ColorButtonPicker("Outer Eye Color", ft.Icons.SQUARE, "#000000")
+outer_eye_gradient_Button = ColorButtonPicker("Outer Eye Gradient Color", ft.Icons.SQUARE, "#0000FF")

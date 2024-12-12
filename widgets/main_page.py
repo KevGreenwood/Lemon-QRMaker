@@ -11,9 +11,9 @@ class App(ft.Row):
         super().__init__()
         
         self.qr = QRGenerator()
-        self.start_datetime: str = None
-        self.end_datetime: str = None
-        self.birthday: str = None
+        self.start_datetime: str = ""
+        self.end_datetime: str = ""
+        self.birthday: str = ""
 
         """ --- TextField --- """
         url_txt.on_change = self.regenerate_preview
@@ -66,8 +66,7 @@ class App(ft.Row):
         correction_drop.on_change = self.regenerate_preview
         gradiant_drop.on_change = self.regenerate_preview
         inner_eye_gradiant_drop.on_change = self.manage_eye_color_style
-        outter_eye_gradiant_drop.on_change = self.manage_eye_color_style
-
+        outer_eye_gradiant_drop.on_change = self.manage_eye_color_style
         
         """ --- Checkbox --- """
         hidden_check.on_change = self.regenerate_preview
@@ -78,15 +77,14 @@ class App(ft.Row):
         start_dt_Picker.on_change = self.get_start_datetime
         end_dt_Picker.on_change = self.get_end_datetime
 
+
         background_Button.fx =  self.regenerate_preview
         foreground_Button.fx = self.regenerate_preview
         gradient_Button.fx = self.regenerate_preview
-
         inner_eye_Button.fx = self.regenerate_preview
         inner_eye_gradient_Button.fx = self.regenerate_preview
-
-        outter_eye_Button.fx = self.regenerate_preview
-        outter_eye_gradient_Button.fx = self.regenerate_preview
+        outer_eye_Button.fx = self.regenerate_preview
+        outer_eye_gradient_Button.fx = self.regenerate_preview
 
         start_dt_Button.on_click = lambda e: self.page.open(
             ft.CupertinoBottomSheet(
@@ -125,7 +123,7 @@ class App(ft.Row):
                     ft.Radio("Single Color", value="normal"),
                     ft.Radio("Color Gradient", value="gradient")
                 ]
-            ), "normal", on_change=self.manage_color_style
+            ), "normal", self.manage_color_style
         )
         self.fore_color_row = ft.Row([foreground_Button])
         self.color_column = ft.Column([ft.Row([self.color_radio_group, custom_eye]), self.fore_color_row, background_Button])
@@ -134,10 +132,10 @@ class App(ft.Row):
                             ft.Container(self.color_column, 20))])
 
         # --- Logo Section ---
-        self.pick_files_dialog = ft.FilePicker(on_result=self.pick_files_result)
-        self.open_logo = ft.ElevatedButton("Upload Logo", ft.icons.UPLOAD_FILE_ROUNDED,
+        self.pick_files_dialog = ft.FilePicker(self.pick_files_result)
+        self.open_logo = ft.ElevatedButton("Upload Logo", ft.Icons.UPLOAD_FILE_ROUNDED,
             on_click=lambda _: self.pick_files_dialog.pick_files(allow_multiple=False, allowed_extensions=["png", "jpeg", "jpg", "svg", "webp"]))
-        self.delete_logo = ft.ElevatedButton("Delete Logo", ft.icons.REMOVE_CIRCLE_OUTLINE_ROUNDED,
+        self.delete_logo = ft.ElevatedButton("Delete Logo", ft.Icons.REMOVE_CIRCLE_OUTLINE_ROUNDED,
                             on_click=self.remove_logo, disabled=True)
         self.logo = ft.Image("Assets/logo.jpg", width=250, height=250)
         
@@ -155,7 +153,7 @@ class App(ft.Row):
 
         # --- Right Layout ---
         self.save_file_dialog = ft.FilePicker(on_result=self.save_file_result)
-        self.save_btn = ft.ElevatedButton("Save", ft.icons.SAVE,
+        self.save_btn = ft.ElevatedButton("Save", ft.Icons.SAVE,
                             on_click=lambda _: self.save_file_dialog.save_file(file_type=ft.FilePickerFileType.IMAGE))
         
         self.qr_size_slider = ft.Slider(32, "{value}", 10, 55, on_change=self.update_scale_txt)
@@ -177,8 +175,8 @@ class App(ft.Row):
                                             self.design_panel, self.advanced_panel]), width=750)
         
         self.inner_eye_row = ft.Row([inner_eye_Button, inner_eye_gradiant_drop])
-        self.outter_eye_row = ft.Row([outter_eye_Button, outter_eye_gradiant_drop])
-        self.eye_column = ft.Column([self.inner_eye_row, self.outter_eye_row])
+        self.outer_eye_row = ft.Row([outer_eye_Button, outer_eye_gradiant_drop])
+        self.eye_column = ft.Column([self.inner_eye_row, self.outer_eye_row])
         self.qr_colors_row = ft.Row([gradient_Button, gradiant_drop])
         
         tabs_widget.on_change = self.update
@@ -190,24 +188,17 @@ class App(ft.Row):
             self.inner_eye_row.controls.append(inner_eye_gradient_Button)
             self.qr.inner_use_gradiant = True
         else:
-            try:
-                self.inner_eye_row.controls.remove(inner_eye_gradient_Button)
-                self.qr.inner_use_gradiant = False
-            except:
-                pass
+            self.inner_eye_row.controls.remove(inner_eye_gradient_Button)
+            self.qr.inner_use_gradiant = False
         
-        if outter_eye_gradiant_drop.value != "Solid Color":
-            self.outter_eye_row.controls.append(outter_eye_gradient_Button)
-            self.qr.outter_use_gradiant = True
+        if outer_eye_gradiant_drop.value != "Solid Color":
+            self.outer_eye_row.controls.append(outer_eye_gradient_Button)
+            self.qr.outer_use_gradiant = True
         else:
-            try:
-                self.outter_eye_row.controls.remove(outter_eye_gradient_Button)
-                self.qr.outter_use_gradient = False
-            except:
-                pass
+            self.outer_eye_row.controls.remove(outer_eye_gradient_Button)
+            self.qr.outer_use_gradiant = False
         self.regenerate_preview(e)
         self.page.update()
-
     
     def manage_color_style(self, e):
         if self.color_radio_group.value == "gradient":
@@ -249,13 +240,13 @@ class App(ft.Row):
     def go_back(self, e):
         if tabs_widget.selected_index > 0:
             tabs_widget.selected_index -= 1
-            #back.icon_color = ft.colors.ON_BACKGROUND
+            #back.icon_color = ft.Colors.ON_SURFACE
         self.update(e)
 
     def go_forward(self, e):
         if tabs_widget.selected_index < 14:
             tabs_widget.selected_index += 1
-            forward.icon_color = ft.colors.ON_BACKGROUND
+            forward.icon_color = ft.Colors.ON_SURFACE
         self.update(e)
 
     def __manage_tabs(self):
@@ -271,6 +262,7 @@ class App(ft.Row):
 
             case 2:
                 reset_text()
+                mail_txt.width = None
                 self.cont.content = ft.Column([mail_txt, subject_txt, msg_txt])
 
             case 3:
@@ -279,11 +271,13 @@ class App(ft.Row):
 
             case 4:
                 reset_text()
+                phone_txt.width = None
                 self.cont.content = ft.Column([phone_txt, msg_txt])
                 
             case 5:
                 reset_text()
-                whatsapp_icon.color = ft.colors.PRIMARY
+                whatsapp_icon.color = ft.Colors.PRIMARY
+                phone_txt.width = None
                 self.cont.content = ft.Column([phone_txt, msg_txt])
 
             case 6:
@@ -350,11 +344,13 @@ class App(ft.Row):
 
             case 12:
                 reset_text(True)
+                url_txt.width = None
                 self.cont.content = ft.Column([title_txt, url_txt])
 
             case 13:
                 reset_text()
                 reset_drop()
+                mail_txt.width = 360
                 self.cont.content = ft.Column(
                     [
                         ft.Row([payment_drop, mail_txt]),
@@ -382,7 +378,7 @@ class App(ft.Row):
         self.__manage_tabs()
 
         if tabs_widget.selected_index != 5:
-            whatsapp_icon.color = ft.colors.ON_BACKGROUND
+            whatsapp_icon.color = ft.Colors.ON_SURFACE
             
         if tabs_widget.selected_index > 0:
             back.disabled = False
@@ -402,7 +398,7 @@ class App(ft.Row):
         network_hide: str = ""
         vcard_txt: str = ""
         crypto_currency: str = ""
-        gradiant_style_map = {"Radial Gradiant": 1, "Square Gradiant": 2, "Hoirzontal Gradient": 3, "Vertical Gradiant": 4}
+        gradiant_style_map = {"Radial Gradiant": 1, "Square Gradiant": 2, "Horizontal Gradient": 3, "Vertical Gradiant": 4}
 
         match tabs_widget.selected_index:
             case 6:
@@ -473,10 +469,12 @@ class App(ft.Row):
         self.qr.back_color = background_Button.qr_color
         self.qr.main_color = foreground_Button.qr_color
 
-
-        self.qr.custom_eye_color = True if custom_eye.value else False
-        self.qr.main_color_inner_eyes = inner_eye_Button.qr_color
-        self.qr.main_color_outter_eyes = outter_eye_Button.qr_color
+        if custom_eye.value:
+            self.qr.custom_eye_color = True
+            self.qr.main_color_inner_eyes = inner_eye_Button.qr_color
+            self.qr.main_color_outer_eyes = outer_eye_Button.qr_color
+        else:
+            self.qr.custom_eye_color = False
         
 
         error_correction_map = {"Low": 0, "Medium": 1, "High": 2, "Very High": 3}
@@ -497,9 +495,9 @@ class App(ft.Row):
             self.qr.alt_color_inner_eyes = inner_eye_gradient_Button.qr_color
             self.qr.index = gradiant_style_map.get(inner_eye_gradiant_drop.value, None)
         
-        if outter_eye_gradiant_drop.value != "Solid Color":
-            self.qr.alt_color_outter_eyes = outter_eye_gradient_Button.qr_color
-            self.qr.index = gradiant_style_map.get(outter_eye_gradiant_drop.value, None)
+        if outer_eye_gradiant_drop.value != "Solid Color":
+            self.qr.alt_color_outer_eyes = outer_eye_gradient_Button.qr_color
+            self.qr.index = gradiant_style_map.get(outer_eye_gradiant_drop.value, None)
         
         return self.qr.generate_preview()
 
@@ -519,7 +517,7 @@ class App(ft.Row):
 
     def remove_logo(self, e):
         if not self.delete_logo.disabled:
-            self.qr.logo_path = None
+            self.qr.logo_path = ""
             self.qr.use_logo = False
             correction_drop.value = "Low"
             correction_drop.update()
@@ -557,7 +555,7 @@ class App(ft.Row):
             self.page.overlay.append(ft.SnackBar(
                 ft.Text(f"Image saved in {e.path}"),
                 True,
-                bgcolor=ft.colors.GREEN,
+                bgcolor=ft.Colors.GREEN,
             ))
             self.page.update()
 
