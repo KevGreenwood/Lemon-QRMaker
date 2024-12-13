@@ -1,16 +1,27 @@
-import PIL.Image
-import PIL.ImageDraw
+import abc
+import io
+import base64
+from PIL import ImageDraw
+from qrcode.main import QRCode
 from qrcode.image.styledpil import StyledPilImage
 from qrcode.image.styles.moduledrawers import *
 from qrcode.image.styles.colormasks import *
-import io
-import base64
-from qrcode.main import QRCode
-import PIL
-from PIL import Image, ImageDraw
+from typing import TYPE_CHECKING, Any, Union
+from utils.qr_extended import (
+    XStyledPilImage,
+    XSquareModuleDrawer,
+    XGappedSquareModuleDrawer,
+    XCircleModuleDrawer,
+    XRoundedModuleDrawer,
+    XVerticalBarsDrawer,
+    XHorizontalBarsDrawer
+)
+
+
 
 REAL_BLACK: tuple = (0, 0, 0)
 FAKE_BLACK: tuple = (1, 0, 0)
+
 
 class QRGenerator(QRCode):
     def __init__(self):
@@ -25,7 +36,7 @@ class QRGenerator(QRCode):
         self.main_color: tuple = REAL_BLACK
         self.back_color: tuple = (255, 255, 255)
         self.alt_color: tuple = (0, 0, 255)
-        self.main_color_inner_eyes: tuple = (0, 0, 0)
+        self.main_color_inner_eyes: tuple = REAL_BLACK
         self.alt_color_inner_eyes: tuple = self.alt_color
         self.main_color_outer_eyes: tuple = REAL_BLACK
         self.alt_color_outer_eyes: tuple = self.alt_color
@@ -53,67 +64,26 @@ class QRGenerator(QRCode):
         self.make()
         self.get_colors_style()
 
-    def style_inner_eyes(self):
-        img_size = self.img.size[0]
-        eye_size = 70 #default
-        quiet_zone = 40 #default
-        mask = Image.new('L', self.img.size, 0)
-        draw = ImageDraw.Draw(mask)
-        draw.rectangle((60, 60, 90, 90), fill=255) #top left eye
-        draw.rectangle((img_size-90, 60, img_size-60, 90), fill=255) #top right eye
-        draw.rectangle((60, img_size-90, 90, img_size-60), fill=255) #bottom left eye
-        return mask
-
-    def style_outer_eyes(self):
-        img_size = self.img.size[0]
-        eye_size = 70 #default
-        quiet_zone = 40 #default
-        mask = Image.new('L', self.img.size, 0)
-        draw = ImageDraw.Draw(mask)
-        draw.rectangle((40, 40, 110, 110), fill=255) #top left eye
-        draw.rectangle((img_size-110, 40, img_size-40, 110), fill=255) #top right eye
-        draw.rectangle((40, img_size-110, 110, img_size-40), fill=255) #bottom left eye
-        draw.rectangle((60, 60, 90, 90), fill=0) #top left eye
-        draw.rectangle((img_size-90, 60, img_size-60, 90), fill=0) #top right eye
-        draw.rectangle((60, img_size-90, 90, img_size-60), fill=0) #bottom left eye  
-        return mask  
-
     def get_colors_style(self):
         color_mask_class = self.color_masks.get(self.index, None)
         self.back_color = FAKE_BLACK if self.back_color == REAL_BLACK else self.back_color
         
         embed_image = self.logo_path if self.use_logo else None
 
+
         if self.use_gradiant:
             self.img = self.make_image(StyledPilImage, color_mask=color_mask_class(self.back_color, self.main_color, self.alt_color), embeded_image_path=embed_image)
         else:
             self.img = self.make_image(StyledPilImage, color_mask=SolidFillColorMask(self.back_color, self.main_color), embeded_image_path=embed_image)
-        
+
         if self.custom_eye_color:
-            if self.inner_use_gradiant:
-                inner_eyes = self.make_image(StyledPilImage, color_mask=color_mask_class(self.back_color, self.main_color_inner_eyes, self.alt_color_inner_eyes))
-            else:
-                inner_eyes = self.make_image(StyledPilImage, color_mask=SolidFillColorMask(self.back_color, self.main_color_inner_eyes))
-            
-            if self.outer_use_gradient:
-                outer_eyes = self.make_image(StyledPilImage, color_mask=color_mask_class(self.back_color, self.main_color_outer_eyes, self.alt_color_outer_eyes))
-            else:
-                outer_eyes = self.make_image(StyledPilImage, color_mask=SolidFillColorMask(self.back_color, self.main_color_outer_eyes))
-            
-            inner_eye_mask = self.style_inner_eyes()
-            outer_eye_mask = self.style_outer_eyes()
+            self.img = self.make_image(
+                image_factory=XStyledPilImage,
+                back_color=self.back_color,
+                module_drawer=XSquareModuleDrawer( front_color=self.main_color),
+                eye_drawer=XSquareModuleDrawer(self.main_color_outer_eyes, self.main_color_inner_eyes),
+                embeded_image_path=embed_image)
 
-            temp = Image.composite(inner_eyes, self.img, inner_eye_mask)
-            self.img = Image.composite(outer_eyes, temp, outer_eye_mask)
-
-    """
-    
-    def set_inner_color_style(self):
-
-
-    def get_draw_style(self):
-        pass
-    """
 
     def generate_preview(self):
         self.box_size = 10

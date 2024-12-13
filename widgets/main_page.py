@@ -398,7 +398,7 @@ class App(ft.Row):
         network_hide: str = ""
         vcard_txt: str = ""
         crypto_currency: str = ""
-        gradiant_style_map = {"Radial Gradiant": 1, "Square Gradiant": 2, "Horizontal Gradient": 3, "Vertical Gradiant": 4}
+        gradiant_style_map = {"Radial Gradient": 1, "Square Gradient": 2, "Horizontal Gradient": 3, "Vertical Gradient": 4}
 
         match tabs_widget.selected_index:
             case 6:

@@ -42,7 +42,7 @@ background_Button = ColorButtonPicker("Background Color", ft.Icons.SQUARE, "#FFF
 foreground_Button = ColorButtonPicker("Foreground Color", ft.Icons.SQUARE, "#000000")
 gradient_Button = ColorButtonPicker("Gradient Color", ft.Icons.SQUARE, "#0000FF")
 
-inner_eye_Button = ColorButtonPicker("Inner Eye Color", ft.Icons.SQUARE, "#FFFFFF")
+inner_eye_Button = ColorButtonPicker("Inner Eye Color", ft.Icons.SQUARE, "#000000")
 inner_eye_gradient_Button = ColorButtonPicker("Inner Eye Gradient Color", ft.Icons.SQUARE, "#0000FF")
 
 outer_eye_Button = ColorButtonPicker("Outer Eye Color", ft.Icons.SQUARE, "#000000")
