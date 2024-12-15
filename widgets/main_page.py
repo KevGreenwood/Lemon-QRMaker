@@ -1,3 +1,5 @@
+from shelve import Shelf
+
 from utils.qr_core import *
 from widgets.common.TextField import *
 from widgets.common.Tab import *
@@ -5,6 +7,7 @@ from widgets.common.Dropdown import *
 from widgets.common.Checkbox import *
 from widgets.common.DateTime import *
 from widgets.common.ColorPicker import *
+from widgets.common.ShapeButton import *
 
 class App(ft.Row):
     def __init__(self):
@@ -64,14 +67,14 @@ class App(ft.Row):
         crypto_drop.on_change = self.regenerate_preview
         payment_drop.on_change = self.regenerate_preview
         correction_drop.on_change = self.regenerate_preview
-        gradiant_drop.on_change = self.regenerate_preview
-        inner_eye_gradiant_drop.on_change = self.manage_eye_color_style
-        outer_eye_gradiant_drop.on_change = self.manage_eye_color_style
-        
+        gradiant_drop.on_change = self.switch_gradients
+        #inner_eye_gradiant_drop.on_change = self.manage_eye_color_style
+        #outer_eye_gradiant_drop.on_change = self.manage_eye_color_style
+
         """ --- Checkbox --- """
         hidden_check.on_change = self.regenerate_preview
         ver_auto_box.on_change = self.switch_version
-        custom_eye.on_change = self.manage_eye_style
+        #custom_eye.on_change = self.manage_eye_style
         
         """ --- DatePicker --- """
         start_dt_Picker.on_change = self.get_start_datetime
@@ -81,10 +84,10 @@ class App(ft.Row):
         background_Button.fx =  self.regenerate_preview
         foreground_Button.fx = self.regenerate_preview
         gradient_Button.fx = self.regenerate_preview
-        inner_eye_Button.fx = self.regenerate_preview
-        inner_eye_gradient_Button.fx = self.regenerate_preview
-        outer_eye_Button.fx = self.regenerate_preview
-        outer_eye_gradient_Button.fx = self.regenerate_preview
+        #inner_eye_Button.fx = self.regenerate_preview
+        #inner_eye_gradient_Button.fx = self.regenerate_preview
+        #outer_eye_Button.fx = self.regenerate_preview
+        #outer_eye_gradient_Button.fx = self.regenerate_preview
 
         start_dt_Button.on_click = lambda e: self.page.open(
             ft.CupertinoBottomSheet(
@@ -103,6 +106,22 @@ class App(ft.Row):
         birthday_Button.on_click = lambda e: self.page.open(
             ft.DatePicker(on_change=self.get_birthday)
         )
+
+        squarebody_Button.on_click = self.normalDrawer
+        gappedbody_Button.on_click = self.gappedDrawer
+        circlebody_Button.on_click = self.circleDrawer
+        roundedbody_Button.on_click = self.roundedDrawer
+        verticalbody_Button.on_click = self.verticalDrawer
+        horizontalbody_Button.on_click = self.horizontalDrawer
+
+        squareeye_Button.on_click = self.normalDrawer_eye
+        gappedeye_Button.on_click = self.gappedDrawer_eye
+        circleeye_Button.on_click = self.circleDrawer_eye
+        roundedeye_Button.on_click = self.roundedDrawer_eye
+        verticaleye_Button.on_click = self.verticalDrawer_eye
+        horizontaleye_Button.on_click = self.horizontalDrawer_eye
+
+
 
 
         # ------------------------------------
@@ -126,7 +145,8 @@ class App(ft.Row):
             ), "normal", self.manage_color_style
         )
         self.fore_color_row = ft.Row([foreground_Button])
-        self.color_column = ft.Column([ft.Row([self.color_radio_group, custom_eye]), self.fore_color_row, background_Button])
+        #self.color_radio_group, custom_eye
+        self.color_column = ft.Column([ft.Row([self.color_radio_group,]), self.fore_color_row, background_Button])
         
         self.color_panel = ft.ExpansionPanelList([ft.ExpansionPanel(ft.ListTile(title=ft.Text("SET COLORS")), 
                             ft.Container(self.color_column, 20))])
@@ -145,9 +165,41 @@ class App(ft.Row):
         self.logo_panel = ft.ExpansionPanelList([ft.ExpansionPanel(ft.ListTile(title=ft.Text("ADD LOGO IMAGE")),
                             ft.Container(self.logo_column, 20))])
 
+
+        self.pick_image_dialog = ft.FilePicker(self.pick_image_result)
+        self.open_image = ft.ElevatedButton("Upload Image", ft.Icons.UPLOAD_FILE_ROUNDED,
+            on_click=lambda _: self.pick_image_dialog.pick_files(allow_multiple=False, allowed_extensions=["png", "jpeg", "jpg", "svg", "webp"]))
+        self.delete_image = ft.ElevatedButton("Delete Image", ft.Icons.REMOVE_CIRCLE_OUTLINE_ROUNDED,
+                            on_click=self.remove_image, disabled=True)
+        self.image = ft.Image("Assets/logo.jpg", width=250, height=250)
+
+        self.image_row = ft.Row([self.open_image, self.delete_image], ft.MainAxisAlignment.CENTER, height=50)
+        self.image_column = ft.Column([self.image, self.image_row], horizontal_alignment=ft.CrossAxisAlignment.CENTER)
+
+
+        self.body_Column = ft.Column(
+            [
+                ft.Text("Body Shapes"),
+                ft.Row(
+                    [squarebody_Button, gappedbody_Button, circlebody_Button, roundedbody_Button, verticalbody_Button,
+                     horizontalbody_Button], wrap=True),
+
+            ]
+        )
+
+        self.eyes_Column = ft.Column(
+            [
+                ft.Text("Eyes Shapes"),
+                ft.Row(
+                    [squareeye_Button, gappedeye_Button, circleeye_Button, roundedeye_Button, verticaleye_Button,
+                     horizontaleye_Button], wrap=True)
+
+            ]
+        )
+
         self.design_panel = ft.ExpansionPanelList([ft.ExpansionPanel(ft.ListTile(title=ft.Text("CUSTOM DESIGN")),
-                            ft.Container( padding=20))])
-        
+                            ft.Container(ft.Column([self.body_Column, self.eyes_Column]), padding=20))])
+
         self.advanced_panel = ft.ExpansionPanelList([ft.ExpansionPanel(ft.ListTile(title=ft.Text("ADVANCED SETTINGS")),
                             ft.Container(correction_drop, 20))])
 
@@ -173,17 +225,21 @@ class App(ft.Row):
 
         self.main = ft.Container(ft.Column([self.size_panel, self.color_panel, self.logo_panel,
                                             self.design_panel, self.advanced_panel]), width=750)
-        
+
+        """
         self.inner_eye_row = ft.Row([inner_eye_Button, inner_eye_gradiant_drop])
         self.outer_eye_row = ft.Row([outer_eye_Button, outer_eye_gradiant_drop])
         self.eye_column = ft.Column([self.inner_eye_row, self.outer_eye_row])
+        """
+
         self.qr_colors_row = ft.Row([gradient_Button, gradiant_drop])
         
         tabs_widget.on_change = self.update
         back.on_click = self.go_back
         forward.on_click = self.go_forward
 
-    def manage_eye_color_style(self, e):
+    """
+        def manage_eye_color_style(self, e):
         if inner_eye_gradiant_drop.value != "Solid Color":
             self.inner_eye_row.controls.append(inner_eye_gradient_Button)
             self.qr.inner_use_gradiant = True
@@ -199,6 +255,56 @@ class App(ft.Row):
             self.qr.outer_use_gradiant = False
         self.regenerate_preview(e)
         self.page.update()
+    """
+    def normalDrawer(self, e):
+        self.qr.bodyDrawer_index = 0
+        self.regenerate_preview(e)
+
+    def gappedDrawer(self, e):
+        self.qr.bodyDrawer_index = 1
+        self.regenerate_preview(e)
+
+    def circleDrawer(self, e):
+        self.qr.bodyDrawer_index = 2
+        self.regenerate_preview(e)
+
+    def roundedDrawer(self, e):
+        self.qr.bodyDrawer_index = 3
+        self.regenerate_preview(e)
+
+    def verticalDrawer(self, e):
+        self.qr.bodyDrawer_index = 4
+        self.regenerate_preview(e)
+
+    def horizontalDrawer(self, e):
+        self.qr.bodyDrawer_index = 5
+        self.regenerate_preview(e)
+
+
+    def normalDrawer_eye(self, e):
+        self.qr.eyeDrawer_index = 0
+        self.regenerate_preview(e)
+
+    def gappedDrawer_eye(self, e):
+        self.qr.eyeDrawer_index = 1
+        self.regenerate_preview(e)
+
+    def circleDrawer_eye(self, e):
+        self.qr.eyeDrawer_index = 2
+        self.regenerate_preview(e)
+
+    def roundedDrawer_eye(self, e):
+        self.qr.eyeDrawer_index = 3
+        self.regenerate_preview(e)
+
+    def verticalDrawer_eye(self, e):
+        self.qr.eyeDrawer_index = 4
+        self.regenerate_preview(e)
+
+    def horizontalDrawer_eye(self, e):
+        self.qr.eyeDrawer_index = 5
+        self.regenerate_preview(e)
+
     
     def manage_color_style(self, e):
         if self.color_radio_group.value == "gradient":
@@ -210,13 +316,15 @@ class App(ft.Row):
         self.regenerate_preview(e)
         self.page.update()
 
-    def manage_eye_style(self, e):
+    """
+        def manage_eye_style(self, e):
         if custom_eye.value:
             self.color_column.controls.append(self.eye_column)
         else:
             self.color_column.controls.remove(self.eye_column)
         self.regenerate_preview(e)
         self.page.update()
+    """
 
     def get_start_datetime(self, e):
         self.start_datetime = e.control.value.strftime("%Y%m%dT%H%M")
@@ -398,7 +506,7 @@ class App(ft.Row):
         network_hide: str = ""
         vcard_txt: str = ""
         crypto_currency: str = ""
-        gradiant_style_map = {"Radial Gradient": 1, "Square Gradient": 2, "Horizontal Gradient": 3, "Vertical Gradient": 4}
+        gradiant_style_map = {"Radial Gradient": 1, "Square Gradient": 2, "Horizontal Gradient": 3, "Vertical Gradient": 4, "Image Fill": 5}
 
         match tabs_widget.selected_index:
             case 6:
@@ -468,14 +576,15 @@ class App(ft.Row):
 
         self.qr.back_color = background_Button.qr_color
         self.qr.main_color = foreground_Button.qr_color
-
+        """
         if custom_eye.value:
             self.qr.custom_eye_color = True
             self.qr.main_color_inner_eyes = inner_eye_Button.qr_color
             self.qr.main_color_outer_eyes = outer_eye_Button.qr_color
         else:
             self.qr.custom_eye_color = False
-        
+        """
+
 
         error_correction_map = {"Low": 0, "Medium": 1, "High": 2, "Very High": 3}
         error_correction = error_correction_map.get(correction_drop.value, None)
@@ -488,18 +597,29 @@ class App(ft.Row):
 
         if self.color_radio_group.value == "gradient":
             self.qr.alt_color = gradient_Button.qr_color
-            
-            self.qr.index = gradiant_style_map.get(gradiant_drop.value, None)
+            self.qr.colorMask_index = gradiant_style_map.get(gradiant_drop.value, None)
 
-        if inner_eye_gradiant_drop.value != "Solid Color":
+
+        """
+                if inner_eye_gradiant_drop.value != "Solid Color":
             self.qr.alt_color_inner_eyes = inner_eye_gradient_Button.qr_color
-            self.qr.index = gradiant_style_map.get(inner_eye_gradiant_drop.value, None)
+            self.qr.colorMask_index = gradiant_style_map.get(inner_eye_gradiant_drop.value, None)
         
         if outer_eye_gradiant_drop.value != "Solid Color":
             self.qr.alt_color_outer_eyes = outer_eye_gradient_Button.qr_color
-            self.qr.index = gradiant_style_map.get(outer_eye_gradiant_drop.value, None)
+            self.qr.colorMask_index = gradiant_style_map.get(outer_eye_gradiant_drop.value, None)
+        """
+
         
         return self.qr.generate_preview()
+
+    def switch_gradients(self, e):
+        if gradiant_drop.value == "Image Fill":
+            self.color_column.controls.append(self.image_column)
+        else:
+            self.color_column.controls.remove(self.image_column)
+
+        self.page.update()
 
     # --- Realtime Building ---
     def regenerate_preview(self, e):
@@ -527,6 +647,18 @@ class App(ft.Row):
             self.delete_logo.disabled = True
             self.delete_logo.update()
 
+
+    def remove_image(self, e):
+        if not self.delete_image.disabled:
+            self.qr.image_mask_path = ""
+            correction_drop.value = "Low"
+            correction_drop.update()
+            self.image.src = "assets/logo.jpg"
+            self.image.update()
+            #self.regenerate_preview(e)
+            self.delete_image.disabled = True
+            self.delete_image.update()
+
     def update_scale_txt(self, e):
         self.regenerate_preview(e)
         self.scale_txt.value = self.qr.get_res()
@@ -545,6 +677,19 @@ class App(ft.Row):
             self.regenerate_preview(e)
             self.delete_logo.disabled = False
             self.delete_logo.update()
+
+    def pick_image_result(self, e: ft.FilePickerResultEvent):
+        if e.files:  # Prevents Error if you cancel
+            for file in e.files:
+                print("Nombre del archivo:", file.name)
+                print("Ruta del archivo:", file.path)
+                print("Tamaño del archivo:", file.size)
+            self.image.src = e.files[0].path
+            self.qr.image_mask_path = e.files[0].path
+            self.image.update()
+            self.regenerate_preview(e)
+            self.delete_image.disabled = False
+            self.delete_image.update()
 
     def save_file_result(self, e: ft.FilePickerResultEvent):
         if e.path:  # Prevents save a filename named "None" in the app path
@@ -573,5 +718,5 @@ class App(ft.Row):
         )
 
     def did_mount(self):
-        self.page.overlay.extend([self.save_file_dialog, self.pick_files_dialog])
+        self.page.overlay.extend([self.save_file_dialog, self.pick_files_dialog, self.pick_image_dialog])
         self.page.update()

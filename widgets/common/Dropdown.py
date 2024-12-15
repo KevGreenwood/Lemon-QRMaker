@@ -14,7 +14,7 @@ encrypt_drop = CustomDropdown("WPA/WPA2", ["None", "WEP", "WPA/WPA2"], "Network 
 crypto_drop = CustomDropdown("Bitcoin", ["Bitcoin", "Bitcoin Cash", "Ethereum", "Litecoin", "Dash"], "Select Cryptocurrency")
 payment_drop = CustomDropdown(None, ["Buy now", "Add to cart", "Donation"], "Payment type", width=360)
 correction_drop = CustomDropdown("Low", ["Low", "Medium", "High", "Very High"], "Correction Level")
-gradiant_drop = CustomDropdown("Radial Gradient", ["Radial Gradient", "Square Gradient", "Horizontal Gradient", "Vertical Gradient"], "Gradient Styles")
+gradiant_drop = CustomDropdown("Radial Gradient", ["Radial Gradient", "Square Gradient", "Horizontal Gradient", "Vertical Gradient", "Image Fill"], "Gradient Styles")
 
 inner_eye_gradiant_drop = CustomDropdown("Solid Color", ["Solid Color", "Radial Gradient", "Square Gradient", "Horizontal Gradient", "Vertical Gradient"], "Color Styles")
 outer_eye_gradiant_drop = CustomDropdown("Solid Color", ["Solid Color", "Radial Gradient", "Square Gradient", "Horizontal Gradient", "Vertical Gradient"], "Color Styles")

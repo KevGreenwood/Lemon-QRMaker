@@ -1,23 +1,11 @@
-import abc
 import io
 import base64
-from PIL import ImageDraw
+
+from qrcode.image.styles.moduledrawers import GappedSquareModuleDrawer, SquareModuleDrawer, CircleModuleDrawer, \
+    RoundedModuleDrawer, VerticalBarsDrawer, HorizontalBarsDrawer
 from qrcode.main import QRCode
 from qrcode.image.styledpil import StyledPilImage
-from qrcode.image.styles.moduledrawers import *
 from qrcode.image.styles.colormasks import *
-from typing import TYPE_CHECKING, Any, Union
-from utils.qr_extended import (
-    XStyledPilImage,
-    XSquareModuleDrawer,
-    XGappedSquareModuleDrawer,
-    XCircleModuleDrawer,
-    XRoundedModuleDrawer,
-    XVerticalBarsDrawer,
-    XHorizontalBarsDrawer
-)
-
-
 
 REAL_BLACK: tuple = (0, 0, 0)
 FAKE_BLACK: tuple = (1, 0, 0)
@@ -43,8 +31,11 @@ class QRGenerator(QRCode):
 
         self.data: str = ""
         self.logo_path: str = ""
+        self.image_mask_path = ""
 
-        self.index: int = 0
+        self.colorMask_index: int = 0
+        self.bodyDrawer_index: int = 0
+        self.eyeDrawer_index: int = 0
         # box_size base: 37x37, so, just multiply by your desire number for scale your qr
         self.real_box_size: int = 10
 
@@ -53,7 +44,16 @@ class QRGenerator(QRCode):
             1: RadialGradiantColorMask,
             2: SquareGradiantColorMask,
             3: HorizontalGradiantColorMask,
-            4: VerticalGradiantColorMask
+            4: VerticalGradiantColorMask,
+            5: ImageColorMask
+        }
+        self.shape_drawer = {
+            0: SquareModuleDrawer(),
+            1: GappedSquareModuleDrawer(),
+            2: CircleModuleDrawer(),
+            3: RoundedModuleDrawer(),
+            4: VerticalBarsDrawer(),
+            5: HorizontalBarsDrawer()
         }
 
         self.img = None
@@ -65,24 +65,21 @@ class QRGenerator(QRCode):
         self.get_colors_style()
 
     def get_colors_style(self):
-        color_mask_class = self.color_masks.get(self.index, None)
+        color_mask_class = self.color_masks.get(self.colorMask_index, None)
         self.back_color = FAKE_BLACK if self.back_color == REAL_BLACK else self.back_color
-        
+        body_draw_class = self.shape_drawer.get(self.bodyDrawer_index, None)
+        eye_draw_class = self.shape_drawer.get(self.eyeDrawer_index, None)
+
+
         embed_image = self.logo_path if self.use_logo else None
 
 
-        if self.use_gradiant:
-            self.img = self.make_image(StyledPilImage, color_mask=color_mask_class(self.back_color, self.main_color, self.alt_color), embeded_image_path=embed_image)
+        if self.use_gradiant and self.colorMask_index != 5:
+            self.img = self.make_image(StyledPilImage, module_drawer=body_draw_class, eye_drawer=eye_draw_class, color_mask=color_mask_class(self.back_color, self.main_color, self.alt_color), embeded_image_path=embed_image)
+        elif self.colorMask_index == 5:
+            self.img = self.make_image(StyledPilImage, module_drawer=body_draw_class, eye_drawer=eye_draw_class, color_mask=ImageColorMask(self.back_color, color_mask_path=self.image_mask_path), embeded_image_path=embed_image)
         else:
-            self.img = self.make_image(StyledPilImage, color_mask=SolidFillColorMask(self.back_color, self.main_color), embeded_image_path=embed_image)
-
-        if self.custom_eye_color:
-            self.img = self.make_image(
-                image_factory=XStyledPilImage,
-                back_color=self.back_color,
-                module_drawer=XSquareModuleDrawer( front_color=self.main_color),
-                eye_drawer=XSquareModuleDrawer(self.main_color_outer_eyes, self.main_color_inner_eyes),
-                embeded_image_path=embed_image)
+            self.img = self.make_image(StyledPilImage, module_drawer=body_draw_class, eye_drawer=eye_draw_class, color_mask=SolidFillColorMask(self.back_color, self.main_color), embeded_image_path=embed_image)
 
 
     def generate_preview(self):
