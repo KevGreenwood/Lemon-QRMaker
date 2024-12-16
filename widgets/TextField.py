@@ -1,7 +1,7 @@
-import flet as ft
+from flet import (TextField, NumbersOnlyInputFilter, InputFilter, TextOnlyInputFilter)
 
 
-class CustomTextField(ft.TextField):
+class CustomTextField(TextField):
     def __init__(self, label, value=None, multiline=False, password=False,
                 can_reveal_password=False, input_filter=None, filled=False,
                 hint_text=None, prefix_text=None, suffix_text=None, width=None):
@@ -20,12 +20,12 @@ class CustomTextField(ft.TextField):
     
     def get_input_filter(self, filter_type):
         filters = {
-            "num": ft.NumbersOnlyInputFilter(),
-            "phone": ft.InputFilter(allow=True, regex_string=r"[0-9+]", replacement_string=""),
-            "geo": ft.InputFilter(allow=True, regex_string=r"[0-9-.]", replacement_string=""),
-            "zip": ft.InputFilter(allow=True, regex_string=r"[0-9-]", replacement_string=""),
-            "money": ft.InputFilter(allow=True, regex_string=r"[0-9.]"),
-            "currency": ft.TextOnlyInputFilter()
+            "num": NumbersOnlyInputFilter(),
+            "phone": InputFilter(allow=True, regex_string=r"[0-9+]", replacement_string=""),
+            "geo": InputFilter(allow=True, regex_string=r"[0-9-.]", replacement_string=""),
+            "zip": InputFilter(allow=True, regex_string=r"[0-9-]", replacement_string=""),
+            "money": InputFilter(allow=True, regex_string=r"[0-9.]"),
+            "currency": TextOnlyInputFilter()
         }
         return filters.get(filter_type) 
 

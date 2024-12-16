@@ -12,8 +12,8 @@ from qrcode.image.styles.moduledrawers import (
 )
 
 
-REAL_BLACK: tuple = (0, 0, 0)
 # Using StyledPilImage with pure black color as background causes the whole QR code to turn fully black
+REAL_BLACK: tuple = (0, 0, 0)
 FAKE_BLACK: tuple = (1, 0, 0)
 
 class QRGenerator(QRCode):
@@ -63,26 +63,27 @@ class QRGenerator(QRCode):
         }
 
         self.img = None
-    """
-        def build_data(self, data_type: str, **kwargs):
+
+    def build_data(self, data_type: str, **kwargs):
         formats = {
             "url": lambda: kwargs.get("url", ""),
-            "plain text": lambda: kwargs.get("text", ""),
+            "text": lambda: kwargs.get("text", ""),
             "mail": lambda: f"mailto:{kwargs.get('email')}?subject={kwargs.get('subject')}&body={kwargs.get('msg')}",
             "phone": lambda : f"tel:{kwargs.get('phone')}",
             "sms": lambda: f"SMSTO:{kwargs.get('phone')}:{kwargs.get('msg')}",
             "whatsapp": lambda: f"https://wa.me/{kwargs.get('phone')}/?text={kwargs.get('msg')}",
-            "mecard": lambda: f"MECARD:N:{kwargs.get('lastname')},{kwargs.get('name')};NICKNAME:{kwargs.get('nick')};TEL:{kwargs.get('work_phone')};TEL:{kwargs.get('priv_phone')};TEL:{kwargs.get('phone')};EMAIL:{kwargs.get('email')};BDAY:{self.birthday};URL:{url_txt.value}NOTE:{filled_txt.value};ADR:,,{street_txt.value},{city_txt.value},{state_txt.value},{zip_txt.value},{country_txt.value};;",
+            "vcard_v2": lambda: f"BEGIN:VCARD\nVERSION:2.1\nN:{kwargs.get('lastname')};{kwargs.get('name')}\nTITLE:{kwargs.get('pos')}\nORG:{kwargs.get('org')}\nURL:{kwargs.get("url")}\nEMAIL;TYPE=INTERNET:{kwargs.get('email')}\nTEL;WORK;VOICE:{kwargs.get('work_phone')}\nTEL;HOME;VOICE:{kwargs.get('priv_phone')}\nTEL;CELL:{kwargs.get('phone')}\nTEL;WORK;FAX:{kwargs.get('work_fax')}\nTEL;HOME;FAX:{kwargs.get('priv_fax')}\nADR:;;{kwargs.get('street')};{kwargs.get('city')};{kwargs.get('state')};{kwargs.get('zip')};{kwargs.get('country')}\nEND:VCARD",
+            "vcard_v3": lambda : f"BEGIN:VCARD\nVERSION:3.0\nN:{kwargs.get('lastname')};{kwargs.get('name')}\nFN:{kwargs.get('name')} {kwargs.get('lastname')}\nTITLE:{kwargs.get('pos')}\nORG:{kwargs.get('org')}\nURL:{kwargs.get("url")}\nEMAIL;TYPE=INTERNET:{kwargs.get('email')}\nTEL;TYPE=voice,work,pref:{kwargs.get('work_phone')}\nTEL;TYPE=voice,home,pref:{kwargs.get('priv_phone')}\nTEL;TYPE=voice,cell,pref:{kwargs.get('phone')}\nTEL;TYPE=fax,work,pref:{kwargs.get('work_fax')}\nTEL;TYPE=fax,home,pref:{kwargs.get('priv_fax')}\nADR:;;{kwargs.get('street')};{kwargs.get('city')};{kwargs.get('state')};{kwargs.get('zip')};{kwargs.get('country')}\nEND:VCARD",
+            "mecard": lambda: f"MECARD:N:{kwargs.get('lastname')},{kwargs.get('name')};NICKNAME:{kwargs.get('nick')};TEL:{kwargs.get('work_phone')};TEL:{kwargs.get('priv_phone')};TEL:{kwargs.get('phone')};EMAIL:{kwargs.get('email')};BDAY:{kwargs.get('birthday')};URL:{kwargs.get("url")}NOTE:{kwargs.get('note')};ADR:,,{kwargs.get('street')},{kwargs.get('city')},{kwargs.get('state')},{kwargs.get('zip')},{kwargs.get('country')};;",
             "map": lambda: f"https://maps.google.com/local?q={kwargs.get('latitude')},{kwargs.get('longitude')}",
-            "wifi": lambda: f"WIFI:S:{ssid_txt.value};T:{wifi_encrypt};P:{pass_txt.value};H:{network_hide};;",
-            "event": lambda: f"BEGIN:VEVENT\nUID:{title_txt.value}\nORGANIZER:{organizer_txt.value}\nLOCATION:{location_txt.value}\nDTSTART:{self.start_datetime}\nDTEND:{self.end_datetime}\nSUMMARY:{summary_txt.value}\nEND:VEVENT",
-            "app": lambda: f"market://details?id={app_txt.value}",
-            "favorite": lambda: f"MEBKM:TITLE:{title_txt.value};URL:{kwargs.get("url")};;",
-            "paypal": lambda: f"https://www.paypal.com/cgi-bin/webscr?business={mail_txt.value}&cmd=_xclick&currency_code={currency_txt.value}&amount={price_txt.value}&item_name={item_name_txt.value}&return={thanks_url_txt.value}&cancel_return={cancel_url_txt.value}",
-            "crypto": lambda: f"{crypto_currency}:{id_txt.value}?amount={amount_txt.value}&message={kwargs.get('msg')}",
+            "wifi": lambda: f"WIFI:S:{kwargs.get('ssid')};T:{kwargs.get('wifi_encrypt')};P:{kwargs.get('passwd')};H:{kwargs.get('network_hide')};;",
+            "event": lambda: f"BEGIN:VEVENT\nUID:{kwargs.get('title')}\nORGANIZER:{kwargs.get('organizer')}\nLOCATION:{kwargs.get('location')}\nDTSTART:{kwargs.get('start_datetime')}\nDTEND:{kwargs.get('end_datetime')}\nSUMMARY:{kwargs.get('summary')}\nEND:VEVENT",
+            "app": lambda: f"market://details?id={kwargs.get('app')}",
+            "favorite": lambda: f"MEBKM:TITLE:{kwargs.get('title')};URL:{kwargs.get("url")};;",
+            "paypal": lambda: f"https://www.paypal.com/cgi-bin/webscr?business={kwargs.get('email')}&cmd=_xclick&currency_code={kwargs.get('currency')}&amount={kwargs.get('price')}&item_name={kwargs.get('item_name')}&return={kwargs.get('thanks_url')}&cancel_return={kwargs.get('cancel_url')}",
+            "crypto": lambda: f"{kwargs.get('crypto_currency')}:{kwargs.get('id')}?amount={kwargs.get('amount')}&message={kwargs.get('msg')}",
         }
-    """
-
+        self.data = formats.get(data_type, lambda: None)()
 
     def _build_qr(self):
         """Builds the QR code with the current configurations."""
