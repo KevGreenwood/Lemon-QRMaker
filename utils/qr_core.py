@@ -63,7 +63,27 @@ class QRGenerator(QRCode):
         }
 
         self.img = None
-    
+    """
+        def build_data(self, data_type: str, **kwargs):
+        formats = {
+            "url": lambda: kwargs.get("url", ""),
+            "plain text": lambda: kwargs.get("text", ""),
+            "mail": lambda: f"mailto:{kwargs.get('email')}?subject={kwargs.get('subject')}&body={kwargs.get('msg')}",
+            "phone": lambda : f"tel:{kwargs.get('phone')}",
+            "sms": lambda: f"SMSTO:{kwargs.get('phone')}:{kwargs.get('msg')}",
+            "whatsapp": lambda: f"https://wa.me/{kwargs.get('phone')}/?text={kwargs.get('msg')}",
+            "mecard": lambda: f"MECARD:N:{kwargs.get('lastname')},{kwargs.get('name')};NICKNAME:{kwargs.get('nick')};TEL:{kwargs.get('work_phone')};TEL:{kwargs.get('priv_phone')};TEL:{kwargs.get('phone')};EMAIL:{kwargs.get('email')};BDAY:{self.birthday};URL:{url_txt.value}NOTE:{filled_txt.value};ADR:,,{street_txt.value},{city_txt.value},{state_txt.value},{zip_txt.value},{country_txt.value};;",
+            "map": lambda: f"https://maps.google.com/local?q={kwargs.get('latitude')},{kwargs.get('longitude')}",
+            "wifi": lambda: f"WIFI:S:{ssid_txt.value};T:{wifi_encrypt};P:{pass_txt.value};H:{network_hide};;",
+            "event": lambda: f"BEGIN:VEVENT\nUID:{title_txt.value}\nORGANIZER:{organizer_txt.value}\nLOCATION:{location_txt.value}\nDTSTART:{self.start_datetime}\nDTEND:{self.end_datetime}\nSUMMARY:{summary_txt.value}\nEND:VEVENT",
+            "app": lambda: f"market://details?id={app_txt.value}",
+            "favorite": lambda: f"MEBKM:TITLE:{title_txt.value};URL:{kwargs.get("url")};;",
+            "paypal": lambda: f"https://www.paypal.com/cgi-bin/webscr?business={mail_txt.value}&cmd=_xclick&currency_code={currency_txt.value}&amount={price_txt.value}&item_name={item_name_txt.value}&return={thanks_url_txt.value}&cancel_return={cancel_url_txt.value}",
+            "crypto": lambda: f"{crypto_currency}:{id_txt.value}?amount={amount_txt.value}&message={kwargs.get('msg')}",
+        }
+    """
+
+
     def _build_qr(self):
         """Builds the QR code with the current configurations."""
         self.clear()
