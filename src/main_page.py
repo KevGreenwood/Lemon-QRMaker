@@ -8,6 +8,7 @@ from widgets.ColorPicker import *
 from widgets.ShapeButton import *
 from flet import (CupertinoBottomSheet, Container, SnackBar, FilePicker, FilePickerResultEvent, DatePicker, Slider, ExpansionPanel, ExpansionPanelList, ListTile, RadioGroup, Radio, FilePickerFileType, FontWeight, ScrollMode, alignment, padding)
 
+
 class App(Row):
     def __init__(self):
         super().__init__()
@@ -30,6 +31,30 @@ class App(Row):
         roundedeye_Button.on_click = self.roundedDrawer_eye
         verticaleye_Button.on_click = self.verticalDrawer_eye
         horizontaleye_Button.on_click = self.horizontalDrawer_eye
+        background_Button.fx = self.regenerate_preview
+        foreground_Button.fx = self.regenerate_preview
+        gradient_Button.fx = self.regenerate_preview
+        # inner_eye_Button.fx = self.regenerate_preview
+        # inner_eye_gradient_Button.fx = self.regenerate_preview
+        # outer_eye_Button.fx = self.regenerate_preview
+        # outer_eye_gradient_Button.fx = self.regenerate_preview
+        start_dt_Button.on_click = lambda e: self.page.open(
+            CupertinoBottomSheet(
+                start_dt_Picker,
+                height=216,
+                padding=padding.only(top=6)
+            )
+        )
+        end_dt_Button.on_click = lambda e: self.page.open(
+            CupertinoBottomSheet(
+                end_dt_Picker,
+                height=216,
+                padding=padding.only(top=6)
+            )
+        )
+        birthday_Button.on_click = lambda e: self.page.open(
+            DatePicker(on_change=self.get_birthday)
+        )
 
         """ --- TextField --- """
         url_txt.on_change = self.regenerate_preview
@@ -93,33 +118,6 @@ class App(Row):
         start_dt_Picker.on_change = self.get_start_datetime
         end_dt_Picker.on_change = self.get_end_datetime
 
-
-        background_Button.fx =  self.regenerate_preview
-        foreground_Button.fx = self.regenerate_preview
-        gradient_Button.fx = self.regenerate_preview
-        #inner_eye_Button.fx = self.regenerate_preview
-        #inner_eye_gradient_Button.fx = self.regenerate_preview
-        #outer_eye_Button.fx = self.regenerate_preview
-        #outer_eye_gradient_Button.fx = self.regenerate_preview
-
-        start_dt_Button.on_click = lambda e: self.page.open(
-            CupertinoBottomSheet(
-                start_dt_Picker,
-                height=216,
-                padding=padding.only(top=6)
-            )
-        )
-        end_dt_Button.on_click = lambda e: self.page.open(
-            CupertinoBottomSheet(
-                end_dt_Picker,
-                height=216,
-                padding=padding.only(top=6)
-            )
-        )
-        birthday_Button.on_click = lambda e: self.page.open(
-            DatePicker(on_change=self.get_birthday)
-        )
-
         # ------------------------------------
 
         self.cont = Container(url_txt, padding=10, width=750)
@@ -165,12 +163,8 @@ class App(Row):
         self.pick_image_dialog = FilePicker(self.pick_image_result)
         self.open_image = ElevatedButton("Upload Image", Icons.UPLOAD_FILE_ROUNDED,
             on_click=lambda _: self.pick_image_dialog.pick_files(allow_multiple=False, allowed_extensions=["png", "jpeg", "jpg", "svg", "webp"]))
-        self.delete_image = ElevatedButton("Delete Image", Icons.REMOVE_CIRCLE_OUTLINE_ROUNDED,
-                            on_click=self.remove_image, disabled=True)
         self.image = Image("/logo.jpg", width=250, height=250)
-
-        self.image_row = Row([self.open_image, self.delete_image], MainAxisAlignment.CENTER, height=50)
-        self.image_column = Column([self.image, self.image_row], horizontal_alignment=CrossAxisAlignment.CENTER)
+        self.image_column = Column([self.image, self.open_image], horizontal_alignment=CrossAxisAlignment.CENTER)
 
 
         self.body_Column = Column(
@@ -358,32 +352,26 @@ class App(Row):
             case 0:
                 reset_text(True)
                 self.cont.content = url_txt
-
             case 1:
                 reset_text()
                 filled_txt.label = "Write your text here"
                 self.cont.content = filled_txt
-
             case 2:
                 reset_text()
                 mail_txt.width = None
                 self.cont.content = Column([mail_txt, subject_txt, msg_txt])
-
             case 3:
                 reset_text()
                 self.cont.content = phone_txt
-
             case 4:
                 reset_text()
                 phone_txt.width = None
                 self.cont.content = Column([phone_txt, msg_txt])
-                
             case 5:
                 reset_text()
                 whatsapp_icon.color = Colors.PRIMARY
                 phone_txt.width = None
                 self.cont.content = Column([phone_txt, msg_txt])
-
             case 6:
                 card_pages()
                 reset_drop()
@@ -400,7 +388,6 @@ class App(Row):
                         Row([state_txt, country_txt]),
                     ]
                 )
-
             case 7:
                 card_pages()
                 self.cont.content = Column(
@@ -415,11 +402,9 @@ class App(Row):
                         filled_txt,
                     ]
                 )
-
             case 8:
                 reset_text()
                 self.cont.content = Row([latitude_txt, longitude_txt])
-
             case 9:
                 reset_text()
                 reset_drop()
@@ -430,7 +415,6 @@ class App(Row):
                         Row([encrypt_drop, hidden_check]),
                     ]
                 )
-                        
             case 10:
                 reset_text()
                 self.cont.content = Column(
@@ -441,16 +425,13 @@ class App(Row):
                      Row([start_dt_Button, end_dt_Button]), 
                     ]
                 )
-            
             case 11:
                 reset_text()
                 self.cont.content = Column([app_txt])
-
             case 12:
                 reset_text(True)
                 url_txt.width = None
                 self.cont.content = Column([title_txt, url_txt])
-
             case 13:
                 reset_text()
                 reset_drop()
@@ -464,7 +445,6 @@ class App(Row):
                         Row([thanks_url_txt, cancel_url_txt])
                     ]
                 )
-
             case 14:
                 reset_text()
                 reset_drop()
@@ -480,15 +460,12 @@ class App(Row):
     
     def update(self, e):
         self.__manage_tabs()
-
         if tabs_widget.selected_index != 5:
             whatsapp_icon.color = Colors.ON_SURFACE
-            
         if tabs_widget.selected_index > 0:
             back.disabled = False
         else:
             back.disabled = True
-
         if tabs_widget.selected_index < 14:
             forward.disabled = False
         else:
@@ -569,7 +546,6 @@ class App(Row):
         self.qr.version = None if ver_auto_box.value else int(self.version_slider.value)
         self.qr.real_box_size = int(self.qr_size_slider.value)
         self.qr.border = 4 if border_txt.value == "" else int(border_txt.value)
-
         self.qr.back_color = background_Button.qr_color
         self.qr.main_color = foreground_Button.qr_color
         """
@@ -593,7 +569,7 @@ class App(Row):
             self.qr.colorMask_index = gradiant_style_map.get(gradiant_drop.value, None)
 
         """
-                if inner_eye_gradiant_drop.value != "Solid Color":
+        if inner_eye_gradiant_drop.value != "Solid Color":
             self.qr.alt_color_inner_eyes = inner_eye_gradient_Button.qr_color
             self.qr.colorMask_index = gradiant_style_map.get(inner_eye_gradiant_drop.value, None)
         
@@ -606,10 +582,12 @@ class App(Row):
 
     def switch_gradients(self, e):
         if gradiant_drop.value == "Image Fill":
-            self.color_column.controls.append(self.image_column)
+            if not self.image_column in self.color_column.controls:
+                self.color_column.controls.append(self.image_column)
         else:
-            self.color_column.controls.remove(self.image_column)
-
+            self.regenerate_preview(e)
+            if self.image_column in self.color_column.controls:
+                self.color_column.controls.remove(self.image_column)
         self.page.update()
 
     # --- Realtime Building ---
@@ -637,18 +615,6 @@ class App(Row):
             self.regenerate_preview(e)
             self.delete_logo.disabled = True
             self.delete_logo.update()
-
-
-    def remove_image(self, e):
-        if not self.delete_image.disabled:
-            self.qr.img_fill_path = ""
-            correction_drop.value = "Low"
-            correction_drop.update()
-            self.image.src = "/logo.jpg"
-            self.image.update()
-            #self.regenerate_preview(e)
-            self.delete_image.disabled = True
-            self.delete_image.update()
 
     def update_scale_txt(self, e):
         self.regenerate_preview(e)
@@ -679,15 +645,11 @@ class App(Row):
             self.qr.img_fill_path = e.files[0].path
             self.image.update()
             self.regenerate_preview(e)
-            self.delete_image.disabled = False
-            self.delete_image.update()
 
     def save_file_result(self, e: FilePickerResultEvent):
         if e.path:  # Prevents save a filename named "None" in the app path
             self.qr.generate_final(e.path)
-
             print(f"Image saved in {e.path}")
-
             self.page.overlay.append(SnackBar(
                 Text(f"Image saved in {e.path}"),
                 True,
