@@ -1,0 +1,35 @@
+[project]
+name = "Lemon-QRGenerator"
+version = "0.1.0"
+description = ""
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+  "flet==0.25.1",
+  "flet-contrib>=2024.12.3",
+  "qrcode>=8.0",
+  "pillow>=11.0.0"
+]
+
+
+[tool.flet]
+# org name in reverse domain name notation, e.g. "com.mycompany".
+# Combined with project.name to build bundle ID for iOS and Android apps
+org = "com.kevgreenwood"
+
+# project display name that is used as an app title on Android and iOS home screens,
+# shown in window titles and about app dialogs on desktop.
+product = "lemon-qrgenerator"
+
+# company name to display in about app dialogs
+company = "Kev Greenwood"
+
+# copyright text to display in about app dialogs
+copyright = "Copyright (C) 2024 by Flet"
+
+compile.app = true # --compile-app
+compile.packages = true # --compile-packages
+compile.cleanup = true # --cleanup-on-compile
+
+[tool.flet.app]
+path = "src"

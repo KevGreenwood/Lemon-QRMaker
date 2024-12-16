@@ -1,7 +1,10 @@
 from flet import (ElevatedButton, TextButton, AlertDialog, Icons, MainAxisAlignment)
 from flet_contrib.color_picker import ColorPicker
-from utils.color_coverter import hex_to_rgb
 
+
+def hex_to_rgb(color: str):
+    color = color.lstrip("#")
+    return tuple(int(color[i:i+2], 16) for i in (0, 2, 4))
 
 class ColorButtonPicker(ElevatedButton):
     def __init__(self, text, icon, color):

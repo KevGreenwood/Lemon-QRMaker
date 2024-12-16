@@ -153,7 +153,7 @@ class App(Row):
             on_click=lambda _: self.pick_files_dialog.pick_files(allow_multiple=False, allowed_extensions=["png", "jpeg", "jpg", "svg", "webp"]))
         self.delete_logo = ElevatedButton("Delete Logo", Icons.REMOVE_CIRCLE_OUTLINE_ROUNDED,
                             on_click=self.remove_logo, disabled=True)
-        self.logo = Image("Assets/logo.jpg", width=250, height=250)
+        self.logo = Image("/logo.jpg", width=250, height=250)
         
         self.logo_row = Row([self.open_logo, self.delete_logo], MainAxisAlignment.CENTER, height=50)
         self.logo_column = Column([self.logo, self.logo_row], horizontal_alignment=CrossAxisAlignment.CENTER)
@@ -167,7 +167,7 @@ class App(Row):
             on_click=lambda _: self.pick_image_dialog.pick_files(allow_multiple=False, allowed_extensions=["png", "jpeg", "jpg", "svg", "webp"]))
         self.delete_image = ElevatedButton("Delete Image", Icons.REMOVE_CIRCLE_OUTLINE_ROUNDED,
                             on_click=self.remove_image, disabled=True)
-        self.image = Image("Assets/logo.jpg", width=250, height=250)
+        self.image = Image("/logo.jpg", width=250, height=250)
 
         self.image_row = Row([self.open_image, self.delete_image], MainAxisAlignment.CENTER, height=50)
         self.image_column = Column([self.image, self.image_row], horizontal_alignment=CrossAxisAlignment.CENTER)
@@ -632,7 +632,7 @@ class App(Row):
             self.qr.use_logo = False
             correction_drop.value = "Low"
             correction_drop.update()
-            self.logo.src = "assets/logo.jpg"
+            self.logo.src = "/logo.jpg"
             self.logo.update()
             self.regenerate_preview(e)
             self.delete_logo.disabled = True
@@ -644,7 +644,7 @@ class App(Row):
             self.qr.img_fill_path = ""
             correction_drop.value = "Low"
             correction_drop.update()
-            self.image.src = "assets/logo.jpg"
+            self.image.src = "/logo.jpg"
             self.image.update()
             #self.regenerate_preview(e)
             self.delete_image.disabled = True

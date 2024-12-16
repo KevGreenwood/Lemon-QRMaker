@@ -11,7 +11,7 @@ def create_tab(icon: Icons, text: str):
     )
 
 whatsapp_icon = Image(
-    src="assets\\icons\\whatsapp.svg",
+    src="/icons/whatsapp.svg",
     width=24,
     height=24,
     color=Colors.ON_SURFACE
