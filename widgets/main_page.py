@@ -18,6 +18,20 @@ class App(ft.Row):
         self.end_datetime: str = ""
         self.birthday: str = ""
 
+        """ --- Buttons --- """
+        squarebody_Button.on_click = self.normalDrawer
+        gappedbody_Button.on_click = self.gappedDrawer
+        circlebody_Button.on_click = self.circleDrawer
+        roundedbody_Button.on_click = self.roundedDrawer
+        verticalbody_Button.on_click = self.verticalDrawer
+        horizontalbody_Button.on_click = self.horizontalDrawer
+        squareeye_Button.on_click = self.normalDrawer_eye
+        gappedeye_Button.on_click = self.gappedDrawer_eye
+        circleeye_Button.on_click = self.circleDrawer_eye
+        roundedeye_Button.on_click = self.roundedDrawer_eye
+        verticaleye_Button.on_click = self.verticalDrawer_eye
+        horizontaleye_Button.on_click = self.horizontalDrawer_eye
+
         """ --- TextField --- """
         url_txt.on_change = self.regenerate_preview
         filled_txt.on_change = self.regenerate_preview
@@ -106,23 +120,6 @@ class App(ft.Row):
         birthday_Button.on_click = lambda e: self.page.open(
             ft.DatePicker(on_change=self.get_birthday)
         )
-
-        squarebody_Button.on_click = self.normalDrawer
-        gappedbody_Button.on_click = self.gappedDrawer
-        circlebody_Button.on_click = self.circleDrawer
-        roundedbody_Button.on_click = self.roundedDrawer
-        verticalbody_Button.on_click = self.verticalDrawer
-        horizontalbody_Button.on_click = self.horizontalDrawer
-
-        squareeye_Button.on_click = self.normalDrawer_eye
-        gappedeye_Button.on_click = self.gappedDrawer_eye
-        circleeye_Button.on_click = self.circleDrawer_eye
-        roundedeye_Button.on_click = self.roundedDrawer_eye
-        verticaleye_Button.on_click = self.verticalDrawer_eye
-        horizontaleye_Button.on_click = self.horizontalDrawer_eye
-
-
-
 
         # ------------------------------------
 
@@ -650,7 +647,7 @@ class App(ft.Row):
 
     def remove_image(self, e):
         if not self.delete_image.disabled:
-            self.qr.image_mask_path = ""
+            self.qr.img_fill_path = ""
             correction_drop.value = "Low"
             correction_drop.update()
             self.image.src = "assets/logo.jpg"
@@ -685,7 +682,7 @@ class App(ft.Row):
                 print("Ruta del archivo:", file.path)
                 print("Tamaño del archivo:", file.size)
             self.image.src = e.files[0].path
-            self.qr.image_mask_path = e.files[0].path
+            self.qr.img_fill_path = e.files[0].path
             self.image.update()
             self.regenerate_preview(e)
             self.delete_image.disabled = False
