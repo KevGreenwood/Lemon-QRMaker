@@ -514,18 +514,18 @@ class App(Row):
             case 6:
                 if vcard_ver.value == "Version 3":
                     self.qr.build_data(data_type="vcard_v3", name=name_txt.value, lastname=lastname_txt.value,
-                                       pos=pos_txt.value, work_phone=work_phone_txt.value,
+                                       pos=pos_txt.value, org=org_txt.value, work_phone=work_phone_txt.value,
                                        priv_phone=priv_phone_txt.value, phone=phone_txt.value, email=mail_txt.value,
-                                       url=url_txt.value, street=street_txt.value, birthday=self.birthday,
+                                       url=url_txt.value, work_fax=work_fax_txt.value, priv_fax=priv_fax_txt.value, street=street_txt.value, birthday=self.birthday,
                                        zip=zip_txt.value, city=city_txt.value, state=state_txt.value,
-                                       country=country_txt.value, note=filled_txt.value)
+                                       country=country_txt.value)
                 else:
                     self.qr.build_data(data_type="vcard_v2", name=name_txt.value, lastname=lastname_txt.value,
-                                       nick=nickname_txt.value, work_phone=work_phone_txt.value,
+                                       pos=pos_txt.value, org=org_txt.value, work_phone=work_phone_txt.value,
                                        priv_phone=priv_phone_txt.value, phone=phone_txt.value, email=mail_txt.value,
-                                       url=url_txt.value, street=street_txt.value, birthday=self.birthday,
+                                       url=url_txt.value, work_fax=work_fax_txt.value, priv_fax=priv_fax_txt.value, street=street_txt.value, birthday=self.birthday,
                                        zip=zip_txt.value, city=city_txt.value, state=state_txt.value,
-                                       country=country_txt.value, note=filled_txt.value)
+                                       country=country_txt.value)
             case 7:
                 self.qr.build_data(data_type="mecard", name=name_txt.value, lastname=lastname_txt.value, nick=nickname_txt.value, work_phone=work_phone_txt.value, priv_phone=priv_phone_txt.value, phone=phone_txt.value, email=mail_txt.value, url=url_txt.value, street=street_txt.value, birthday=self.birthday, zip=zip_txt.value, city=city_txt.value, state=state_txt.value, country=country_txt.value, note=filled_txt.value)
             case 8:
