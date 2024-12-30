@@ -270,7 +270,6 @@ class App(Row):
         self.qr.bodyDrawer_index = 5
         self.regenerate_preview(e)
 
-
     def normalDrawer_eye(self, e):
         self.qr.eyeDrawer_index = 0
         self.regenerate_preview(e)
@@ -583,10 +582,12 @@ class App(Row):
     def switch_gradients(self, e):
         if gradiant_drop.value == "Image Fill":
             if not self.image_column in self.color_column.controls:
+                gradient_Button.disabled = True
                 self.color_column.controls.append(self.image_column)
         else:
             self.regenerate_preview(e)
             if self.image_column in self.color_column.controls:
+                gradient_Button.disabled = False
                 self.color_column.controls.remove(self.image_column)
         self.page.update()
 
