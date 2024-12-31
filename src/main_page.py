@@ -1,3 +1,5 @@
+from flet.core.vertical_divider import VerticalDivider
+
 from utils.qr_core import QRGenerator
 from widgets.TextField import *
 from widgets.Tab import *
@@ -121,7 +123,7 @@ class App(Row):
         # ------------------------------------
 
         self.cont = Container(url_txt, padding=10, width=750)
-        self.tabs_widget_container = Container(Column([tab_row, self.cont]), alignment=alignment.top_left, width=770)
+        self.tabs_widget_container = Container(Column([tab_row]), alignment=alignment.top_left, width=770)
         # --- Size Section ---
         self.version_slider = Slider(1, "{value}", 1, 40, 39, on_change=self.regenerate_preview, disabled=True)
         
@@ -212,10 +214,10 @@ class App(Row):
                 self.prev_container, self.qr_size_slider, 
                 self.size_row, self.save_btn
             ], horizontal_alignment=CrossAxisAlignment.CENTER),
-            bgcolor="white", width=500, height=1500)
+            bgcolor="white", expand=True)
 
-        self.main = Container(Column([self.size_panel, self.color_panel, self.logo_panel,
-                                            self.design_panel, self.advanced_panel]), width=750)
+        self.main = Container(Column([self.cont, self.size_panel, self.color_panel, self.logo_panel,
+                                            self.design_panel, self.advanced_panel], scroll=ScrollMode.ALWAYS), width=750)
 
         """
         self.inner_eye_row = Row([inner_eye_Button, inner_eye_gradiant_drop])
@@ -680,17 +682,9 @@ class App(Row):
             self.page.update()
 
     def build(self):
-        return Row(
-            [
-                Column(
-                    [self.tabs_widget_container, self.main],
-                    height=650,
-                    scroll=ScrollMode.ADAPTIVE,
-                ),
-                self.right
-            ],
-            MainAxisAlignment.CENTER, CrossAxisAlignment.START
-        )
+        return Column([
+            Row([self.tabs_widget_container], alignment=MainAxisAlignment.CENTER), Row([self.main, self.right], vertical_alignment=CrossAxisAlignment.START)
+        ], expand=True, alignment=MainAxisAlignment.START)
 
     def did_mount(self):
         self.page.overlay.extend([self.save_file_dialog, self.pick_files_dialog, self.pick_image_dialog])
