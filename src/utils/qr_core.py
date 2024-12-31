@@ -1,5 +1,7 @@
 import io
 import base64
+import threading
+import multiprocessing
 from qrcode.main import QRCode
 from qrcode.image.styledpil import StyledPilImage
 from qrcode.image.styles.colormasks import (
@@ -22,17 +24,10 @@ class QRGenerator(QRCode):
         super().__init__()
         self.use_logo: bool = False
         self.use_gradiant: bool = False
-        #self.custom_eye_color: bool = False
-        #self.inner_use_gradiant: bool = False
-        #self.outer_use_gradient: bool = False
         
         self.back_color: tuple = (255, 255, 255)
         self.main_color: tuple = REAL_BLACK
         self.alt_color: tuple = (0, 0, 255)
-        #self.main_color_inner_eyes: tuple = REAL_BLACK
-        #self.alt_color_inner_eyes: tuple = self.alt_color
-        #self.main_color_outer_eyes: tuple = REAL_BLACK
-        #self.alt_color_outer_eyes: tuple = self.alt_color
 
         self.data: str = ""
         self.logo_path: str = ""
@@ -42,7 +37,6 @@ class QRGenerator(QRCode):
         self.bodyDrawer_index: int = 0
         self.eyeDrawer_index: int = 0
 
-        # box_size base: 37x37, so, just multiply by your desire number for scale your qr
         self.real_box_size: int = 10
 
         self.color_masks = {
@@ -146,3 +140,13 @@ class QRGenerator(QRCode):
     def get_res(self) -> str:
         """Returns the resolution of the generated QR code."""
         return f"{int(self.img.size[0]/10 * self.real_box_size)} x {int(self.img.size[1]/10 * self.real_box_size)}"
+
+    def parallel_generate(self, data_type: str, path: str, **kwargs):
+        """Generates data and QR code in parallel."""
+        data_thread = threading.Thread(target=self.build_data, args=(data_type,), kwargs=kwargs)
+        data_thread.start()
+        data_thread.join()
+
+        qr_process = multiprocessing.Process(target=self.generate_final, args=(path,))
+        qr_process.start()
+        qr_process.join()
