@@ -11,8 +11,7 @@ crypto_currencies = {
 
 wifi_encrypt_map = {"None": "nopass", "WEP": "WEP", "WPA/WPA2": "WPA"}
 
-gradiant_style_map = {"Radial Gradient": 1, "Square Gradient": 2, "Horizontal Gradient": 3, "Vertical Gradient": 4,
-                      "Image Fill": 5}
+gradiant_style_map = {"Radial Gradient": 1, "Square Gradient": 2, "Horizontal Gradient": 3, "Vertical Gradient": 4}
 
 class CustomDropdown(Dropdown):
     def __init__(self, value, options, label, width=None):
@@ -34,6 +33,6 @@ encrypt_drop = CustomDropdown("WPA/WPA2", ["None", "WEP", "WPA/WPA2"], "Network 
 crypto_drop = CustomDropdown("Bitcoin", ["Bitcoin", "Bitcoin Cash", "Ethereum", "Litecoin", "Dash"], "Select Cryptocurrency")
 payment_drop = CustomDropdown(None, ["Buy now", "Add to cart", "Donation"], "Payment type", width=360)
 correction_drop = CustomDropdown("Low", ["Low", "Medium", "High", "Very High"], "Correction Level")
-gradiant_drop = CustomDropdown("Radial Gradient", ["Radial Gradient", "Square Gradient", "Horizontal Gradient", "Vertical Gradient", "Image Fill"], "Gradient Styles")
+gradiant_drop = CustomDropdown("Radial Gradient", ["Radial Gradient", "Square Gradient", "Horizontal Gradient", "Vertical Gradient"], "Gradient Styles")
 #inner_eye_gradiant_drop = CustomDropdown("Solid Color", ["Solid Color", "Radial Gradient", "Square Gradient", "Horizontal Gradient", "Vertical Gradient"], "Color Styles")
 #outer_eye_gradiant_drop = CustomDropdown("Solid Color", ["Solid Color", "Radial Gradient", "Square Gradient", "Horizontal Gradient", "Vertical Gradient"], "Color Styles")

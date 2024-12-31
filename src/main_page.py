@@ -134,13 +134,14 @@ class App(Row):
         self.color_radio_group = RadioGroup(Row(
                 [
                     Radio("Single Color", value="normal"),
-                    Radio("Color Gradient", value="gradient")
+                    Radio("Color Gradient", value="gradient"),
+                    Radio("Image Fill", value="image")
                 ]
             ), "normal", self.manage_color_style
         )
         self.fore_color_row = Row([foreground_Button])
         #self.color_radio_group, custom_eye
-        self.color_column = Column([Row([self.color_radio_group,]), self.fore_color_row, background_Button])
+        self.color_column = Column([Row([self.color_radio_group]), self.fore_color_row, background_Button])
         
         self.color_panel = ExpansionPanelList([ExpansionPanel(ListTile(title=Text("SET COLORS")), 
                             Container(self.color_column, 20))])
@@ -164,7 +165,7 @@ class App(Row):
         self.open_image = ElevatedButton("Upload Image", Icons.UPLOAD_FILE_ROUNDED,
             on_click=lambda _: self.pick_image_dialog.pick_files(allow_multiple=False, allowed_extensions=["png", "jpeg", "jpg", "svg", "webp"]))
         self.image = Image("/logo.jpg", width=250, height=250)
-        self.image_column = Column([self.image, self.open_image], horizontal_alignment=CrossAxisAlignment.CENTER)
+        self.image_column = Row([Column([self.image, self.open_image], horizontal_alignment=CrossAxisAlignment.CENTER)], alignment=MainAxisAlignment.CENTER)
 
 
         self.body_Column = Column(
@@ -296,12 +297,38 @@ class App(Row):
 
     
     def manage_color_style(self, e):
-        if self.color_radio_group.value == "gradient":
-            self.fore_color_row.controls.append(self.qr_colors_row)
-            self.qr.use_gradiant = True
-        else:
-            self.fore_color_row.controls.remove(self.qr_colors_row)
-            self.qr.use_gradiant = False
+        match self.color_radio_group.value:
+            case "normal":
+                self.qr.use_gradiant = False
+                self.qr.colorMask_index = 0
+                gradiant_drop.value = "Radial Gradient"
+                foreground_Button.disabled = False
+                if self.qr_colors_row in self.fore_color_row.controls:
+                    self.fore_color_row.controls.remove(self.qr_colors_row)
+                if self.image_column in self.color_column.controls:
+                    self.color_column.controls.remove(self.image_column)
+                    self.image.src = "/logo.jpg"
+
+            case "gradient":
+                if not self.qr_colors_row in self.fore_color_row.controls:
+                    self.fore_color_row.controls.append(self.qr_colors_row)
+                self.qr.use_gradiant = True
+                self.qr.colorMask_index = 1
+                gradiant_drop.value = "Radial Gradient"
+                foreground_Button.disabled = False
+                gradient_Button.disabled = False
+                if self.image_column in self.color_column.controls:
+                    self.color_column.controls.remove(self.image_column)
+                    self.image.src = "/logo.jpg"
+
+            case "image":
+                if self.qr_colors_row in self.fore_color_row.controls:
+                    self.fore_color_row.controls.remove(self.qr_colors_row)
+                if not self.image_column in self.color_column.controls:
+                    gradient_Button.disabled = True
+                    foreground_Button.disabled = True
+                    self.color_column.controls.append(self.image_column)
+
         self.regenerate_preview(e)
         self.page.update()
 
@@ -580,16 +607,9 @@ class App(Row):
         return self.qr.generate_preview()
 
     def switch_gradients(self, e):
-        if gradiant_drop.value == "Image Fill":
-            if not self.image_column in self.color_column.controls:
-                gradient_Button.disabled = True
-                self.color_column.controls.append(self.image_column)
-        else:
-            self.regenerate_preview(e)
-            if self.image_column in self.color_column.controls:
-                gradient_Button.disabled = False
-                self.color_column.controls.remove(self.image_column)
+        self.regenerate_preview(e)
         self.page.update()
+
 
     # --- Realtime Building ---
     def regenerate_preview(self, e):
@@ -642,6 +662,7 @@ class App(Row):
                 print("Nombre del archivo:", file.name)
                 print("Ruta del archivo:", file.path)
                 print("Tamaño del archivo:", file.size)
+            self.qr.colorMask_index = 5
             self.image.src = e.files[0].path
             self.qr.img_fill_path = e.files[0].path
             self.image.update()
