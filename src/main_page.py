@@ -202,19 +202,18 @@ class App(Row):
                             on_click=lambda _: self.save_file_dialog.save_file(file_type=FilePickerFileType.IMAGE))
         
         self.qr_size_slider = Slider(32, "{value}", 10, 55, on_change=self.update_scale_txt)
-
         self.qr_preview = Image(src_base64=self.build_qr(), width=400, height=400)
         self.prev_container = Container(self.qr_preview, alignment=alignment.top_center)
 
         self.scale_txt = Text(self.qr.get_res(), weight=FontWeight.BOLD)
-        self.size_row = Row([Text("Low Quality"), self.scale_txt, Text("High Quality")],
+        self.size_row = Row([Text("      Low Quality"), self.scale_txt, Text("High Quality      ")],
                             MainAxisAlignment.SPACE_BETWEEN)
         self.right = Container(Column(
             [
                 self.prev_container, self.qr_size_slider, 
                 self.size_row, self.save_btn
             ], horizontal_alignment=CrossAxisAlignment.CENTER),
-            bgcolor="white", expand=True)
+            bgcolor="white", width=380)
 
         self.main = Container(Column([self.cont, self.size_panel, self.color_panel, self.logo_panel,
                                             self.design_panel, self.advanced_panel], scroll=ScrollMode.ALWAYS), width=750)
