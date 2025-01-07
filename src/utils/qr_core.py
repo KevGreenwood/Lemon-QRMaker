@@ -22,6 +22,7 @@ class QRGenerator(QRCode):
     """A class to generate QR codes with customizable styles, colors, and embedded logos."""
     def __init__(self):
         super().__init__()
+
         self.use_logo: bool = False
         self.use_gradiant: bool = False
         
@@ -135,7 +136,7 @@ class QRGenerator(QRCode):
         """Generates and saves the final QR code image to a specified path."""
         self.box_size = self.real_box_size
         self._build_qr()
-        self.img.save(f"{path}.png")
+        self.img.save(path)
 
     def get_res(self) -> str:
         """Returns the resolution of the generated QR code."""

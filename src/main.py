@@ -3,7 +3,6 @@ from flet import (Page, app)
 
 def main(page: Page):
     page.title = "Lemon-QRCodeMaker"
-    Page.window_min_width = 1150
     #page.bgcolor = ft.Colors.AMBER
     page.scroll = "auto"
     page.add(App())

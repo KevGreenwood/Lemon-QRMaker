@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="a" data-name="Capa 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <rect width="1024" height="1024" style="fill: #fff; stroke-width: 0px;"/>
+  <line x2="1024" y2="1024" style="fill: #fff; stroke: #000; stroke-miterlimit: 10; stroke-width: 50px;"/>
+  <line y1="1024" x2="1024" style="fill: #fff; stroke: #000; stroke-miterlimit: 10; stroke-width: 50px;"/>
+</svg>

@@ -1,5 +1,7 @@
+from flet.core.responsive_row import ResponsiveRow
 from flet.core.vertical_divider import VerticalDivider
 
+from widgets.Radio import *
 from utils.qr_core import QRGenerator
 from widgets.TextField import *
 from widgets.Tab import *
@@ -33,13 +35,8 @@ class App(Row):
         roundedeye_Button.on_click = self.roundedDrawer_eye
         verticaleye_Button.on_click = self.verticalDrawer_eye
         horizontaleye_Button.on_click = self.horizontalDrawer_eye
-        background_Button.fx = self.regenerate_preview
-        foreground_Button.fx = self.regenerate_preview
-        gradient_Button.fx = self.regenerate_preview
-        # inner_eye_Button.fx = self.regenerate_preview
-        # inner_eye_gradient_Button.fx = self.regenerate_preview
-        # outer_eye_Button.fx = self.regenerate_preview
-        # outer_eye_gradient_Button.fx = self.regenerate_preview
+
+
         start_dt_Button.on_click = lambda e: self.page.open(
             CupertinoBottomSheet(
                 start_dt_Picker,
@@ -58,61 +55,12 @@ class App(Row):
             DatePicker(on_change=self.get_birthday)
         )
 
-        """ --- TextField --- """
-        url_txt.on_change = self.regenerate_preview
-        filled_txt.on_change = self.regenerate_preview
-        mail_txt.on_change = self.regenerate_preview
-        subject_txt.on_change = self.regenerate_preview
-        msg_txt.on_change = self.regenerate_preview
-        phone_txt.on_change = self.regenerate_preview
-        name_txt.on_change = self.regenerate_preview
-        lastname_txt.on_change = self.regenerate_preview
-        org_txt.on_change = self.regenerate_preview
-        pos_txt.on_change = self.regenerate_preview
-        work_phone_txt.on_change = self.regenerate_preview
-        priv_phone_txt.on_change = self.regenerate_preview
-        work_fax_txt.on_change = self.regenerate_preview
-        priv_fax_txt.on_change = self.regenerate_preview
-        street_txt.on_change = self.regenerate_preview
-        zip_txt.on_change = self.regenerate_preview
-        city_txt.on_change = self.regenerate_preview
-        state_txt.on_change = self.regenerate_preview
-        country_txt.on_change = self.regenerate_preview
-        nickname_txt.on_change = self.regenerate_preview
-        latitude_txt.on_change = self.regenerate_preview
-        longitude_txt.on_change = self.regenerate_preview
-        ssid_txt.on_change = self.regenerate_preview
-        pass_txt.on_change = self.regenerate_preview
-        title_txt.on_change = self.regenerate_preview
-        location_txt.on_change = self.regenerate_preview
-        organizer_txt.on_change = self.regenerate_preview
-        summary_txt.on_change = self.regenerate_preview
-        app_txt.on_change = self.regenerate_preview
-        crypto_address_txt.on_change = self.regenerate_preview
-        amount_txt.on_change = self.regenerate_preview
-        id_txt.on_change = self.regenerate_preview
-        item_name_txt.on_change = self.regenerate_preview
-        item_id_txt.on_change = self.regenerate_preview
-        price_txt.on_change = self.regenerate_preview
-        currency_txt.on_change = self.regenerate_preview
-        ship_txt.on_change = self.regenerate_preview
-        tax_txt.on_change = self.regenerate_preview
-        border_txt.on_change = self.regenerate_preview
-        thanks_url_txt.on_change = self.regenerate_preview
-        cancel_url_txt.on_change = self.regenerate_preview
-        
-        """ --- Dropdown --- """
-        vcard_ver.on_change = self.regenerate_preview
-        encrypt_drop.on_change = self.regenerate_preview
-        crypto_drop.on_change = self.regenerate_preview
-        payment_drop.on_change = self.regenerate_preview
-        correction_drop.on_change = self.regenerate_preview
+
         gradiant_drop.on_change = self.switch_gradients
         #inner_eye_gradiant_drop.on_change = self.manage_eye_color_style
         #outer_eye_gradiant_drop.on_change = self.manage_eye_color_style
 
         """ --- Checkbox --- """
-        hidden_check.on_change = self.regenerate_preview
         ver_auto_box.on_change = self.switch_version
         #custom_eye.on_change = self.manage_eye_style
         
@@ -125,7 +73,7 @@ class App(Row):
         self.cont = Container(url_txt, padding=10, width=750)
         self.tabs_widget_container = Container(Column([tab_row]), alignment=alignment.top_left, width=770)
         # --- Size Section ---
-        self.version_slider = Slider(1, "{value}", 1, 40, 39, on_change=self.regenerate_preview, disabled=True)
+        self.version_slider = Slider(1, "{value}", 1, 40, 39, disabled=True)
         
         self.size_row = Row([self.version_slider, ver_auto_box])
         
@@ -133,17 +81,11 @@ class App(Row):
                             Container(Column([self.size_row, border_txt]), 20),)])
 
         # --- Color Section ---
-        self.color_radio_group = RadioGroup(Row(
-                [
-                    Radio("Single Color", value="normal"),
-                    Radio("Color Gradient", value="gradient"),
-                    Radio("Image Fill", value="image")
-                ]
-            ), "normal", self.manage_color_style
-        )
+        color_radio_group.on_change = self.manage_color_style
+
+
         self.fore_color_row = Row([foreground_Button])
-        #self.color_radio_group, custom_eye
-        self.color_column = Column([Row([self.color_radio_group]), self.fore_color_row, background_Button])
+        self.color_column = Column([Row([color_radio_group]), self.fore_color_row, background_Button])
         
         self.color_panel = ExpansionPanelList([ExpansionPanel(ListTile(title=Text("SET COLORS")), 
                             Container(self.color_column, 20))])
@@ -151,10 +93,10 @@ class App(Row):
         # --- Logo Section ---
         self.pick_files_dialog = FilePicker(self.pick_files_result)
         self.open_logo = ElevatedButton("Upload Logo", Icons.UPLOAD_FILE_ROUNDED,
-            on_click=lambda _: self.pick_files_dialog.pick_files(allow_multiple=False, allowed_extensions=["png", "jpeg", "jpg", "svg", "webp"]))
+            on_click=lambda _: self.pick_files_dialog.pick_files(allow_multiple=False, allowed_extensions=["png", "jpeg", "jpg", "webp"]))
         self.delete_logo = ElevatedButton("Delete Logo", Icons.REMOVE_CIRCLE_OUTLINE_ROUNDED,
                             on_click=self.remove_logo, disabled=True)
-        self.logo = Image("/logo.jpg", width=250, height=250)
+        self.logo = Image("/placeholder.svg", width=250, height=250)
         
         self.logo_row = Row([self.open_logo, self.delete_logo], MainAxisAlignment.CENTER, height=50)
         self.logo_column = Column([self.logo, self.logo_row], horizontal_alignment=CrossAxisAlignment.CENTER)
@@ -166,7 +108,7 @@ class App(Row):
         self.pick_image_dialog = FilePicker(self.pick_image_result)
         self.open_image = ElevatedButton("Upload Image", Icons.UPLOAD_FILE_ROUNDED,
             on_click=lambda _: self.pick_image_dialog.pick_files(allow_multiple=False, allowed_extensions=["png", "jpeg", "jpg", "svg", "webp"]))
-        self.image = Image("/logo.jpg", width=250, height=250)
+        self.image = Image("/placeholder.svg", width=250, height=250)
         self.image_column = Row([Column([self.image, self.open_image], horizontal_alignment=CrossAxisAlignment.CENTER)], alignment=MainAxisAlignment.CENTER)
 
 
@@ -199,8 +141,12 @@ class App(Row):
         # --- Right Layout ---
         self.save_file_dialog = FilePicker(on_result=self.save_file_result)
         self.save_btn = ElevatedButton("Save", Icons.SAVE,
-                            on_click=lambda _: self.save_file_dialog.save_file(file_type=FilePickerFileType.IMAGE))
-        
+                            on_click=lambda _: self.save_file_dialog.save_file(file_name="qr.png", allowed_extensions=["png", "jpeg", "jpg", "webp"]))
+        self.gen_btn = ElevatedButton("Generate", Icons.QR_CODE,
+                                       on_click=self.regenerate_preview)
+        self.button_row = Row([self.gen_btn, self.save_btn], alignment=MainAxisAlignment.CENTER, spacing=40, )
+
+
         self.qr_size_slider = Slider(32, "{value}", 10, 55, on_change=self.update_scale_txt)
         self.qr_preview = Image(src_base64=self.build_qr(), width=400, height=400)
         self.prev_container = Container(self.qr_preview, alignment=alignment.top_center)
@@ -208,15 +154,14 @@ class App(Row):
         self.scale_txt = Text(self.qr.get_res(), weight=FontWeight.BOLD)
         self.size_row = Row([Text("      Low Quality"), self.scale_txt, Text("High Quality      ")],
                             MainAxisAlignment.SPACE_BETWEEN)
-        self.right = Container(Column(
+        self.right = Column(
             [
                 self.prev_container, self.qr_size_slider, 
-                self.size_row, self.save_btn
-            ], horizontal_alignment=CrossAxisAlignment.CENTER),
-            bgcolor="white", width=380)
+                self.size_row, self.button_row
+            ], horizontal_alignment=CrossAxisAlignment.CENTER, col={"sm": 12, "md": 5, "lg": 4})
 
-        self.main = Container(Column([self.cont, self.size_panel, self.color_panel, self.logo_panel,
-                                            self.design_panel, self.advanced_panel], scroll=ScrollMode.ALWAYS), width=750)
+        self.main = Column([self.cont, self.size_panel, self.color_panel, self.logo_panel,
+                                            self.design_panel, self.advanced_panel], col={"sm": 12, "md": 7, "lg": 8})
 
         """
         self.inner_eye_row = Row([inner_eye_Button, inner_eye_gradiant_drop])
@@ -245,7 +190,6 @@ class App(Row):
         else:
             self.outer_eye_row.controls.remove(outer_eye_gradient_Button)
             self.qr.outer_use_gradiant = False
-        self.regenerate_preview(e)
         self.page.update()
     """
     def normalDrawer(self, e):
@@ -298,7 +242,7 @@ class App(Row):
 
     
     def manage_color_style(self, e):
-        match self.color_radio_group.value:
+        match color_radio_group.value:
             case "normal":
                 self.qr.use_gradiant = False
                 self.qr.colorMask_index = 0
@@ -308,7 +252,7 @@ class App(Row):
                     self.fore_color_row.controls.remove(self.qr_colors_row)
                 if self.image_column in self.color_column.controls:
                     self.color_column.controls.remove(self.image_column)
-                    self.image.src = "/logo.jpg"
+                    self.image.src = "/placeholder.svg"
 
             case "gradient":
                 if not self.qr_colors_row in self.fore_color_row.controls:
@@ -320,7 +264,7 @@ class App(Row):
                 gradient_Button.disabled = False
                 if self.image_column in self.color_column.controls:
                     self.color_column.controls.remove(self.image_column)
-                    self.image.src = "/logo.jpg"
+                    self.image.src = "/placeholder.svg"
 
             case "image":
                 if self.qr_colors_row in self.fore_color_row.controls:
@@ -330,7 +274,6 @@ class App(Row):
                     foreground_Button.disabled = True
                     self.color_column.controls.append(self.image_column)
 
-        self.regenerate_preview(e)
         self.page.update()
 
     """
@@ -339,26 +282,22 @@ class App(Row):
             self.color_column.controls.append(self.eye_column)
         else:
             self.color_column.controls.remove(self.eye_column)
-        self.regenerate_preview(e)
         self.page.update()
     """
 
     def get_start_datetime(self, e):
         self.start_datetime = e.control.value.strftime("%Y%m%dT%H%M")
         start_dt_Text.value = e.control.value.strftime('%Y/%m/%d %H:%M')
-        self.regenerate_preview(e)
         start_dt_Text.update()
 
     def get_end_datetime(self, e):
         self.end_datetime = e.control.value.strftime("%Y%m%dT%H%M")
         end_dt_Text.value = e.control.value.strftime('%Y/%m/%d %H:%M')
-        self.regenerate_preview(e)
         end_dt_Text.update()
     
     def get_birthday(self, e):
         self.birthday = e.control.value.strftime("%Y%m%d")
         birthday_Text.value = e.control.value.strftime('%Y/%m/%d')
-        self.regenerate_preview(e)
         birthday_Text.update()
 
     # Custom Tabs
@@ -404,7 +343,7 @@ class App(Row):
                 reset_drop()
                 self.cont.content = Column(
                     [
-                        vcard_ver,
+                        vcard_ver_group,
                         Row([name_txt, lastname_txt]),
                         Row([org_txt, pos_txt]),
                         Row([work_phone_txt, priv_phone_txt]),
@@ -516,7 +455,7 @@ class App(Row):
             case 5:
                 self.qr.build_data(data_type="whatsapp", phone=phone_txt.value, msg=msg_txt.value)
             case 6:
-                if vcard_ver.value == "Version 3":
+                if vcard_ver_group.value == "3":
                     self.qr.build_data(data_type="vcard_v3", name=name_txt.value, lastname=lastname_txt.value,
                                        pos=pos_txt.value, org=org_txt.value, work_phone=work_phone_txt.value,
                                        priv_phone=priv_phone_txt.value, phone=phone_txt.value, email=mail_txt.value,
@@ -591,7 +530,7 @@ class App(Row):
         else:
             self.qr.error_correction = {"Low": 0, "Medium": 1, "High": 2, "Very High": 3}.get(correction_drop.value, None)
 
-        if self.color_radio_group.value == "gradient":
+        if color_radio_group.value == "gradient":
             self.qr.alt_color = gradient_Button.qr_color
             self.qr.colorMask_index = gradiant_style_map.get(gradiant_drop.value, None)
 
@@ -608,7 +547,6 @@ class App(Row):
         return self.qr.generate_preview()
 
     def switch_gradients(self, e):
-        self.regenerate_preview(e)
         self.page.update()
 
 
@@ -624,7 +562,6 @@ class App(Row):
         else:
             self.version_slider.disabled = False
         self.version_slider.update()
-        self.regenerate_preview(e)
 
     def remove_logo(self, e):
         if not self.delete_logo.disabled:
@@ -632,7 +569,7 @@ class App(Row):
             self.qr.use_logo = False
             correction_drop.value = "Low"
             correction_drop.update()
-            self.logo.src = "/logo.jpg"
+            self.logo.src = "/placeholder.svg"
             self.logo.update()
             self.regenerate_preview(e)
             self.delete_logo.disabled = True
@@ -682,8 +619,8 @@ class App(Row):
 
     def build(self):
         return Column([
-            Row([self.tabs_widget_container], alignment=MainAxisAlignment.CENTER), Row([self.main, self.right], vertical_alignment=CrossAxisAlignment.START)
-        ], expand=True, alignment=MainAxisAlignment.START)
+            Row([self.tabs_widget_container], alignment=MainAxisAlignment.CENTER), ResponsiveRow([self.main, self.right])
+        ], expand=True, )
 
     def did_mount(self):
         self.page.overlay.extend([self.save_file_dialog, self.pick_files_dialog, self.pick_image_dialog])

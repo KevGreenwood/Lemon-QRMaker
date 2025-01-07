@@ -11,7 +11,6 @@ class ColorButtonPicker(ElevatedButton):
         super().__init__(text, icon, icon_color=color, on_click=self.open_color_picker)
         self.start_color = color
         self.qr_color: tuple = hex_to_rgb(color)
-        self.fx = None
         self.color_Picker = ColorPicker(color, 300)
         self.confirm_text = TextButton("OK", on_click=self.change_color)
         self.color_dialog = AlertDialog(
@@ -31,7 +30,6 @@ class ColorButtonPicker(ElevatedButton):
     def change_color(self, e):
         self.icon_color = self.color_Picker.color
         self.qr_color = hex_to_rgb(self.color_Picker.color)
-        self.fx(e)
         self.color_dialog.open = False
         e.page.update()
 
