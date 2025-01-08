@@ -5,7 +5,7 @@ description = ""
 readme = "README.md"
 requires-python = ">=3.8"
 dependencies = [
-  "flet==0.25.1",
+  "flet==0.25.2",
   "flet-contrib>=2024.12.3",
   "qrcode>=8.0",
   "pillow>=11.0.0"
