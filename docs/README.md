@@ -1,4 +1,5 @@
 # Lemon-QRMaker
+![Screenshoot](/docs/screenshoot.png)
 This program is an intuitive and cross-platform desktop solution for generating QR codes, built using the `qrcode` library and the `Flet` framework for the graphical interface. Inspired by QR Code Monkey, it operates entirely offline, offering advanced customization tools and multiple content format options.
 
 ## Key Features
